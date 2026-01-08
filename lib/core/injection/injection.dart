@@ -4,7 +4,7 @@ import 'package:sun_scan/core/network/http_client.dart';
 import '../../main.dart';
 
 class Injection {
-  static const String fontFamily = 'Dm Sans';
+  static const String fontFamily = 'DMSans';
   // static final AppSharedPrefKey sharedPrefKey = AppSharedPrefKey();
   // static final HttpClient httpClient = AppHttpClient.create();
   // static final HeaderProvider headerProvider = AppHeaderProvider.create();
