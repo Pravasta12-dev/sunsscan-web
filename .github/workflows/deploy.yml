@@ -26,7 +26,10 @@ jobs:
         run: flutter pub get
 
       - name: Build Flutter Web
-        run: flutter build web --base-href "/sunscan-web/"
+        run: flutter build web --base-href "/sunsscan-web/" --release
+
+      - name: Add .nojekyll file
+        run: touch build/web/.nojekyll
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
