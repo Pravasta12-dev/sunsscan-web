@@ -1,5 +1,5 @@
 class QrScanResult {
-  final int eventId;
+  final String eventId;
 
   final String raw;
 
@@ -19,11 +19,8 @@ class QrScanHelper {
       throw Exception('QR rusak');
     }
 
-    final eventId = int.tryParse(parts[1]);
-
-    if (eventId == null) {
-      throw Exception('QR tidak dikenali');
-    }
+    final eventId = parts[1];
+    print('[QrScanHelper] Parsed QR: eventId=$eventId, raw=$rawQr');
 
     return QrScanResult(eventId: eventId, raw: rawQr);
   }

@@ -1,51 +1,51 @@
 import 'dart:async';
 
-import 'package:sun_scan/core/network/network_logger.dart';
 import 'package:sun_scan/core/sync/sync_config.dart';
+import 'package:sun_scan/core/sync/sync_debouncer.dart';
 import 'package:sun_scan/core/sync/sync_runner.dart';
 
-/// [SyncEngine] manages periodic synchronization of data using multiple [SyncRunner]s.
+import 'sync_guard.dart';
+
 class SyncEngine {
   final SyncConfig config;
   final List<SyncRunner> runners;
+  final SyncGuard _guard = SyncGuard();
+  final _debouncer = SyncDebouncer();
 
   Timer? _timer;
-  bool _isRunning = false;
 
   SyncEngine({required this.config, required this.runners});
 
-  // Start the periodic sync process
   void start() {
-    stop(); // Ensure no duplicate timers
+    stop();
 
-    _timer = Timer.periodic(config.interval, (_) async {
-      await syncOnce();
+    _timer = Timer.periodic(config.interval, (_) {
+      syncOnce();
     });
   }
 
-  // Stop the periodic sync process
   void stop() {
     _timer?.cancel();
     _timer = null;
   }
 
-  // Perform a single sync operation
   Future<void> syncOnce() async {
-    if (_isRunning) return;
+    if (!_guard.acquire()) return;
 
-    _isRunning = true;
     try {
       for (final runner in runners) {
         await runner.run(config.batchSize);
       }
-    } catch (e) {
-      appNetworkLogger(
-        endpoint: 'sync',
-        payload: e.toString(),
-        response: 'Error during sync',
-      );
+    } catch (_) {
+      // log error kalau mau
     } finally {
-      _isRunning = false;
+      _guard.release();
     }
+  }
+
+  void trigger() {
+    _debouncer.call(() async {
+      await syncOnce();
+    });
   }
 }

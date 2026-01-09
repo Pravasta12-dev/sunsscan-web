@@ -17,7 +17,7 @@ extension EnvironmentExtension on Environment {
   String get baseURL {
     switch (this) {
       case Environment.development:
-        return '192.168.1.14';
+        return '192.168.0.102';
       case Environment.production:
         return 'sunscan-production.up.railway.app';
       case Environment.staging:

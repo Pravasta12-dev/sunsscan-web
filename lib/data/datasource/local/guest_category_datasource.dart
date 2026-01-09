@@ -12,9 +12,7 @@ class GuestCategoryDatasource {
     return GuestCategoryDatasource(DatabaseHelper());
   }
 
-  Future<List<GuestCategoryModel>> getAllCategories({
-    required String eventUuid,
-  }) async {
+  Future<List<GuestCategoryModel>> getAllCategories({required String eventUuid}) async {
     final db = await _databaseHelper.database;
     final result = await db.query(
       'guest_categories',
@@ -25,9 +23,7 @@ class GuestCategoryDatasource {
     return result.map((e) => GuestCategoryModel.fromJson(e)).toList();
   }
 
-  Future<List<GuestCategoryModel>> getPendingSyncGuestsCategories(
-    int limit,
-  ) async {
+  Future<List<GuestCategoryModel>> getPendingSyncGuestsCategories(int limit) async {
     final db = await _databaseHelper.database;
     final result = await db.query(
       'guest_categories',
@@ -65,7 +61,7 @@ class GuestCategoryDatasource {
       whereArgs: [category.categoryUuid],
     );
 
-    if (existing.isEmpty) {
+    if (existing.isNotEmpty) {
       final localSync = existing.first['sync_status'];
 
       if (localSync == SyncStatus.pending.name) {
@@ -73,9 +69,7 @@ class GuestCategoryDatasource {
         return;
       }
 
-      final localUpdatedAt = DateTime.tryParse(
-        existing.first['updated_at'] as String? ?? '',
-      );
+      final localUpdatedAt = DateTime.tryParse(existing.first['updated_at'] as String? ?? '');
 
       if (localUpdatedAt != null &&
           category.updatedAt != null &&
@@ -83,12 +77,13 @@ class GuestCategoryDatasource {
         // Skip updating as local data is more recent
         return;
       }
-
-      await db.insert(
-        'guest_categories',
-        category.toJson(),
-        conflictAlgorithm: ConflictAlgorithm.replace,
-      );
     }
+
+    // Insert or update
+    await db.insert(
+      'guest_categories',
+      category.toJson(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
   }
 }

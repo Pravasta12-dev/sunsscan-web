@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sun_scan/app_bootstrap.dart';
 import 'package:sun_scan/core/theme/app_theme.dart';
 import 'package:sun_scan/features/event/bloc/event/event_bloc.dart';
 import 'package:sun_scan/features/guest/bloc/guest/guest_bloc.dart';
@@ -9,8 +10,33 @@ import 'features/guest/bloc/bloc/guest_category_bloc.dart';
 import 'features/web/bloc/event_web/event_web_bloc.dart';
 import 'features/web/bloc/guest_web/guest_web_bloc.dart';
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    AppBootstrap.dispose();
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.detached) {
+      AppBootstrap.dispose();
+    }
+  }
 
   // This widget is the root of your application.
   @override
@@ -25,9 +51,7 @@ class MyApp extends StatelessWidget {
       ],
       child: Builder(
         builder: (context) {
-          final mediaQuery = MediaQuery.of(
-            context,
-          ).copyWith(textScaler: TextScaler.linear(1.0));
+          final mediaQuery = MediaQuery.of(context).copyWith(textScaler: TextScaler.linear(1.0));
           return MediaQuery(
             data: mediaQuery,
             child: MaterialApp(

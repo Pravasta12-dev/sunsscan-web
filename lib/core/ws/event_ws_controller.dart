@@ -1,27 +1,24 @@
+// core/ws/event_ws_controller.dart
 import 'package:sun_scan/core/ws/event_ws_service.dart';
 
 import '../sync/sync_pull_service.dart';
 
 class EventWsController {
   final EventWsService _ws;
-  final SyncPullService _pullService;
+  final SyncPullService _pull;
 
-  bool _pulling = false;
-
-  EventWsController(this._ws, this._pullService);
+  EventWsController(this._ws, this._pull);
 
   void start() {
     _ws.connect(
       onEvent: (type) async {
-        if (_pulling) return;
-
-        if (type.startsWith('event') || type.startsWith('guest')) {
-          _pulling = true;
-          try {
-            await _pullService.pull();
-          } finally {
-            _pulling = false;
-          }
+        print('[WsController] Received event: $type');
+        try {
+          print('[WsController] Pulling data from server...');
+          await _pull.pull();
+          print('[WsController] Pull completed successfully!');
+        } catch (e) {
+          print('[WsController] Pull failed: $e');
         }
       },
     );

@@ -33,8 +33,12 @@ class _GuestScanPageState extends State<GuestScanPage> {
   void _onDetect(BarcodeCapture capture) {
     if (_isProcessing) return;
 
+    print('[GuestScanPage] Barcode detected: ${capture.barcodes.length}');
+
     final barcode = capture.barcodes.firstOrNull;
     final rawValue = barcode?.rawValue;
+
+    print('[GuestScanPage] Raw value: $rawValue');
 
     if (rawValue == null) return;
 
@@ -44,8 +48,10 @@ class _GuestScanPageState extends State<GuestScanPage> {
       final qrValue = QrScanHelper.parse(rawValue);
 
       if (widget.scanType == GuestScanType.checkIn) {
+        print('[GuestScanPage] Scanning for check-in');
         context.read<GuestBloc>().scanCheckIn(qrValue.raw);
       } else {
+        print('[GuestScanPage] Scanning for check-out');
         context.read<GuestBloc>().scanCheckOut(qrValue.raw);
       }
     } catch (e) {
@@ -61,9 +67,7 @@ class _GuestScanPageState extends State<GuestScanPage> {
   }
 
   void _showError(String message) {
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(message)));
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override
@@ -75,11 +79,7 @@ class _GuestScanPageState extends State<GuestScanPage> {
         centerTitle: true,
         leading: InkWell(
           onTap: () => AppTransition.popTransition(context),
-          child: Icon(
-            Icons.arrow_back_ios,
-            color: AppColors.whiteColor,
-            size: 12,
-          ),
+          child: Icon(Icons.arrow_back_ios, color: AppColors.whiteColor, size: 12),
         ),
       ),
       body: Stack(
@@ -87,14 +87,13 @@ class _GuestScanPageState extends State<GuestScanPage> {
           BlocListener<GuestBloc, GuestState>(
             listener: (context, state) async {
               if (state is GuestScanSuccess) {
-                final result =
-                    await AppTransition.pushTransition<GuestScanResult>(
-                      context,
-                      GuestScanSuccessPage(
-                        guestName: state.guest.name,
-                        isCheckOut: state.guest.checkedOutAt != null,
-                      ),
-                    );
+                final result = await AppTransition.pushTransition<GuestScanResult>(
+                  context,
+                  GuestScanSuccessPage(
+                    guestName: state.guest.name,
+                    isCheckOut: state.guest.checkedOutAt != null,
+                  ),
+                );
 
                 if (result == GuestScanResult.scanAgain) {
                   setState(() => _isProcessing = false);
@@ -109,10 +108,7 @@ class _GuestScanPageState extends State<GuestScanPage> {
 
               if (state is GuestScanFailure) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(state.message),
-                    duration: const Duration(seconds: 2),
-                  ),
+                  SnackBar(content: Text(state.message), duration: const Duration(seconds: 2)),
                 );
 
                 // Semua error, kembali ke halaman sebelumnya

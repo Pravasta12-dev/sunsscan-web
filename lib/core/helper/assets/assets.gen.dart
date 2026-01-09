@@ -66,6 +66,10 @@ class $AssetsSvgGen {
   /// File path: assets/svg/svg_dot.svg
   SvgGenImage get svgDot => const SvgGenImage('assets/svg/svg_dot.svg');
 
+  /// File path: assets/svg/svg_download.svg
+  SvgGenImage get svgDownload =>
+      const SvgGenImage('assets/svg/svg_download.svg');
+
   /// File path: assets/svg/svg_edit.svg
   SvgGenImage get svgEdit => const SvgGenImage('assets/svg/svg_edit.svg');
 
@@ -151,6 +155,9 @@ class $AssetsSvgGen {
   /// File path: assets/svg/svg_setting.svg
   SvgGenImage get svgSetting => const SvgGenImage('assets/svg/svg_setting.svg');
 
+  /// File path: assets/svg/svg_share.svg
+  SvgGenImage get svgShare => const SvgGenImage('assets/svg/svg_share.svg');
+
   /// File path: assets/svg/svg_shield.svg
   SvgGenImage get svgShield => const SvgGenImage('assets/svg/svg_shield.svg');
 
@@ -198,6 +205,7 @@ class $AssetsSvgGen {
     svgCheckCircle,
     svgClock,
     svgDot,
+    svgDownload,
     svgEdit,
     svgEmail,
     svgError,
@@ -225,6 +233,7 @@ class $AssetsSvgGen {
     svgQuestion,
     svgSearch,
     svgSetting,
+    svgShare,
     svgShield,
     svgShirt,
     svgSpark,

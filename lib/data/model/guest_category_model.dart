@@ -19,14 +19,7 @@ class GuestCategoryModel extends Equatable {
   });
 
   @override
-  List<Object?> get props => [
-    categoryUuid,
-    eventUuid,
-    name,
-    createdAt,
-    updatedAt,
-    syncStatus,
-  ];
+  List<Object?> get props => [categoryUuid, eventUuid, name, createdAt, updatedAt, syncStatus];
 
   Map<String, dynamic> toJson() {
     return {
@@ -44,8 +37,8 @@ class GuestCategoryModel extends Equatable {
       'id': categoryUuid,
       'event_id': eventUuid,
       'name': name,
-      'created_at': createdAt.toIso8601String(),
-      'updated_at': updatedAt?.toIso8601String(),
+      'created_at': createdAt.toUtc().toIso8601String(),
+      'updated_at': updatedAt?.toUtc().toIso8601String(),
       'sync_status': syncStatus.name,
     };
   }
@@ -74,9 +67,7 @@ class GuestCategoryModel extends Equatable {
       eventUuid: json['event_uuid'] as String,
       name: json['name'] as String,
       createdAt: DateTime.parse(json['created_at'] as String),
-      updatedAt: json['updated_at'] != null
-          ? DateTime.parse(json['updated_at'] as String)
-          : null,
+      updatedAt: json['updated_at'] != null ? DateTime.parse(json['updated_at'] as String) : null,
       syncStatus: json['sync_status'] != null
           ? SyncStatus.values.firstWhere(
               (e) => e.name == json['sync_status'],
@@ -92,9 +83,7 @@ class GuestCategoryModel extends Equatable {
       eventUuid: json['event_id'] as String,
       name: json['name'] as String,
       createdAt: DateTime.parse(json['created_at'] as String),
-      updatedAt: json['updated_at'] != null
-          ? DateTime.parse(json['updated_at'] as String)
-          : null,
+      updatedAt: json['updated_at'] != null ? DateTime.parse(json['updated_at'] as String) : null,
       syncStatus: json['sync_status'] != null
           ? SyncStatus.values.firstWhere(
               (e) => e.name == json['sync_status'],

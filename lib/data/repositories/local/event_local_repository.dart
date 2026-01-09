@@ -1,3 +1,5 @@
+import 'package:sun_scan/core/sync/sync_dispatcher.dart';
+
 import '../../../core/exception/custom_exception.dart';
 import '../../datasource/local/event_local_datasource.dart';
 import '../../model/event_model.dart';
@@ -14,13 +16,13 @@ abstract class EventLocalRepository {
 class EventLocalRepositoryImpl implements EventLocalRepository {
   final EventLocalDatasource _datasource;
 
-  EventLocalRepositoryImpl({required EventLocalDatasource datasource})
-    : _datasource = datasource;
+  EventLocalRepositoryImpl({required EventLocalDatasource datasource}) : _datasource = datasource;
 
   @override
   Future<void> deleteEvent(String eventUuid) async {
     try {
       await _datasource.deleteEvent(eventUuid);
+      SyncDispatcher.onLocalChange();
     } catch (e) {
       return _dbError();
     }
@@ -48,6 +50,7 @@ class EventLocalRepositoryImpl implements EventLocalRepository {
   Future<void> insertEvent(EventModel event) async {
     try {
       await _datasource.insertEvent(event);
+      SyncDispatcher.onLocalChange();
     } catch (e) {
       return _dbError();
     }
@@ -57,6 +60,7 @@ class EventLocalRepositoryImpl implements EventLocalRepository {
   Future<void> setActiveEvent(String eventUuid) async {
     try {
       await _datasource.setActiveEvent(eventUuid);
+      SyncDispatcher.onLocalChange();
     } catch (e) {
       return _dbError();
     }
@@ -66,6 +70,7 @@ class EventLocalRepositoryImpl implements EventLocalRepository {
   Future<void> updateEvent(EventModel event) async {
     try {
       await _datasource.updateEvent(event);
+      SyncDispatcher.onLocalChange();
     } catch (e) {
       return _dbError();
     }
@@ -77,5 +82,4 @@ class EventLocalRepositoryImpl implements EventLocalRepository {
   }
 }
 
-dynamic _dbError() =>
-    throw CustomException('Terjadi kesalahan database', code: 'DATABASE_ERROR');
+dynamic _dbError() => throw CustomException('Terjadi kesalahan database', code: 'DATABASE_ERROR');

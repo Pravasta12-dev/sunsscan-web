@@ -9,7 +9,7 @@ import 'package:sun_scan/core/storage/database.dart';
 
 import 'main_app.dart';
 
-Environment appEnvironment = Environment.production;
+Environment appEnvironment = Environment.development;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,9 +26,7 @@ void main() async {
     final isTabletUp = logicalWidth >= 600;
 
     if (!isTabletUp) {
-      await SystemChrome.setPreferredOrientations([
-        DeviceOrientation.portraitUp,
-      ]);
+      await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
     }
   }
 

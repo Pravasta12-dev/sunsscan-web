@@ -1,3 +1,5 @@
+import 'package:sun_scan/core/sync/connectivity_observer.dart';
+import 'package:sun_scan/core/sync/sync_dispatcher.dart';
 import 'package:sun_scan/data/datasource/local/guest_category_datasource.dart';
 
 import 'core/sync/sync_engine.dart';
@@ -16,6 +18,7 @@ class AppBootstrap {
   static SyncEngine? _syncEngine;
   static SyncPullService? _syncPullService;
   static EventWsController? _eventWsController;
+  static ConnectivityObserver? _connectivity;
 
   static Future<void> initialized() async {
     /// 🔹 DATASOURCES
@@ -38,15 +41,8 @@ class AppBootstrap {
       guestCategoryLocal: guestCategoryLocal,
     );
 
-    /// 🔹 INITIAL PULL (APP START) - Non-blocking, continue if failed
-    try {
-      await _syncPullService!.pull();
-      print('[AppBootstrap] ✅ Initial sync completed');
-    } catch (e) {
-      print('[AppBootstrap] ⚠️ Initial sync failed: $e');
-      print('[AppBootstrap] 📱 App will continue in offline mode');
-      // App tetap jalan, sync akan retry otomatis nanti
-    }
+    /// Initial pull to sync data from server to local
+    await _syncPullService!.pull();
 
     /// 🔹 WS CONTROLLER
     final wsService = EventWsService();
@@ -63,10 +59,16 @@ class AppBootstrap {
       guestCategoryRemoteDatasource: guestCategoryRemote,
     );
 
-    _syncEngine!.start();
+    _connectivity = ConnectivityObserver(_syncEngine!, _syncPullService!);
+    _connectivity!.start();
+
+    /// 🔹 INITIALIZE SYNC DISPATCHER
+    SyncDispatcher.init(_syncEngine!);
   }
 
   static void dispose() {
+    SyncDispatcher.dispose();
+
     _eventWsController?.stop();
     _syncEngine?.stop();
 

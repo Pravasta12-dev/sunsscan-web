@@ -26,7 +26,7 @@ class SyncRegistry {
         fetchPending: eventLocalDatasource.getPendingSyncEvents,
         markAsSynced: eventLocalDatasource.markEventsAsSynced,
       ),
-      remoteSync: eventRemoteDatasource.sync,
+      pushRemote: eventRemoteDatasource.sync,
       getId: (event) => event.eventUuid ?? '',
     );
 
@@ -35,7 +35,7 @@ class SyncRegistry {
         fetchPending: guestLocalDatasource.getPendingSyncGuests,
         markAsSynced: guestLocalDatasource.markGuestsAsSynced,
       ),
-      remoteSync: guestRemoteDatasource.sync,
+      pushRemote: guestRemoteDatasource.sync,
       getId: (guest) => guest.guestUuid ?? '',
     );
 
@@ -44,7 +44,7 @@ class SyncRegistry {
         fetchPending: guestCategoryDatasource.getPendingSyncGuestsCategories,
         markAsSynced: guestCategoryDatasource.markCategoriesAsSynced,
       ),
-      remoteSync: guestCategoryRemoteDatasource.sync,
+      pushRemote: guestCategoryRemoteDatasource.sync,
       getId: (category) => category.categoryUuid ?? '',
     );
 

@@ -24,41 +24,46 @@ class EventMobileView extends StatelessWidget {
         centerTitle: true,
       ),
 
-      body: BlocBuilder<EventBloc, EventState>(
-        builder: (context, state) {
-          if (state is EventLoading) {
-            return EventLoadingWidget();
-          }
+      body: RefreshIndicator(
+        onRefresh: () async {
+          context.read<EventBloc>().loadEvents();
+        },
+        child: BlocBuilder<EventBloc, EventState>(
+          builder: (context, state) {
+            if (state is EventLoading) {
+              return EventLoadingWidget();
+            }
 
-          if (state is EventLoaded) {
-            final events = state.events;
+            if (state is EventLoaded) {
+              final events = state.events;
 
-            if (events.isEmpty) {
+              if (events.isEmpty) {
+                return Column(
+                  children: [
+                    EventBanner(activeEvent: null),
+                    Expanded(child: EventEmptyWidget()),
+                    CreateEventButton(),
+                    const SizedBox(height: 16),
+                  ],
+                );
+              }
+
               return Column(
                 children: [
-                  EventBanner(activeEvent: null),
-                  Expanded(child: EventEmptyWidget()),
+                  Expanded(child: EventLoadedWidget(events: events)),
                   CreateEventButton(),
                   const SizedBox(height: 16),
                 ],
               );
             }
 
-            return Column(
-              children: [
-                Expanded(child: EventLoadedWidget(events: events)),
-                CreateEventButton(),
-                const SizedBox(height: 16),
-              ],
-            );
-          }
+            if (state is EventError) {
+              return EventErrorWidget();
+            }
 
-          if (state is EventError) {
-            return EventErrorWidget();
-          }
-
-          return SizedBox.shrink();
-        },
+            return SizedBox.shrink();
+          },
+        ),
       ),
     );
   }

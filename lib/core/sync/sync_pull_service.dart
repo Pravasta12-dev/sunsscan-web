@@ -25,31 +25,66 @@ class SyncPullService {
        _guestCategoryLocal = guestCategoryLocal;
 
   Future<void> pull() async {
+    print('[SyncPullService] ===== PULL STARTED =====');
     final lastSyncAt = await _syncState.getLastSyncAt();
+    print('[SyncPullService] Last sync at: $lastSyncAt');
 
     final response = await _remote.pullAll(lastSyncAt: lastSyncAt);
 
+    print('[SyncPullService] Pull response received');
+    print('[SyncPullService] Events count: ${response.events?.length ?? 0}');
+    print('[SyncPullService] Guests count: ${response.guests?.length ?? 0}');
+    print('[SyncPullService] Categories count: ${response.guestCategories?.length ?? 0}');
+
     /// 🔹 EVENTS
-    if (response.events != null) {
+    if (response.events != null && response.events!.isNotEmpty) {
+      print('[SyncPullService] Upserting ${response.events!.length} events...');
       for (final event in response.events!) {
-        await _eventLocal.upsertFromRemote(event);
+        try {
+          print('[SyncPullService] Upserting event: ${event.eventUuid}');
+          await _eventLocal.upsertFromRemote(event);
+          print('[SyncPullService] ✅ Event upserted: ${event.eventUuid}');
+        } catch (e) {
+          print('[SyncPullService] ❌ Error upserting event: $e');
+        }
       }
+    } else {
+      print('[SyncPullService] No events to upsert');
     }
 
-    if (response.guests != null) {
+    if (response.guests != null && response.guests!.isNotEmpty) {
+      print('[SyncPullService] Upserting ${response.guests!.length} guests...');
       for (final guest in response.guests!) {
-        await _guestLocal.upsertFromRemote(guest);
+        try {
+          print('[SyncPullService] Upserting guest: ${guest.guestUuid}');
+          await _guestLocal.upsertFromRemote(guest);
+          print('[SyncPullService] ✅ Guest upserted: ${guest.guestUuid}');
+        } catch (e) {
+          print('[SyncPullService] ❌ Error upserting guest: $e');
+        }
       }
+    } else {
+      print('[SyncPullService] No guests to upsert');
     }
 
     /// 🔹 GUEST CATEGORIES
-    if (response.guestCategories != null) {
+    if (response.guestCategories != null && response.guestCategories!.isNotEmpty) {
+      print('[SyncPullService] Upserting ${response.guestCategories!.length} categories...');
       for (final category in response.guestCategories!) {
-        await _guestCategoryLocal.upsertFromRemote(category);
+        try {
+          print('[SyncPullService] Upserting category: ${category.categoryUuid}');
+          await _guestCategoryLocal.upsertFromRemote(category);
+          print('[SyncPullService] ✅ Category upserted: ${category.categoryUuid}');
+        } catch (e) {
+          print('[SyncPullService] ❌ Error upserting category: $e');
+        }
       }
+    } else {
+      print('[SyncPullService] No categories to upsert');
     }
 
     /// 🔹 SAVE SERVER TIME
     await _syncState.setLastSyncAt(response.serverTime);
+    print('[SyncPullService] ===== PULL COMPLETED =====');
   }
 }

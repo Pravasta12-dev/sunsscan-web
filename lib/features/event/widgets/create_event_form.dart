@@ -46,9 +46,7 @@ class _DefaultFormState extends State<DefaultForm> {
 
   void _validateForm() {
     final isValid =
-        _nameController.text.isNotEmpty &&
-        _eventDateStart != null &&
-        _eventDateEnd != null;
+        _nameController.text.isNotEmpty && _eventDateStart != null && _eventDateEnd != null;
 
     if (isValid != _isFormValid) {
       setState(() {
@@ -150,9 +148,9 @@ class _DefaultFormState extends State<DefaultForm> {
     if (!_formKey.currentState!.validate() || !_isFormValid) return;
 
     if (_eventDateStart == null && _eventDateEnd == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Tanggal event wajib diisi')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Tanggal event wajib diisi')));
       return;
     }
 
@@ -186,112 +184,102 @@ class _DefaultFormState extends State<DefaultForm> {
       key: _formKey,
       child: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            /// NAMA ACARA
-            CustomFormWidget().buildTextFormInput(
-              controller: _nameController,
-              label: 'Nama Acara',
-              hintText: 'Contoh: Acara Pernikahan Megha & Dito',
-              contentPadding: const EdgeInsets.symmetric(
-                vertical: 16,
-                horizontal: 12,
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              /// NAMA ACARA
+              CustomFormWidget().buildTextFormInput(
+                controller: _nameController,
+                label: 'Nama Acara',
+                hintText: 'Contoh: Acara Pernikahan Megha & Dito',
+                contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+                onChanged: (_) => _validateForm(),
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return 'Nama event wajib diisi';
+                  }
+                  return null;
+                },
               ),
-              onChanged: (_) => _validateForm(),
-              validator: (value) {
-                if (value == null || value.trim().isEmpty) {
-                  return 'Nama event wajib diisi';
-                }
-                return null;
-              },
-            ),
 
-            const SizedBox(height: 24),
-
-            /// TANGGAL EVENT
-            CustomFormWidget().buildDateFormInput(
-              _eventDateStart,
-              _pickDate,
-              label: 'Tanggal dan Waktu Acara Mulai',
-            ),
-            const SizedBox(height: 24),
-            CustomFormWidget().buildDateFormInput(
-              _eventDateEnd,
-              _pickDateEnd,
-              label: 'Tanggal dan Waktu Acara Selesai',
-            ),
-
-            const SizedBox(height: 24),
-
-            /// CATATAN
-            CustomFormWidget().buildTextFormInput(
-              controller: _location,
-              label: 'Alamat Acara (opsional)',
-              hintText: 'Contoh: Bekasi, Jawa Barat',
-              maxLines: 4,
-              onChanged: (_) => _validateForm(),
-              contentPadding: const EdgeInsets.symmetric(
-                vertical: 16,
-                horizontal: 12,
-              ),
-              isRequired: false,
-            ),
-            const SizedBox(height: 24),
-
-            /// SWITCH SCAN KELUAR MASUK TAMU
-            CustomFormWidget().buildSwitchInput(
-              title: 'Scan Keluar Masuk Tamu',
-              value: _scanOutActive,
-              onChanged: (value) {
-                setState(() {
-                  _scanOutActive = value;
-                });
-                _validateForm();
-              },
-            ),
-
-            const SizedBox(height: 32),
-
-            /// BUTTON SIMPAN
-            SizedBox(
-              width: double.infinity,
-              child: CustomButton(
-                onPressed: _submit,
-                title: 'Simpan Event',
-                buttonType: _isFormValid
-                    ? ButtonType.primary
-                    : ButtonType.disable,
-              ),
-            ),
-
-            /// LOCK EVENT
-            if (widget.activeEvent != null) ...[
               const SizedBox(height: 24),
+
+              /// TANGGAL EVENT
+              CustomFormWidget().buildDateFormInput(
+                _eventDateStart,
+                _pickDate,
+                label: 'Tanggal dan Waktu Acara Mulai',
+              ),
+              const SizedBox(height: 24),
+              CustomFormWidget().buildDateFormInput(
+                _eventDateEnd,
+                _pickDateEnd,
+                label: 'Tanggal dan Waktu Acara Selesai',
+              ),
+
+              const SizedBox(height: 24),
+
+              /// CATATAN
+              CustomFormWidget().buildTextFormInput(
+                controller: _location,
+                label: 'Alamat Acara (opsional)',
+                hintText: 'Contoh: Bekasi, Jawa Barat',
+                maxLines: 4,
+                onChanged: (_) => _validateForm(),
+                contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+                isRequired: false,
+              ),
+              const SizedBox(height: 24),
+
+              /// SWITCH SCAN KELUAR MASUK TAMU
+              CustomFormWidget().buildSwitchInput(
+                title: 'Scan Keluar Masuk Tamu',
+                value: _scanOutActive,
+                onChanged: (value) {
+                  setState(() {
+                    _scanOutActive = value;
+                  });
+                  _validateForm();
+                },
+              ),
+
+              const SizedBox(height: 32),
+
+              /// BUTTON SIMPAN
               SizedBox(
                 width: double.infinity,
                 child: CustomButton(
-                  onPressed: () {
-                    setState(() {
-                      _isLocked = !_isLocked;
-                    });
-                    // DISPATCH BLOC UNTUK UPDATE ISLOCKED
-                    final updatedEvent = widget.activeEvent!.copyWith(
-                      isLocked: _isLocked,
-                    );
-
-                    context.read<EventBloc>().updateEvent(updatedEvent);
-                    AppTransition.popTransition(context);
-                  },
-                  title: widget.activeEvent!.isLocked
-                      ? 'Buka Kunci Acara'
-                      : 'Kunci Acara',
-                  buttonType: widget.activeEvent!.isLocked
-                      ? ButtonType.disable
-                      : ButtonType.outline,
+                  onPressed: _submit,
+                  title: 'Simpan Event',
+                  buttonType: _isFormValid ? ButtonType.primary : ButtonType.disable,
                 ),
               ),
+
+              /// LOCK EVENT
+              if (widget.activeEvent != null) ...[
+                const SizedBox(height: 24),
+                SizedBox(
+                  width: double.infinity,
+                  child: CustomButton(
+                    onPressed: () {
+                      setState(() {
+                        _isLocked = !_isLocked;
+                      });
+                      // DISPATCH BLOC UNTUK UPDATE ISLOCKED
+                      final updatedEvent = widget.activeEvent!.copyWith(isLocked: _isLocked);
+
+                      context.read<EventBloc>().updateEvent(updatedEvent);
+                      AppTransition.popTransition(context);
+                    },
+                    title: widget.activeEvent!.isLocked ? 'Buka Kunci Acara' : 'Kunci Acara',
+                    buttonType: widget.activeEvent!.isLocked
+                        ? ButtonType.disable
+                        : ButtonType.outline,
+                  ),
+                ),
+              ],
             ],
-          ],
+          ),
         ),
       ),
     );

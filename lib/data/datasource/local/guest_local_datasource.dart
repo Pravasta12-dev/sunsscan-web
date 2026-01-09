@@ -8,8 +8,7 @@ import '../../../core/enum/enum.dart';
 class GuestLocalDatasource {
   final DatabaseHelper _databaseHelper;
 
-  GuestLocalDatasource({required DatabaseHelper databaseHelper})
-    : _databaseHelper = databaseHelper;
+  GuestLocalDatasource({required DatabaseHelper databaseHelper}) : _databaseHelper = databaseHelper;
 
   factory GuestLocalDatasource.create() {
     return GuestLocalDatasource(databaseHelper: DatabaseHelper());
@@ -47,10 +46,7 @@ class GuestLocalDatasource {
       await txn.insert(
         'guests',
         newGuest
-            .copyWith(
-              guestCategoryUuid: categoryUuid ?? catUuid,
-              guestCategoryName: categoryName,
-            )
+            .copyWith(guestCategoryUuid: categoryUuid ?? catUuid, guestCategoryName: categoryName)
             .toJson(),
       );
     });
@@ -94,11 +90,7 @@ class GuestLocalDatasource {
   Future<List<GuestsModel>> getGuestsByEventId(String eventUuid) async {
     final db = await _databaseHelper.database;
 
-    final maps = await db.query(
-      'guests',
-      where: 'event_uuid = ?',
-      whereArgs: [eventUuid],
-    );
+    final maps = await db.query('guests', where: 'event_uuid = ?', whereArgs: [eventUuid]);
 
     return maps.map(GuestsModel.fromJson).toList();
   }
@@ -106,12 +98,9 @@ class GuestLocalDatasource {
   Future<GuestsModel?> getGuestByQrValue(String qrValue) async {
     final db = await _databaseHelper.database;
 
-    final maps = await db.query(
-      'guests',
-      where: 'qr_value = ?',
-      whereArgs: [qrValue],
-      limit: 1,
-    );
+    final maps = await db.query('guests', where: 'qr_value = ?', whereArgs: [qrValue], limit: 1);
+
+    print('getGuestByQrValue: found ${maps.length} records for qrValue=$qrValue');
 
     if (maps.isEmpty) return null;
     return GuestsModel.fromJson(maps.first);
@@ -150,12 +139,7 @@ class GuestLocalDatasource {
       // Update guest dengan categoryUuid yang benar
       await txn.update(
         'guests',
-        updatedGuest
-            .copyWith(
-              guestCategoryUuid: catUuid,
-              guestCategoryName: categoryName,
-            )
-            .toJson(),
+        updatedGuest.copyWith(guestCategoryUuid: catUuid, guestCategoryName: categoryName).toJson(),
         where: 'guest_uuid = ?',
         whereArgs: [guestData.guestUuid],
       );
@@ -188,6 +172,8 @@ class GuestLocalDatasource {
       where: 'guest_uuid = ?',
       whereArgs: [guestUuid],
     );
+
+    print('[GuestLocalDatasource] Guest $guestUuid checked in at $checkInTime');
   }
 
   // =====================================================
@@ -248,11 +234,7 @@ class GuestLocalDatasource {
   Future<void> upsertFromRemote(GuestsModel remote) async {
     final db = await _databaseHelper.database;
 
-    final local = await db.query(
-      'guests',
-      where: 'guest_uuid = ?',
-      whereArgs: [remote.guestUuid],
-    );
+    final local = await db.query('guests', where: 'guest_uuid = ?', whereArgs: [remote.guestUuid]);
 
     if (local.isNotEmpty) {
       final localSync = local.first['sync_status'];
@@ -260,9 +242,7 @@ class GuestLocalDatasource {
       // ❌ pending lokal = jangan di-overwrite
       if (localSync == SyncStatus.pending.name) return;
 
-      final localUpdated = DateTime.tryParse(
-        local.first['updated_at'] as String? ?? '',
-      );
+      final localUpdated = DateTime.tryParse(local.first['updated_at'] as String? ?? '');
 
       if (localUpdated != null &&
           remote.updatedAt != null &&
@@ -271,10 +251,6 @@ class GuestLocalDatasource {
       }
     }
 
-    await db.insert(
-      'guests',
-      remote.toJson(),
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
+    await db.insert('guests', remote.toJson(), conflictAlgorithm: ConflictAlgorithm.replace);
   }
 }

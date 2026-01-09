@@ -1,14 +1,16 @@
+// core/sync/sync_guard.dart
 class SyncGuard {
-  static bool _isRunning = false;
+  bool _running = false;
 
-  static bool tryLock() {
-    if (_isRunning) return false;
+  bool get isRunning => _running;
 
-    _isRunning = true;
+  bool acquire() {
+    if (_running) return false;
+    _running = true;
     return true;
   }
 
-  static void unlock() {
-    _isRunning = false;
+  void release() {
+    _running = false;
   }
 }

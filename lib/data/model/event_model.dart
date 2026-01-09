@@ -74,12 +74,8 @@ class EventModel extends Equatable {
       isActive: json['is_active'] == 1,
       outActive: json['out_active'] == 1,
       isLocked: json['is_locked'] == 1,
-      createdAt: json['created_at'] != null
-          ? DateTime.parse(json['created_at'])
-          : DateTime.now(),
-      updatedAt: json['updated_at'] != null
-          ? DateTime.parse(json['updated_at'])
-          : null,
+      createdAt: json['created_at'] != null ? DateTime.parse(json['created_at']) : DateTime.now(),
+      updatedAt: json['updated_at'] != null ? DateTime.parse(json['updated_at']) : null,
       syncStatus: SyncStatus.values.firstWhere(
         (e) => e.name == json['sync_status'],
         orElse: () => SyncStatus.pending,
@@ -99,17 +95,11 @@ class EventModel extends Equatable {
       isActive: json['is_active'] == true, // Boolean native
       outActive: json['out_active'] == true,
       isLocked: json['is_locked'] == true,
-      createdAt: json['CreatedAt'] != null
-          ? DateTime.parse(json['CreatedAt'])
-          : DateTime.now(),
-      updatedAt: json['updated_at'] != null
-          ? DateTime.parse(json['updated_at'])
-          : null,
+      createdAt: json['CreatedAt'] != null ? DateTime.parse(json['CreatedAt']) : DateTime.now(),
+      updatedAt: json['updated_at'] != null ? DateTime.parse(json['updated_at']) : null,
       syncStatus: json['SyncStatus'] != null
           ? SyncStatus.values.firstWhere(
-              (e) =>
-                  e.name.toLowerCase() ==
-                  (json['SyncStatus'] as String).toLowerCase(),
+              (e) => e.name.toLowerCase() == (json['SyncStatus'] as String).toLowerCase(),
               orElse: () => SyncStatus.synced,
             )
           : SyncStatus.synced,
@@ -173,13 +163,13 @@ class EventModel extends Equatable {
       'id': eventUuid,
       'event_code': eventCode,
       'name': name,
-      'event_date_start': eventDateStart.toIso8601String(),
-      'event_date_end': eventDateEnd.toIso8601String(),
+      'event_date_start': eventDateStart.toUtc().toIso8601String(),
+      'event_date_end': eventDateEnd.toUtc().toIso8601String(),
       'location': location,
       'is_active': isActive,
       'out_active': outActive,
       'is_locked': isLocked,
-      'updated_at': updatedAt?.toIso8601String(),
+      'updated_at': updatedAt?.toUtc().toIso8601String(),
     };
   }
 }

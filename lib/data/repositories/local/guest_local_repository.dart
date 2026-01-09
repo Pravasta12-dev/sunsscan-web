@@ -20,8 +20,7 @@ abstract class GuestLocalRepository {
 class GuestLocalRepositoryImpl implements GuestLocalRepository {
   final GuestLocalDatasource _datasource;
 
-  GuestLocalRepositoryImpl({required GuestLocalDatasource datasource})
-    : _datasource = datasource;
+  GuestLocalRepositoryImpl({required GuestLocalDatasource datasource}) : _datasource = datasource;
 
   @override
   Future<void> insertGuest(GuestsModel guest) async {
@@ -38,10 +37,7 @@ class GuestLocalRepositoryImpl implements GuestLocalRepository {
     required void Function(int current, int total) onProgress,
   }) async {
     try {
-      await _datasource.insertGuestsBatch(
-        guests: guests,
-        onProgress: onProgress,
-      );
+      await _datasource.insertGuestsBatch(guests: guests, onProgress: onProgress);
     } catch (e) {
       return _dbError();
     }
@@ -60,7 +56,9 @@ class GuestLocalRepositoryImpl implements GuestLocalRepository {
   Future<GuestsModel?> getGuestByQrValue(String qrValue) async {
     try {
       return await _datasource.getGuestByQrValue(qrValue);
-    } catch (e) {
+    } catch (e, st) {
+      print('[GuestLocalRepository] Error getGuestByQrValue: $e');
+      print(st);
       return _dbError();
     }
   }
@@ -87,7 +85,9 @@ class GuestLocalRepositoryImpl implements GuestLocalRepository {
   Future<void> checkInGuest(String guestUuid, String checkInTime) async {
     try {
       await _datasource.checkInGuest(guestUuid, checkInTime);
-    } catch (e) {
+    } catch (e, st) {
+      print('[GuestLocalRepository] Error checkInGuest: $e');
+      print(st);
       return _dbError();
     }
   }
@@ -101,10 +101,7 @@ class GuestLocalRepositoryImpl implements GuestLocalRepository {
     }
   }
 
-  dynamic _dbError() => throw CustomException(
-    'Terjadi kesalahan database',
-    code: 'DATABASE_ERROR',
-  );
+  dynamic _dbError() => throw CustomException('Terjadi kesalahan database', code: 'DATABASE_ERROR');
 
   factory GuestLocalRepositoryImpl.create() {
     final datasource = GuestLocalDatasource.create();
