@@ -46,7 +46,7 @@ class EventRemoteDatasourceImpl implements EventRemoteDatasource {
     final res = await _httpClient.post(
       _appEndpoint.syncPull,
       headers: AppHeader.jsonHeader,
-      body: jsonEncode({'last_sync_at': lastSyncAt?.toIso8601String()}),
+      body: jsonEncode({'last_sync_at': lastSyncAt?.toUtc().toIso8601String()}),
     );
 
     final decoded = jsonDecode(res.body) as Map<String, dynamic>;
