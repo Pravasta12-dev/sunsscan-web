@@ -43,6 +43,9 @@ class EventRemoteDatasourceImpl implements EventRemoteDatasource {
 
   @override
   Future<SyncPullResponse> pullAll({DateTime? lastSyncAt}) async {
+    print('Last sync at (UTC): ${lastSyncAt?.toUtc().toIso8601String()}');
+    print('Last sync at (Local): ${lastSyncAt?.toIso8601String()}');
+
     final res = await _httpClient.post(
       _appEndpoint.syncPull,
       headers: AppHeader.jsonHeader,
