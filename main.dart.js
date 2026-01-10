@@ -30021,7 +30021,7 @@ _.c=a
 _.d=b
 _.e=c
 _.a=d},
-b5_(a){switch(a.a){case 0:return"192.168.0.102"
+b5_(a){switch(a.a){case 0:return"192.168.0.106"
 case 1:return"sunscan-production.up.railway.app"
 case 2:return"https://staging.com"
 case 3:return"https://testing.com"}},
