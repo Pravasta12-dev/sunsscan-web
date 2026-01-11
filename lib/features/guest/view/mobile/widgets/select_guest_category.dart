@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sun_scan/core/components/custom_button.dart';
 import 'package:sun_scan/core/components/custom_form_widget.dart';
+import 'package:sun_scan/core/helper/responsive_builder.dart';
 import 'package:sun_scan/core/routes/app_transition.dart';
 import 'package:sun_scan/core/theme/app_colors.dart';
 import 'package:sun_scan/core/theme/app_text_styles.dart';
 
-import '../../../bloc/bloc/guest_category_bloc.dart';
+import '../../../bloc/guest_category/guest_category_bloc.dart';
 
 class SelectGuestCategory extends StatefulWidget {
   const SelectGuestCategory({
@@ -59,7 +60,11 @@ class _SelectGuestCategoryState extends State<SelectGuestCategory> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: double.infinity,
+      width: ResponsiveBuilder.getGenericValue(
+        context: context,
+        mobile: MediaQuery.of(context).size.width,
+        tabletUp: 500,
+      ),
       padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 20.0),
       constraints: BoxConstraints(
         maxHeight: MediaQuery.of(context).size.height * 0.6,

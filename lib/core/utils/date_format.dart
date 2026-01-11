@@ -44,6 +44,11 @@ class CustomDateFormat {
     return '$formattedStartDate - $formattedEndDate';
   }
 
+  // Jan 2, 2025, 08:00
+  String getFormattedEventDate({required DateTime date}) {
+    return formatDate(date: date, formatDate: 'MMM d, yyyy, HH:mm');
+  }
+
   String getFormattedToday({
     required DateTime date,
     String format = 'yyyy-MM-dd',

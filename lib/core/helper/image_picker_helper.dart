@@ -34,6 +34,13 @@ class ImagePickerHelper {
   }) async {
     final picker = ImagePicker();
 
+    if (Platform.isIOS || Platform.isMacOS || Platform.isWindows) {
+      if (source == ImageSource.camera) {
+        // On these platforms, camera source is not supported
+        return null;
+      }
+    }
+
     final picked = await picker.pickImage(
       source: source,
       maxWidth: maxWidth.toDouble(),

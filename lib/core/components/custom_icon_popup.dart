@@ -51,7 +51,7 @@ class _CustomIconPopupState<T> extends State<CustomIconPopup<T>> {
                     colorFilter: ColorFilter.mode(
                       widget.color != null && widget.color!.length >= i + 1
                           ? widget.color![i]
-                          : AppColors.blackColor,
+                          : AppColors.whiteColor,
                       BlendMode.srcIn,
                     ),
                   ),
@@ -62,7 +62,7 @@ class _CustomIconPopupState<T> extends State<CustomIconPopup<T>> {
                   style: AppTextStyles.caption.copyWith(
                     color: widget.color != null && widget.color!.length >= i + 1
                         ? widget.color![i]
-                        : AppColors.textPrimary,
+                        : AppColors.whiteColor,
                   ),
                 ),
               ],

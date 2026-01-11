@@ -23,4 +23,5 @@ class AppColors {
   static const Color lightSecondaryColor = Color(0xffCEFAFE);
   static const Color lightToscaColor = Color(0xffEFF6FF);
   static const Color backgroundColor = Color(0xffF2F8FF);
+  static const Color headerColor = Color(0xff181715);
 }

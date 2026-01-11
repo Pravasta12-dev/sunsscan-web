@@ -24,8 +24,22 @@ class $AssetsFontsGen {
   List<String> get values => [dMSansRegular];
 }
 
+class $AssetsImagesGen {
+  const $AssetsImagesGen();
+
+  /// File path: assets/images/logo_sun.png
+  AssetGenImage get logoSun =>
+      const AssetGenImage('assets/images/logo_sun.png');
+
+  /// List of all assets
+  List<AssetGenImage> get values => [logoSun];
+}
+
 class $AssetsSvgGen {
   const $AssetsSvgGen();
+
+  /// File path: assets/svg/logo.svg
+  SvgGenImage get logo => const SvgGenImage('assets/svg/logo.svg');
 
   /// File path: assets/svg/svg_alert_circle.svg
   SvgGenImage get svgAlertCircle =>
@@ -60,8 +74,16 @@ class $AssetsSvgGen {
   SvgGenImage get svgCheckCircle =>
       const SvgGenImage('assets/svg/svg_check_circle.svg');
 
+  /// File path: assets/svg/svg_circle_remove.svg
+  SvgGenImage get svgCircleRemove =>
+      const SvgGenImage('assets/svg/svg_circle_remove.svg');
+
   /// File path: assets/svg/svg_clock.svg
   SvgGenImage get svgClock => const SvgGenImage('assets/svg/svg_clock.svg');
+
+  /// File path: assets/svg/svg_dashboard.svg
+  SvgGenImage get svgDashboard =>
+      const SvgGenImage('assets/svg/svg_dashboard.svg');
 
   /// File path: assets/svg/svg_dot.svg
   SvgGenImage get svgDot => const SvgGenImage('assets/svg/svg_dot.svg');
@@ -88,6 +110,9 @@ class $AssetsSvgGen {
   /// File path: assets/svg/svg_filter.svg
   SvgGenImage get svgFilter => const SvgGenImage('assets/svg/svg_filter.svg');
 
+  /// File path: assets/svg/svg_gift.svg
+  SvgGenImage get svgGift => const SvgGenImage('assets/svg/svg_gift.svg');
+
   /// File path: assets/svg/svg_home.svg
   SvgGenImage get svgHome => const SvgGenImage('assets/svg/svg_home.svg');
 
@@ -110,6 +135,9 @@ class $AssetsSvgGen {
   SvgGenImage get svgLucideAward =>
       const SvgGenImage('assets/svg/svg_lucide_award.svg');
 
+  /// File path: assets/svg/svg_monitor.svg
+  SvgGenImage get svgMonitor => const SvgGenImage('assets/svg/svg_monitor.svg');
+
   /// File path: assets/svg/svg_more.svg
   SvgGenImage get svgMore => const SvgGenImage('assets/svg/svg_more.svg');
 
@@ -126,6 +154,9 @@ class $AssetsSvgGen {
 
   /// File path: assets/svg/svg_package.svg
   SvgGenImage get svgPackage => const SvgGenImage('assets/svg/svg_package.svg');
+
+  /// File path: assets/svg/svg_pencil.svg
+  SvgGenImage get svgPencil => const SvgGenImage('assets/svg/svg_pencil.svg');
 
   /// File path: assets/svg/svg_phone.svg
   SvgGenImage get svgPhone => const SvgGenImage('assets/svg/svg_phone.svg');
@@ -186,6 +217,10 @@ class $AssetsSvgGen {
   /// File path: assets/svg/svg_user.svg
   SvgGenImage get svgUser => const SvgGenImage('assets/svg/svg_user.svg');
 
+  /// File path: assets/svg/svg_user_check.svg
+  SvgGenImage get svgUserCheck =>
+      const SvgGenImage('assets/svg/svg_user_check.svg');
+
   /// File path: assets/svg/svg_users.svg
   SvgGenImage get svgUsers => const SvgGenImage('assets/svg/svg_users.svg');
 
@@ -194,6 +229,7 @@ class $AssetsSvgGen {
 
   /// List of all assets
   List<SvgGenImage> get values => [
+    logo,
     svgAlertCircle,
     svgArrowRight,
     svgBlueprint,
@@ -203,7 +239,9 @@ class $AssetsSvgGen {
     svgCamera,
     svgChart,
     svgCheckCircle,
+    svgCircleRemove,
     svgClock,
+    svgDashboard,
     svgDot,
     svgDownload,
     svgEdit,
@@ -212,6 +250,7 @@ class $AssetsSvgGen {
     svgEye,
     svgFace,
     svgFilter,
+    svgGift,
     svgHome,
     svgIdcard,
     svgImage,
@@ -219,11 +258,13 @@ class $AssetsSvgGen {
     svgLock,
     svgLogout,
     svgLucideAward,
+    svgMonitor,
     svgMore,
     svgNoConnection,
     svgNotification,
     svgOrder,
     svgPackage,
+    svgPencil,
     svgPhone,
     svgPin,
     svgPlus,
@@ -243,6 +284,7 @@ class $AssetsSvgGen {
     svgTrash,
     svgUpload,
     svgUser,
+    svgUserCheck,
     svgUsers,
     svgWallet,
   ];
@@ -252,7 +294,96 @@ class Assets {
   const Assets._();
 
   static const $AssetsFontsGen fonts = $AssetsFontsGen();
+  static const $AssetsImagesGen images = $AssetsImagesGen();
   static const $AssetsSvgGen svg = $AssetsSvgGen();
+}
+
+class AssetGenImage {
+  const AssetGenImage(
+    this._assetName, {
+    this.size,
+    this.flavors = const {},
+    this.animation,
+  });
+
+  final String _assetName;
+
+  final Size? size;
+  final Set<String> flavors;
+  final AssetGenImageAnimation? animation;
+
+  Image image({
+    Key? key,
+    AssetBundle? bundle,
+    ImageFrameBuilder? frameBuilder,
+    ImageErrorWidgetBuilder? errorBuilder,
+    String? semanticLabel,
+    bool excludeFromSemantics = false,
+    double? scale,
+    double? width,
+    double? height,
+    Color? color,
+    Animation<double>? opacity,
+    BlendMode? colorBlendMode,
+    BoxFit? fit,
+    AlignmentGeometry alignment = Alignment.center,
+    ImageRepeat repeat = ImageRepeat.noRepeat,
+    Rect? centerSlice,
+    bool matchTextDirection = false,
+    bool gaplessPlayback = true,
+    bool isAntiAlias = false,
+    String? package,
+    FilterQuality filterQuality = FilterQuality.medium,
+    int? cacheWidth,
+    int? cacheHeight,
+  }) {
+    return Image.asset(
+      _assetName,
+      key: key,
+      bundle: bundle,
+      frameBuilder: frameBuilder,
+      errorBuilder: errorBuilder,
+      semanticLabel: semanticLabel,
+      excludeFromSemantics: excludeFromSemantics,
+      scale: scale,
+      width: width,
+      height: height,
+      color: color,
+      opacity: opacity,
+      colorBlendMode: colorBlendMode,
+      fit: fit,
+      alignment: alignment,
+      repeat: repeat,
+      centerSlice: centerSlice,
+      matchTextDirection: matchTextDirection,
+      gaplessPlayback: gaplessPlayback,
+      isAntiAlias: isAntiAlias,
+      package: package,
+      filterQuality: filterQuality,
+      cacheWidth: cacheWidth,
+      cacheHeight: cacheHeight,
+    );
+  }
+
+  ImageProvider provider({AssetBundle? bundle, String? package}) {
+    return AssetImage(_assetName, bundle: bundle, package: package);
+  }
+
+  String get path => _assetName;
+
+  String get keyName => _assetName;
+}
+
+class AssetGenImageAnimation {
+  const AssetGenImageAnimation({
+    required this.isAnimation,
+    required this.duration,
+    required this.frames,
+  });
+
+  final bool isAnimation;
+  final Duration duration;
+  final int frames;
 }
 
 class SvgGenImage {

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sun_scan/core/helper/assets/assets.gen.dart';
 import 'package:sun_scan/features/event/widgets/event_error.dart';
 import 'package:sun_scan/features/event/widgets/event_loading.dart';
 import 'package:sun_scan/features/event/views/tablet/section/event_tablet_banner.dart';
@@ -19,16 +20,27 @@ class EventTabletView extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.lightBlackColor,
       body: Padding(
-        padding: const EdgeInsets.all(60),
+        padding: const EdgeInsets.all(40),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'SUN SCAN',
-              style: AppTextStyles.heading.copyWith(
-                fontSize: 44,
-                fontWeight: FontWeight.bold,
-              ),
+            Row(
+              children: [
+                Image.asset(
+                  Assets.images.logoSun.path,
+                  width: 50,
+                  height: 50,
+                  color: AppColors.primaryColor,
+                ),
+                const SizedBox(width: 20),
+                Text(
+                  'SUN SCAN',
+                  style: AppTextStyles.heading.copyWith(
+                    fontSize: 44,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: 24),
             Expanded(
@@ -71,12 +83,6 @@ class EventTabletView extends StatelessWidget {
                           child: EventLoadedWidget(
                             events: events,
                             isTablet: true,
-                          ),
-                        ),
-                        SizedBox(
-                          width: double.infinity,
-                          child: CreateEventButton(
-                            buttonType: CreateEventButtonType.tabletUp,
                           ),
                         ),
                       ],

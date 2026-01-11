@@ -20,6 +20,8 @@ class DatabaseHelper {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, 'sun_scan.db');
 
+    print('Database path: $path');
+
     return await openDatabase(path, version: 1, onCreate: _onCreate);
   }
 
@@ -49,6 +51,7 @@ class DatabaseHelper {
         phone TEXT,
         qr_value TEXT NOT NULL UNIQUE,
         photo TEXT,
+        tag TEXT,
         is_checked_in INTEGER NOT NULL DEFAULT 0,
         gender VARCHAR(16) NOT NULL DEFAULT 'male',
         guest_category_uuid TEXT NOT NULL,
@@ -74,9 +77,35 @@ class DatabaseHelper {
       );
     ''');
 
+    await db.execute('''
+      CREATE TABLE souvenirs (
+        souvenir_uuid TEXT PRIMARY KEY,
+        event_uuid TEXT NOT NULL,
+        guest_uuid TEXT NOT NULL,
+        guest_category_uuid TEXT NOT NULL,
+        souvenir_status TEXT NOT NULL DEFAULT 'pending',
+        received_at TEXT,
+        created_at TEXT NOT NULL,
+        updated_at TEXT,
+        sync_status TEXT NOT NULL DEFAULT 'pending',
+        FOREIGN KEY (event_uuid) REFERENCES events (event_uuid) ON DELETE CASCADE,
+        FOREIGN KEY (guest_uuid) REFERENCES guests (guest_uuid) ON DELETE CASCADE,
+        FOREIGN KEY (guest_category_uuid) REFERENCES guest_categories (category_uuid) ON DELETE CASCADE
+      );
+    ''');
+
     await db.execute('CREATE INDEX idx_guests_qr_value ON guests (qr_value);');
     await db.execute(
       'CREATE INDEX idx_guests_event_uuid ON guests (event_uuid);',
+    );
+    await db.execute(
+      'CREATE INDEX idx_souvenirs_event_uuid ON souvenirs (event_uuid);',
+    );
+    await db.execute(
+      'CREATE INDEX idx_souvenirs_guest_uuid ON souvenirs (guest_uuid);',
+    );
+    await db.execute(
+      'CREATE INDEX idx_souvenirs_guest_category_uuid ON souvenirs (guest_category_uuid);',
     );
   }
 }

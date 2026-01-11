@@ -26,4 +26,21 @@ class ResponsiveBuilder extends StatelessWidget {
 
     return mobile;
   }
+
+  static T getGenericValue<T>({
+    required BuildContext context,
+    required T mobile,
+    T? web,
+    T? tabletUp,
+  }) {
+    if (kIsWeb && web != null) {
+      return web;
+    }
+
+    if (tabletUp != null && Responsive.isTabletUp(context)) {
+      return tabletUp;
+    }
+
+    return mobile;
+  }
 }

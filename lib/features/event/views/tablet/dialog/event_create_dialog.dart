@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:sun_scan/core/theme/app_colors.dart';
 import 'package:sun_scan/core/theme/app_text_styles.dart';
+import 'package:sun_scan/data/model/event_model.dart';
 
 import '../../../widgets/create_event_form.dart';
 
 class EventCreateDialog extends StatelessWidget {
-  const EventCreateDialog({super.key});
+  const EventCreateDialog({super.key, this.activeEvent});
+
+  final EventModel? activeEvent;
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +48,7 @@ class EventCreateDialog extends StatelessWidget {
               ),
             ),
             // Konten form pembuatan acara
-            DefaultForm(),
+            DefaultForm(activeEvent: activeEvent),
           ],
         ),
       ),

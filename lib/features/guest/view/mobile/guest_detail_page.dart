@@ -10,6 +10,7 @@ import 'package:sun_scan/core/theme/app_colors.dart';
 import 'package:sun_scan/core/utils/date_format.dart';
 import 'package:sun_scan/data/model/guests_model.dart';
 import 'package:sun_scan/features/guest/view/mobile/insert_guest_page.dart';
+import 'package:sun_scan/features/guest/view/tablet/dialog/guest_detail_dialog.dart';
 
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/utils/export_to_gallery.dart';
@@ -63,26 +64,17 @@ class GuestDetailPage extends StatelessWidget {
             ),
           ),
           tabletUp: Container(
-            width: 500,
-            padding: const EdgeInsets.all(24),
+            width: 600,
+            padding: const EdgeInsets.symmetric(vertical: 24),
             decoration: BoxDecoration(
-              color: AppColors.lightBlackColor,
+              color: AppColors.headerColor,
               borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: AppColors.lightGreyColor),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  'Tampilan QR Code Tamu',
-                  style: AppTextStyles.subtitle.copyWith(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 24),
-                _GuestDetailContent(guest: currentGuest),
-              ],
+              children: [GuestDetailDialog(guest: currentGuest)],
             ),
           ),
         );

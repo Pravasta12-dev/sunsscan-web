@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:sun_scan/core/helper/responsive_builder.dart';
 
 import '../helper/assets/assets.gen.dart';
 import '../theme/app_colors.dart';
@@ -11,12 +12,12 @@ class CustomDialog {
   static bool _isShowingLoading = false;
   static BuildContext? _loadingContext;
 
-  static void showMainDialog({
+  static Future<T?> showMainDialog<T>({
     required BuildContext context,
     required Widget child,
     GlobalKey? key,
   }) {
-    showDialog(
+    return showDialog<T>(
       context: context,
       barrierColor: AppColors.blackColor.withOpacity(0.3),
       barrierDismissible: true,
@@ -172,11 +173,16 @@ class CustomDialog {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
-                width: MediaQuery.of(context).size.width * 0.9,
-                padding: const EdgeInsets.all(16),
+                width: ResponsiveBuilder.getGenericValue<double>(
+                  context: context,
+                  mobile: MediaQuery.of(context).size.width * 0.9,
+                  tabletUp: MediaQuery.of(context).size.width * 0.4,
+                ),
+                padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: AppColors.whiteColor,
+                  color: AppColors.blackColor,
                   borderRadius: BorderRadius.circular(16.0),
+                  border: Border.all(color: AppColors.lightGreyColor, width: 2),
                 ),
                 child: Column(
                   children: [
@@ -200,16 +206,14 @@ class CustomDialog {
                     Text(
                       title,
                       style: AppTextStyles.bodyLarge.copyWith(
-                        color: AppColors.textPrimary,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    SizedBox(height: 8),
+                    SizedBox(height: 12),
                     if (subtitle.isNotEmpty) ...[
                       Text(
                         subtitle,
                         style: AppTextStyles.body.copyWith(
-                          color: AppColors.textSecondary,
                           fontWeight: FontWeight.w400,
                         ),
                       ),
@@ -219,7 +223,6 @@ class CustomDialog {
                       message,
                       textAlign: TextAlign.center,
                       style: AppTextStyles.caption.copyWith(
-                        color: AppColors.textSecondary,
                         fontWeight: FontWeight.w400,
                       ),
                     ),
@@ -244,7 +247,6 @@ class CustomDialog {
                             child: Text(
                               'Batal',
                               style: AppTextStyles.body.copyWith(
-                                color: AppColors.textPrimary,
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
@@ -270,7 +272,7 @@ class CustomDialog {
                               ),
                             ),
                             child: Text(
-                              'Hapus',
+                              'Ya',
                               style: AppTextStyles.body.copyWith(
                                 color: AppColors.whiteColor,
                                 fontWeight: FontWeight.w600,

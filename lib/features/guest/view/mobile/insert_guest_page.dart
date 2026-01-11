@@ -46,6 +46,7 @@ class _GuestInsertPageState extends State<GuestInsertPage> {
 
   final _nameController = TextEditingController();
   final _phoneController = TextEditingController();
+  final _tagController = TextEditingController();
   String? _photoPath;
   bool _isShowingImportDialog = false;
 
@@ -57,6 +58,7 @@ class _GuestInsertPageState extends State<GuestInsertPage> {
   void dispose() {
     _nameController.dispose();
     _phoneController.dispose();
+    _tagController.dispose();
     super.dispose();
   }
 
@@ -70,6 +72,7 @@ class _GuestInsertPageState extends State<GuestInsertPage> {
       selectedGuestCategoryUuid = widget.existingGuest!.guestCategoryUuid;
       selectedGuestCategoryName = widget.existingGuest!.guestCategoryName;
       selectedGender = widget.existingGuest!.gender;
+      _tagController.text = widget.existingGuest!.tag ?? '';
     }
   }
 
@@ -79,7 +82,8 @@ class _GuestInsertPageState extends State<GuestInsertPage> {
     final isValid =
         _nameController.text.isNotEmpty &&
         _phoneController.text.isNotEmpty &&
-        selectedGuestCategoryName != null;
+        selectedGuestCategoryName != null &&
+        _tagController.text.isNotEmpty;
 
     if (isValid != _isValid) {
       setState(() {
@@ -103,9 +107,14 @@ class _GuestInsertPageState extends State<GuestInsertPage> {
       eventUuid: widget.eventId,
       name: _nameController.text.trim(),
       qrValue: qrData,
-      phone: _phoneController.text.trim().isEmpty ? null : _phoneController.text.trim(),
+      phone: _phoneController.text.trim().isEmpty
+          ? null
+          : _phoneController.text.trim(),
       isCheckedIn: false,
       createdAt: DateTime.now(),
+      tag: _tagController.text.trim().isEmpty
+          ? null
+          : _tagController.text.trim(),
       photo: _photoPath,
       guestCategoryUuid: selectedGuestCategoryUuid,
       guestCategoryName: selectedGuestCategoryName,
@@ -128,7 +137,9 @@ class _GuestInsertPageState extends State<GuestInsertPage> {
 
       final result = await AppTransition.pushTransition<CreateGuestResult>(
         context,
-        GuestInsertSuccessPage(guest: guest.copyWith(eventName: widget.eventName)),
+        GuestInsertSuccessPage(
+          guest: guest.copyWith(eventName: widget.eventName),
+        ),
       );
 
       /// =============================
@@ -199,12 +210,15 @@ class _GuestInsertPageState extends State<GuestInsertPage> {
             context: context,
             dialogType: DialogEnum.success,
             title: 'Berhasil Mengimpor Tamu',
-            message: 'Berhasil mengimpor ${state.importedCount} tamu dari file CSV.',
+            message:
+                'Berhasil mengimpor ${state.importedCount} tamu dari file CSV.',
             onPressed: () {
               AppTransition.popTransition(context); // Tutup dialog success
               AppTransition.popTransition(context); // Kembali ke guest page
               AppTransition.popTransition(context); // Kembali ke guest list
-              context.read<GuestBloc>().loadGuests(widget.eventId); // Reload guest list
+              context.read<GuestBloc>().loadGuests(
+                widget.eventId,
+              ); // Reload guest list
             },
           );
         }
@@ -233,7 +247,11 @@ class _GuestInsertPageState extends State<GuestInsertPage> {
           centerTitle: true,
           leading: InkWell(
             onTap: () => AppTransition.popTransition(context),
-            child: Icon(Icons.arrow_back_ios, color: AppColors.whiteColor, size: 12),
+            child: Icon(
+              Icons.arrow_back_ios,
+              color: AppColors.whiteColor,
+              size: 12,
+            ),
           ),
         ),
         body: SafeArea(
@@ -250,7 +268,10 @@ class _GuestInsertPageState extends State<GuestInsertPage> {
                     CustomFormWidget().buildTextFormInput(
                       controller: _nameController,
                       label: 'Nama Tamu',
-                      contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                      contentPadding: const EdgeInsets.symmetric(
+                        vertical: 12,
+                        horizontal: 16,
+                      ),
                       hintText: 'Contoh: Agnes Jennifer',
                       onChanged: (_) => _validateForm(),
                       validator: (value) {
@@ -265,7 +286,10 @@ class _GuestInsertPageState extends State<GuestInsertPage> {
                     CustomFormWidget().buildTextFormInput(
                       controller: _phoneController,
                       label: 'No. WhatsApp',
-                      contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                      contentPadding: const EdgeInsets.symmetric(
+                        vertical: 12,
+                        horizontal: 16,
+                      ),
                       hintText: 'Contoh: 081234567890',
                       keyboardType: TextInputType.phone,
                       onChanged: (_) => _validateForm(),
@@ -279,12 +303,15 @@ class _GuestInsertPageState extends State<GuestInsertPage> {
 
                     /// KATEGORI TAMU
                     CustomFormWidget().buildDefault(
-                      hintText: selectedGuestCategoryName ?? 'Pilih Kategori Tamu',
+                      hintText:
+                          selectedGuestCategoryName ?? 'Pilih Kategori Tamu',
                       label: 'Kategori Tamu',
                       onTap: () async {
                         // open bottomsheet
                         final selectedCategory =
-                            await CustomModalBottomSheet.showMain<Map<String, dynamic>>(
+                            await CustomModalBottomSheet.showMain<
+                              Map<String, dynamic>
+                            >(
                               context,
                               child: SelectGuestCategory(
                                 eventUuid: widget.eventId,
@@ -295,8 +322,10 @@ class _GuestInsertPageState extends State<GuestInsertPage> {
 
                         if (selectedCategory != null) {
                           setState(() {
-                            selectedGuestCategoryUuid = selectedCategory['uuid'];
-                            selectedGuestCategoryName = selectedCategory['name'];
+                            selectedGuestCategoryUuid =
+                                selectedCategory['uuid'];
+                            selectedGuestCategoryName =
+                                selectedCategory['name'];
                           });
 
                           _validateForm();
@@ -325,50 +354,83 @@ class _GuestInsertPageState extends State<GuestInsertPage> {
                         _validateForm();
                       },
                     ),
+                    CustomFormWidget().buildTextFormInput(
+                      controller: _tagController,
+                      label: 'Tag',
+                      contentPadding: const EdgeInsets.symmetric(
+                        vertical: 12,
+                        horizontal: 16,
+                      ),
+                      hintText: 'Contoh: Tamu dari mempelai Pria',
+                      keyboardType: TextInputType.text,
+                      onChanged: (_) => _validateForm(),
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return 'Tag wajib diisi';
+                        }
+                        return null;
+                      },
+                    ),
 
                     /// FOTO TAMU (Opsional)
                     CustomFormWidget().buildFormSelectFile(
                       title: _photoFileName,
                       onTap: () async {
-                        final source = await CustomModalBottomSheet.showMain<ImageSource>(
-                          context,
-                          child: Padding(
-                            padding: const EdgeInsets.all(16.0),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                ListTile(
-                                  leading: Assets.svg.svgCamera.svg(
-                                    width: 24,
-                                    height: 24,
-                                    colorFilter: ColorFilter.mode(
-                                      AppColors.primaryColor,
-                                      BlendMode.srcIn,
+                        final source =
+                            await CustomModalBottomSheet.showMain<ImageSource>(
+                              context,
+                              child: Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    ListTile(
+                                      leading: Assets.svg.svgCamera.svg(
+                                        width: 24,
+                                        height: 24,
+                                        colorFilter: ColorFilter.mode(
+                                          AppColors.primaryColor,
+                                          BlendMode.srcIn,
+                                        ),
+                                      ),
+                                      title: Text(
+                                        'Ambil Foto',
+                                        style: AppTextStyles.body,
+                                      ),
+                                      onTap: () => Navigator.pop(
+                                        context,
+                                        ImageSource.camera,
+                                      ),
                                     ),
-                                  ),
-                                  title: Text('Ambil Foto', style: AppTextStyles.body),
-                                  onTap: () => Navigator.pop(context, ImageSource.camera),
-                                ),
-                                ListTile(
-                                  leading: Assets.svg.svgImage.svg(
-                                    width: 24,
-                                    height: 24,
-                                    colorFilter: ColorFilter.mode(
-                                      AppColors.primaryColor,
-                                      BlendMode.srcIn,
+                                    ListTile(
+                                      leading: Assets.svg.svgImage.svg(
+                                        width: 24,
+                                        height: 24,
+                                        colorFilter: ColorFilter.mode(
+                                          AppColors.primaryColor,
+                                          BlendMode.srcIn,
+                                        ),
+                                      ),
+                                      title: Text(
+                                        'Pilih dari Galeri',
+                                        style: AppTextStyles.body,
+                                      ),
+                                      onTap: () => Navigator.pop(
+                                        context,
+                                        ImageSource.gallery,
+                                      ),
                                     ),
-                                  ),
-                                  title: Text('Pilih dari Galeri', style: AppTextStyles.body),
-                                  onTap: () => Navigator.pop(context, ImageSource.gallery),
+                                  ],
                                 ),
-                              ],
-                            ),
-                          ),
-                        );
+                              ),
+                            );
 
                         if (source == null) return;
 
-                        final photoPath = await ImagePickerHelper.pickAndSaveImage(source: source);
+                        final photoPath =
+                            await ImagePickerHelper.pickAndSaveImage(
+                              source: source,
+                            );
 
                         if (photoPath != null) {
                           setState(() {
@@ -387,7 +449,9 @@ class _GuestInsertPageState extends State<GuestInsertPage> {
                       width: double.infinity,
                       child: CustomButton(
                         title: 'SIMPAN TAMU',
-                        buttonType: _isValid ? ButtonType.primary : ButtonType.disable,
+                        buttonType: _isValid
+                            ? ButtonType.primary
+                            : ButtonType.disable,
                         onPressed: _submit,
                       ),
                     ),
@@ -399,18 +463,23 @@ class _GuestInsertPageState extends State<GuestInsertPage> {
                           CustomFormWidget().buildFormSelectFile(
                             title: 'IMPORT DARI CSV',
                             onTap: () async {
-                              final result = await FilePicker.platform.pickFiles(
-                                type: FileType.custom,
-                                allowedExtensions: ['csv'],
-                              );
+                              final result = await FilePicker.platform
+                                  .pickFiles(
+                                    type: FileType.custom,
+                                    allowedExtensions: ['csv'],
+                                  );
 
-                              if (result == null || result.files.single.path == null) {
+                              if (result == null ||
+                                  result.files.single.path == null) {
                                 return;
                               }
 
                               final path = result.files.single.path!;
 
-                              context.read<GuestBloc>().importGuests(widget.eventId, path);
+                              context.read<GuestBloc>().importGuests(
+                                widget.eventId,
+                                path,
+                              );
                             },
                           ),
 
@@ -421,7 +490,9 @@ class _GuestInsertPageState extends State<GuestInsertPage> {
                             padding: const EdgeInsets.all(12),
                             decoration: BoxDecoration(
                               color: AppColors.lightBlackColor,
-                              border: Border.all(color: AppColors.primaryColor.withAlpha(50)),
+                              border: Border.all(
+                                color: AppColors.primaryColor.withAlpha(50),
+                              ),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Row(

@@ -108,7 +108,7 @@ class CustomDropdown {
 
             icon: Icon(
               Icons.keyboard_arrow_down_rounded,
-              color: enabled ? AppColors.textPrimary : AppColors.textSecondary,
+              color: enabled ? AppColors.whiteColor : AppColors.textSecondary,
               size: 24,
             ),
             elevation: 8,
