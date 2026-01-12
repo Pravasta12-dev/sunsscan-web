@@ -71,3 +71,9 @@ class EventRemoteDatasourceImpl implements EventRemoteDatasource {
     return EventModel.fromJsonOnline(decoded);
   }
 }
+
+// 2026-01-12T04:04:42.944887Z => device kirim
+// 2026-01-12T04:05:35.968386Z => device terima
+
+// device kirim => 2026-01-12T04:08:11.228045Z
+// device terima => 2026-01-12T04:06:17.453456Z

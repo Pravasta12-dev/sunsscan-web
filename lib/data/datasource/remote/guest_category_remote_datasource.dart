@@ -9,8 +9,7 @@ abstract class GuestCategoryRemoteDatasource {
   Future<List<String>> sync(List<GuestCategoryModel> categories);
 }
 
-class GuestCategoryRemoteDatasourceImpl
-    implements GuestCategoryRemoteDatasource {
+class GuestCategoryRemoteDatasourceImpl implements GuestCategoryRemoteDatasource {
   final CustomHttpClient _httpClient;
   final AppEndpoint _appEndpoint;
 
@@ -28,9 +27,7 @@ class GuestCategoryRemoteDatasourceImpl
     final response = await _httpClient.post(
       _appEndpoint.guestCategoriesUrl,
       headers: AppHeader.jsonHeader,
-      body: jsonEncode({
-        'categories': categories.map((e) => e.toSyncJson()).toList(),
-      }),
+      body: jsonEncode({'categories': categories.map((e) => e.toSyncJson()).toList()}),
     );
 
     /// response example:

@@ -5,12 +5,16 @@ import 'package:sun_scan/core/sync/sync_runner.dart';
 import 'package:sun_scan/data/datasource/local/event_local_datasource.dart';
 import 'package:sun_scan/data/datasource/local/guest_category_datasource.dart';
 import 'package:sun_scan/data/datasource/local/guest_local_datasource.dart';
+import 'package:sun_scan/data/datasource/local/souvenir_local_datasource.dart';
 import 'package:sun_scan/data/datasource/remote/event_remote_datasource.dart';
 import 'package:sun_scan/data/datasource/remote/guest_category_remote_datasource.dart';
 import 'package:sun_scan/data/datasource/remote/guest_remote_datasource.dart';
 import 'package:sun_scan/data/model/event_model.dart';
 import 'package:sun_scan/data/model/guest_category_model.dart';
 import 'package:sun_scan/data/model/guests_model.dart';
+
+import '../../data/datasource/remote/souvenir_remote_datasource.dart';
+import '../../data/model/souvenir_model.dart';
 
 class SyncRegistry {
   static SyncEngine create({
@@ -20,6 +24,8 @@ class SyncRegistry {
     required GuestRemoteDatasource guestRemoteDatasource,
     required GuestCategoryDatasource guestCategoryDatasource,
     required GuestCategoryRemoteDatasource guestCategoryRemoteDatasource,
+    required SouvenirLocalDataSource souvenirLocalDatasource,
+    required SouvenirRemoteDatasource souvenirRemoteDatasource,
   }) {
     final eventRunner = SyncRunner<EventModel>(
       queue: SyncQueue(
@@ -48,9 +54,18 @@ class SyncRegistry {
       getId: (category) => category.categoryUuid ?? '',
     );
 
+    final souvenirRunner = SyncRunner<SouvenirModel>(
+      queue: SyncQueue(
+        fetchPending: souvenirLocalDatasource.getPendingSyncSouvenirs,
+        markAsSynced: souvenirLocalDatasource.markSouvenirsAsSynced,
+      ),
+      pushRemote: souvenirRemoteDatasource.sync,
+      getId: (souvenir) => souvenir.souvenirUuid,
+    );
+
     return SyncEngine(
       config: SyncConfig(interval: Duration(seconds: 8), batchSize: 20),
-      runners: [eventRunner, guestRunner, guestCategoryRunner],
+      runners: [eventRunner, guestRunner, guestCategoryRunner, souvenirRunner],
     );
   }
 }

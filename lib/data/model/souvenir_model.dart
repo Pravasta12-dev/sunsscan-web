@@ -13,6 +13,8 @@ class SouvenirModel extends Equatable {
   final DateTime createdAt;
   final DateTime? updatedAt;
   final SyncStatus syncStatus;
+  final bool isDeleted;
+  final DateTime? deletedAt;
 
   // ==== HELPER ====
   final String? guestName;
@@ -29,6 +31,8 @@ class SouvenirModel extends Equatable {
     required this.createdAt,
     this.updatedAt,
     this.syncStatus = SyncStatus.pending,
+    this.isDeleted = false,
+    this.deletedAt,
     this.guestName,
     this.guestCategoryName,
     this.checkinStatus,
@@ -46,6 +50,24 @@ class SouvenirModel extends Equatable {
       'created_at': createdAt.toIso8601String(),
       'updated_at': updatedAt?.toIso8601String(),
       'sync_status': syncStatus.name,
+      'is_deleted': isDeleted ? 1 : 0,
+      'deleted_at': deletedAt?.toIso8601String(),
+    };
+  }
+
+  // toOnlineJson
+  Map<String, dynamic> toOnlineJson() {
+    return {
+      'souvenir_uuid': souvenirUuid,
+      'event_uuid': eventUuid,
+      'guest_uuid': guestUuid,
+      'guest_category_uuid': guestCategoryUuid,
+      'souvenir_status': status.name,
+      'received_at': receivedAt?.toUtc().toIso8601String(),
+      'created_at': createdAt.toUtc().toIso8601String(),
+      'updated_at': updatedAt?.toUtc().toIso8601String(),
+      'is_deleted': isDeleted,
+      'deleted_at': deletedAt?.toUtc().toIso8601String(),
     };
   }
 
@@ -60,19 +82,17 @@ class SouvenirModel extends Equatable {
         (e) => e.name == json['souvenir_status'],
         orElse: () => SouvenirStatus.pending,
       ),
-      receivedAt: json['received_at'] != null
-          ? DateTime.parse(json['received_at'])
-          : null,
+      receivedAt: json['received_at'] != null ? DateTime.parse(json['received_at']) : null,
       createdAt: DateTime.parse(json['created_at']),
-      updatedAt: json['updated_at'] != null
-          ? DateTime.parse(json['updated_at'])
-          : null,
+      updatedAt: json['updated_at'] != null ? DateTime.parse(json['updated_at']) : null,
       syncStatus: json['sync_status'] != null
           ? SyncStatus.values.firstWhere(
               (e) => e.name == json['sync_status'],
               orElse: () => SyncStatus.pending,
             )
           : SyncStatus.pending,
+      isDeleted: json['is_deleted'] == 1,
+      deletedAt: json['deleted_at'] != null ? DateTime.parse(json['deleted_at']) : null,
       guestName: json['guest_name'],
       guestCategoryName: json['guest_category_name'],
       checkinStatus: json['checkin_status'] == 1,
@@ -90,6 +110,8 @@ class SouvenirModel extends Equatable {
     createdAt,
     updatedAt,
     syncStatus,
+    isDeleted,
+    deletedAt,
     guestName,
     guestCategoryName,
     checkinStatus,
@@ -106,6 +128,8 @@ class SouvenirModel extends Equatable {
     DateTime? createdAt,
     DateTime? updatedAt,
     SyncStatus? syncStatus,
+    bool? isDeleted,
+    DateTime? deletedAt,
     String? guestName,
     String? guestCategoryName,
     bool? checkinStatus,
@@ -120,6 +144,8 @@ class SouvenirModel extends Equatable {
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       syncStatus: syncStatus ?? this.syncStatus,
+      isDeleted: isDeleted ?? this.isDeleted,
+      deletedAt: deletedAt ?? this.deletedAt,
       guestName: guestName ?? this.guestName,
       guestCategoryName: guestCategoryName ?? this.guestCategoryName,
       checkinStatus: checkinStatus ?? this.checkinStatus,

@@ -15,24 +15,19 @@ class AppEndpoint {
   }
 
   Uri get guestCategoriesUrl {
-    return UriHelper.createUrl(
-      host: _baseUrl,
-      path: 'api/sync/guest-categories',
-    );
+    return UriHelper.createUrl(host: _baseUrl, path: 'api/sync/guest-categories');
+  }
+
+  Uri get souvenirsUrl {
+    return UriHelper.createUrl(host: _baseUrl, path: 'api/sync/souvenirs');
   }
 
   Uri fetchPublicEventByCode(String eventCode) {
-    return UriHelper.createUrl(
-      host: _baseUrl,
-      path: 'api/public/events/code/$eventCode',
-    );
+    return UriHelper.createUrl(host: _baseUrl, path: 'api/public/events/code/$eventCode');
   }
 
   Uri fetchPublicGuestByEventUuid(String eventUuid) {
-    return UriHelper.createUrl(
-      host: _baseUrl,
-      path: 'api/public/events/$eventUuid/guests',
-    );
+    return UriHelper.createUrl(host: _baseUrl, path: 'api/public/events/$eventUuid/guests');
   }
 
   Uri get syncPull {

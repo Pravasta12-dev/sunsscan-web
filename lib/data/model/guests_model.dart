@@ -18,6 +18,8 @@ class GuestsModel extends Equatable {
   final DateTime createdAt;
   final DateTime? updatedAt;
   final SyncStatus syncStatus;
+  final bool isDeleted;
+  final DateTime? deletedAt;
 
   final String? eventName; // Tambahkan properti eventName
 
@@ -39,6 +41,8 @@ class GuestsModel extends Equatable {
     this.updatedAt,
     this.syncStatus = SyncStatus.pending,
     this.eventName,
+    this.isDeleted = false,
+    this.deletedAt,
   });
 
   @override
@@ -60,6 +64,8 @@ class GuestsModel extends Equatable {
     syncStatus,
     gender,
     eventName,
+    isDeleted,
+    deletedAt,
   ];
 
   // tojson
@@ -81,6 +87,8 @@ class GuestsModel extends Equatable {
       'created_at': createdAt.toIso8601String(),
       'updated_at': updatedAt?.toIso8601String(),
       'sync_status': syncStatus.name,
+      'is_deleted': isDeleted ? 1 : 0,
+      'deleted_at': deletedAt?.toIso8601String(),
     };
   }
 
@@ -96,25 +104,18 @@ class GuestsModel extends Equatable {
       tag: json['tag'],
       guestCategoryUuid: json['guest_category_uuid'],
       guestCategoryName: json['guest_category_name'],
-      gender: Gender.values.firstWhere(
-        (e) => e.name == json['gender'],
-        orElse: () => Gender.male,
-      ),
+      gender: Gender.values.firstWhere((e) => e.name == json['gender'], orElse: () => Gender.male),
       photo: json['photo'], // FIX: Changed from 'base64_photo' to 'photo'
-      checkedInAt: json['checked_in_at'] != null
-          ? DateTime.parse(json['checked_in_at'])
-          : null,
-      checkedOutAt: json['checked_out_at'] != null
-          ? DateTime.parse(json['checked_out_at'])
-          : null,
+      checkedInAt: json['checked_in_at'] != null ? DateTime.parse(json['checked_in_at']) : null,
+      checkedOutAt: json['checked_out_at'] != null ? DateTime.parse(json['checked_out_at']) : null,
       createdAt: DateTime.parse(json['created_at']),
-      updatedAt: json['updated_at'] != null
-          ? DateTime.parse(json['updated_at'])
-          : null,
+      updatedAt: json['updated_at'] != null ? DateTime.parse(json['updated_at']) : null,
       syncStatus: SyncStatus.values.firstWhere(
         (e) => e.name == json['sync_status'],
         orElse: () => SyncStatus.pending,
       ),
+      isDeleted: json['is_deleted'] == 1,
+      deletedAt: json['deleted_at'] != null ? DateTime.parse(json['deleted_at']) : null,
     );
   }
 
@@ -137,6 +138,8 @@ class GuestsModel extends Equatable {
     DateTime? updatedAt,
     SyncStatus? syncStatus,
     String? eventName,
+    bool? isDeleted,
+    DateTime? deletedAt,
   }) {
     return GuestsModel(
       guestUuid: guestUuid ?? this.guestUuid,
@@ -156,6 +159,8 @@ class GuestsModel extends Equatable {
       updatedAt: updatedAt ?? this.updatedAt,
       syncStatus: syncStatus ?? this.syncStatus,
       eventName: eventName ?? this.eventName,
+      isDeleted: isDeleted ?? this.isDeleted,
+      deletedAt: deletedAt ?? this.deletedAt,
     );
   }
 
@@ -172,15 +177,13 @@ class GuestsModel extends Equatable {
       'guest_category_uuid': guestCategoryUuid,
       'guest_category_name': guestCategoryName,
       'photo_path': photo, // ✅ Changed key to 'photo_path'
-      'checked_in_at': checkedInAt
-          ?.toUtc()
-          .toIso8601String(), // ✅ Convert ke string
-      'checked_out_at': checkedOutAt
-          ?.toUtc()
-          .toIso8601String(), // ✅ Convert ke string
+      'checked_in_at': checkedInAt?.toUtc().toIso8601String(), // ✅ Convert ke string
+      'checked_out_at': checkedOutAt?.toUtc().toIso8601String(), // ✅ Convert ke string
       'created_at': createdAt.toUtc().toIso8601String(), // ✅ Convert ke string
       'updated_at': updatedAt?.toUtc().toIso8601String(), // ✅ Convert ke string
       'sync_status': syncStatus.name,
+      'is_deleted': isDeleted,
+      'deleted_at': deletedAt?.toUtc().toIso8601String(),
     };
   }
 
@@ -193,30 +196,22 @@ class GuestsModel extends Equatable {
       tag: json['tag'],
       qrValue: json['qr_value'],
       isCheckedIn: json['is_checked_in'],
-      gender: Gender.values.firstWhere(
-        (e) => e.name == json['gender'],
-        orElse: () => Gender.male,
-      ),
+      gender: Gender.values.firstWhere((e) => e.name == json['gender'], orElse: () => Gender.male),
       guestCategoryUuid: json['guest_category_uuid'],
       guestCategoryName: json['guest_category_name'],
-      photo:
-          json['photo_path'], // FIX: Changed from 'base64_photo' to 'photo_path'
-      checkedInAt: json['checked_in_at'] != null
-          ? DateTime.parse(json['checked_in_at'])
-          : null,
-      checkedOutAt: json['checked_out_at'] != null
-          ? DateTime.parse(json['checked_out_at'])
-          : null,
+      photo: json['photo_path'], // FIX: Changed from 'base64_photo' to 'photo_path'
+      checkedInAt: json['checked_in_at'] != null ? DateTime.parse(json['checked_in_at']) : null,
+      checkedOutAt: json['checked_out_at'] != null ? DateTime.parse(json['checked_out_at']) : null,
       createdAt: DateTime.parse(json['created_at']),
-      updatedAt: json['updated_at'] != null
-          ? DateTime.parse(json['updated_at'])
-          : null,
+      updatedAt: json['updated_at'] != null ? DateTime.parse(json['updated_at']) : null,
       syncStatus: json['sync_status'] != null
           ? SyncStatus.values.firstWhere(
               (e) => e.name == json['sync_status'],
               orElse: () => SyncStatus.synced,
             )
           : SyncStatus.synced,
+      isDeleted: json['is_deleted'] == true,
+      deletedAt: json['deleted_at'] != null ? DateTime.parse(json['deleted_at']) : null,
     );
   }
 }

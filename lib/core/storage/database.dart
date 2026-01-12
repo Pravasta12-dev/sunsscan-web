@@ -39,7 +39,9 @@ class DatabaseHelper {
         is_locked INTEGER NOT NULL DEFAULT 0,
         created_at TEXT NOT NULL,
         updated_at TEXT,
-        sync_status TEXT NOT NULL DEFAULT 'pending'
+        sync_status TEXT NOT NULL DEFAULT 'pending',
+        is_deleted INTEGER NOT NULL DEFAULT 0,
+        deleted_at TEXT
       );
     ''');
 
@@ -61,6 +63,8 @@ class DatabaseHelper {
         created_at TEXT NOT NULL,
         updated_at TEXT,
         sync_status TEXT NOT NULL DEFAULT 'pending',
+        is_deleted INTEGER NOT NULL DEFAULT 0,
+        deleted_at TEXT,
         FOREIGN KEY (event_uuid) REFERENCES events (event_uuid) ON DELETE CASCADE
       );
     ''');
@@ -73,6 +77,8 @@ class DatabaseHelper {
         created_at TEXT NOT NULL,
         updated_at TEXT,
         sync_status TEXT NOT NULL DEFAULT 'pending',
+        is_deleted INTEGER NOT NULL DEFAULT 0,
+        deleted_at TEXT,
         FOREIGN KEY (event_uuid) REFERENCES events (event_uuid) ON DELETE CASCADE
       );
     ''');
@@ -87,6 +93,8 @@ class DatabaseHelper {
         received_at TEXT,
         created_at TEXT NOT NULL,
         updated_at TEXT,
+        is_deleted INTEGER NOT NULL DEFAULT 0,
+        deleted_at TEXT,
         sync_status TEXT NOT NULL DEFAULT 'pending',
         FOREIGN KEY (event_uuid) REFERENCES events (event_uuid) ON DELETE CASCADE,
         FOREIGN KEY (guest_uuid) REFERENCES guests (guest_uuid) ON DELETE CASCADE,
@@ -94,18 +102,32 @@ class DatabaseHelper {
       );
     ''');
 
+    await db.execute('''
+      CREATE TABLE greeting_screens (
+        greeting_uuid TEXT PRIMARY KEY,
+        event_uuid TEXT NOT NULL,
+        name TEXT NOT NULL,
+        content_type TEXT NOT NULL,
+        content_path TEXT NOT NULL,
+        added_by TEXT,        
+        created_at TEXT NOT NULL,
+        updated_at TEXT,
+        sync_status TEXT NOT NULL DEFAULT 'pending',
+        is_deleted INTEGER NOT NULL DEFAULT 0,
+        deleted_at TEXT,
+        FOREIGN KEY (event_uuid) REFERENCES events (event_uuid) ON DELETE CASCADE
+      );
+    ''');
+
     await db.execute('CREATE INDEX idx_guests_qr_value ON guests (qr_value);');
-    await db.execute(
-      'CREATE INDEX idx_guests_event_uuid ON guests (event_uuid);',
-    );
-    await db.execute(
-      'CREATE INDEX idx_souvenirs_event_uuid ON souvenirs (event_uuid);',
-    );
-    await db.execute(
-      'CREATE INDEX idx_souvenirs_guest_uuid ON souvenirs (guest_uuid);',
-    );
+    await db.execute('CREATE INDEX idx_guests_event_uuid ON guests (event_uuid);');
+    await db.execute('CREATE INDEX idx_souvenirs_event_uuid ON souvenirs (event_uuid);');
+    await db.execute('CREATE INDEX idx_souvenirs_guest_uuid ON souvenirs (guest_uuid);');
     await db.execute(
       'CREATE INDEX idx_souvenirs_guest_category_uuid ON souvenirs (guest_category_uuid);',
+    );
+    await db.execute(
+      'CREATE INDEX idx_greeting_screens_event_uuid ON greeting_screens (event_uuid);',
     );
   }
 }

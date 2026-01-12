@@ -59,7 +59,12 @@ class EventLocalDatasource {
   Future<List<EventModel>> getAllEvents() async {
     final db = await _databaseHelper.database;
     try {
-      final result = await db.query('events', orderBy: 'event_date_start ASC');
+      final result = await db.query(
+        'events',
+        orderBy: 'event_date_start ASC',
+        where: 'is_deleted = ?',
+        whereArgs: [0],
+      );
       return result.map((json) => EventModel.fromJson(json)).toList();
     } catch (e) {
       throw Exception('Failed to get all events: $e');
@@ -72,9 +77,7 @@ class EventLocalDatasource {
       print('[EventLocalDatasource] Updating event: ${event.eventUuid}');
       return await db.update(
         'events',
-        event
-            .copyWith(updatedAt: DateTime.now(), syncStatus: SyncStatus.pending)
-            .toJson(),
+        event.copyWith(updatedAt: DateTime.now(), syncStatus: SyncStatus.pending).toJson(),
         where: 'event_uuid = ?',
         whereArgs: [event.eventUuid],
       );
@@ -87,9 +90,16 @@ class EventLocalDatasource {
 
   Future<int> deleteEvent(String eventUuid) async {
     final db = await _databaseHelper.database;
+    // Soft delete: tandai sebagai terhapus tanpa menghapus data secara fisik
     try {
-      return await db.delete(
+      return await db.update(
         'events',
+        {
+          'is_deleted': 1,
+          'deleted_at': DateTime.now().toUtc().toIso8601String(),
+          'updated_at': DateTime.now().toUtc().toIso8601String(),
+          'sync_status': SyncStatus.pending.name,
+        },
         where: 'event_uuid = ?',
         whereArgs: [eventUuid],
       );
@@ -102,14 +112,8 @@ class EventLocalDatasource {
     final db = await _databaseHelper.database;
     print('[EventLocalDatasource] Fetching active event from local database');
     try {
-      final result = await db.query(
-        'events',
-        where: 'is_active = ?',
-        whereArgs: [1],
-      );
-      print(
-        '[EventLocalDatasource] Active event query result count: ${result.length}',
-      );
+      final result = await db.query('events', where: 'is_active = ?', whereArgs: [1]);
+      print('[EventLocalDatasource] Active event query result count: ${result.length}');
       if (result.isNotEmpty) {
         print('[EventLocalDatasource] Active event found: ${result.first}');
         return EventModel.fromJson(result.first);
@@ -129,12 +133,7 @@ class EventLocalDatasource {
       await db.update('events', {'is_active': 0});
 
       // Set the specified event to active
-      await db.update(
-        'events',
-        {'is_active': 1},
-        where: 'event_uuid = ?',
-        whereArgs: [eventUuid],
-      );
+      await db.update('events', {'is_active': 1}, where: 'event_uuid = ?', whereArgs: [eventUuid]);
     } catch (e) {
       throw Exception('Failed to set active event: $e');
     }
@@ -159,10 +158,10 @@ class EventLocalDatasource {
     final db = await _databaseHelper.database;
     try {
       final ids = eventUuids.map((e) => '?').join(', ');
-      await db.rawUpdate(
-        'UPDATE events SET sync_status = ? WHERE event_uuid IN ($ids)',
-        [SyncStatus.synced.name, ...eventUuids],
-      );
+      await db.rawUpdate('UPDATE events SET sync_status = ? WHERE event_uuid IN ($ids)', [
+        SyncStatus.synced.name,
+        ...eventUuids,
+      ]);
     } catch (e) {
       throw Exception('Failed to mark events as synced: $e');
     }
@@ -171,45 +170,37 @@ class EventLocalDatasource {
   Future<void> upsertFromRemote(EventModel remote) async {
     final db = await _databaseHelper.database;
 
-    print(
-      '[upsertFromRemote] Processing event: ${remote.name}, UUID: ${remote.eventUuid}',
-    );
-
-    final local = await db.query(
-      'events',
-      where: 'event_uuid = ?',
-      whereArgs: [remote.eventUuid],
-    );
+    final local = await db.query('events', where: 'event_uuid = ?', whereArgs: [remote.eventUuid]);
 
     if (local.isNotEmpty) {
-      print('[upsertFromRemote] Event already exists locally');
-      final localSync = local.first['sync_status'];
+      final localRow = local.first;
 
-      // ❌ jangan overwrite data pending
-      if (localSync == SyncStatus.pending.name) {
-        print('[upsertFromRemote] Skip: local has pending changes');
+      final localSyncStatus = localRow['sync_status'] as String?;
+      final localUpdatedAt = DateTime.tryParse(localRow['updated_at'] as String? ?? '');
+
+      /// 1️⃣ JANGAN overwrite data lokal yang masih pending
+      if (localSyncStatus == SyncStatus.pending.name) {
         return;
       }
 
-      final localUpdated = DateTime.tryParse(
-        local.first['updated_at'] as String? ?? '',
-      );
+      /// 2️⃣ JIKA REMOTE SUDAH DI-DELETE → HARUS TERAPKAN
+      if (remote.isDeleted == true) {
+        await db.delete('events', where: 'event_uuid = ?', whereArgs: [remote.eventUuid]);
+        return;
+      }
 
-      if (localUpdated != null &&
+      /// 3️⃣ Bandingkan updated_at (normal case)
+      if (localUpdatedAt != null &&
           remote.updatedAt != null &&
-          localUpdated.isAfter(remote.updatedAt!)) {
-        print('[upsertFromRemote] Skip: local is newer than remote');
+          localUpdatedAt.isAfter(remote.updatedAt!)) {
         return;
       }
-
-      print('[upsertFromRemote] Updating existing event');
-    } else {
-      print('[upsertFromRemote] Inserting new event from server');
     }
 
+    /// 4️⃣ INSERT / REPLACE NORMAL
     await db.insert(
       'events',
-      remote.toJson(),
+      remote.copyWith(syncStatus: SyncStatus.synced).toJson(),
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
   }

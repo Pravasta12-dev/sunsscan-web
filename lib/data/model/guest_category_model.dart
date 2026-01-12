@@ -8,6 +8,8 @@ class GuestCategoryModel extends Equatable {
   final DateTime createdAt;
   final DateTime? updatedAt;
   final SyncStatus syncStatus;
+  final bool isDeleted;
+  final DateTime? deletedAt;
 
   const GuestCategoryModel({
     this.categoryUuid,
@@ -16,11 +18,21 @@ class GuestCategoryModel extends Equatable {
     required this.createdAt,
     this.updatedAt,
     this.syncStatus = SyncStatus.pending,
+    this.isDeleted = false,
+    this.deletedAt,
   });
 
   @override
-  List<Object?> get props => [categoryUuid, eventUuid, name, createdAt, updatedAt, syncStatus];
-
+  List<Object?> get props => [
+    categoryUuid,
+    eventUuid,
+    name,
+    createdAt,
+    updatedAt,
+    syncStatus,
+    isDeleted,
+    deletedAt,
+  ];
   Map<String, dynamic> toJson() {
     return {
       'category_uuid': categoryUuid,
@@ -29,6 +41,8 @@ class GuestCategoryModel extends Equatable {
       'created_at': createdAt.toIso8601String(),
       'updated_at': updatedAt?.toIso8601String(),
       'sync_status': syncStatus.name,
+      'is_deleted': isDeleted ? 1 : 0,
+      'deleted_at': deletedAt?.toIso8601String(),
     };
   }
 
@@ -40,6 +54,8 @@ class GuestCategoryModel extends Equatable {
       'created_at': createdAt.toUtc().toIso8601String(),
       'updated_at': updatedAt?.toUtc().toIso8601String(),
       'sync_status': syncStatus.name,
+      'is_deleted': isDeleted,
+      'deleted_at': deletedAt?.toUtc().toIso8601String(),
     };
   }
 
@@ -50,6 +66,8 @@ class GuestCategoryModel extends Equatable {
     DateTime? createdAt,
     DateTime? updatedAt,
     SyncStatus? syncStatus,
+    bool? isDeleted,
+    DateTime? deletedAt,
   }) {
     return GuestCategoryModel(
       categoryUuid: categoryUuid ?? this.categoryUuid,
@@ -58,6 +76,8 @@ class GuestCategoryModel extends Equatable {
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       syncStatus: syncStatus ?? this.syncStatus,
+      isDeleted: isDeleted ?? this.isDeleted,
+      deletedAt: deletedAt ?? this.deletedAt,
     );
   }
 
@@ -74,6 +94,8 @@ class GuestCategoryModel extends Equatable {
               orElse: () => SyncStatus.pending,
             )
           : SyncStatus.pending,
+      isDeleted: json['is_deleted'] == 1,
+      deletedAt: json['deleted_at'] != null ? DateTime.parse(json['deleted_at'] as String) : null,
     );
   }
 
@@ -90,6 +112,8 @@ class GuestCategoryModel extends Equatable {
               orElse: () => SyncStatus.pending,
             )
           : SyncStatus.pending,
+      isDeleted: json['is_deleted'] == true,
+      deletedAt: json['deleted_at'] != null ? DateTime.parse(json['deleted_at'] as String) : null,
     );
   }
 }

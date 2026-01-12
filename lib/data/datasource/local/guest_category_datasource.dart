@@ -69,6 +69,16 @@ class GuestCategoryDatasource {
         return;
       }
 
+      if (category.isDeleted == true) {
+        // If the remote category is marked as deleted, delete it locally
+        await db.delete(
+          'guest_categories',
+          where: 'category_uuid = ?',
+          whereArgs: [category.categoryUuid],
+        );
+        return;
+      }
+
       final localUpdatedAt = DateTime.tryParse(existing.first['updated_at'] as String? ?? '');
 
       if (localUpdatedAt != null &&

@@ -14,6 +14,8 @@ class EventModel extends Equatable {
   final DateTime createdAt;
   final DateTime? updatedAt;
   final SyncStatus syncStatus;
+  final bool isDeleted;
+  final DateTime? deletedAt;
 
   const EventModel({
     this.eventUuid,
@@ -28,6 +30,8 @@ class EventModel extends Equatable {
     required this.createdAt,
     this.updatedAt,
     this.syncStatus = SyncStatus.pending,
+    this.isDeleted = false,
+    this.deletedAt,
   });
 
   @override
@@ -44,6 +48,8 @@ class EventModel extends Equatable {
     createdAt,
     updatedAt,
     syncStatus,
+    isDeleted,
+    deletedAt,
   ];
 
   Map<String, dynamic> toJson() {
@@ -60,6 +66,8 @@ class EventModel extends Equatable {
       'created_at': createdAt.toIso8601String(),
       'updated_at': updatedAt?.toIso8601String(),
       'sync_status': syncStatus.name,
+      'is_deleted': isDeleted ? 1 : 0,
+      'deleted_at': deletedAt?.toIso8601String(),
     };
   }
 
@@ -80,6 +88,8 @@ class EventModel extends Equatable {
         (e) => e.name == json['sync_status'],
         orElse: () => SyncStatus.pending,
       ),
+      isDeleted: json['is_deleted'] == 1,
+      deletedAt: json['deleted_at'] != null ? DateTime.parse(json['deleted_at']) : null,
     );
   }
 
@@ -103,6 +113,8 @@ class EventModel extends Equatable {
               orElse: () => SyncStatus.synced,
             )
           : SyncStatus.synced,
+      isDeleted: json['is_deleted'] == true,
+      deletedAt: json['deleted_at'] != null ? DateTime.parse(json['deleted_at']) : null,
     );
   }
 
@@ -120,6 +132,8 @@ class EventModel extends Equatable {
       createdAt: DateTime.now(),
       updatedAt: null,
       syncStatus: SyncStatus.pending,
+      isDeleted: false,
+      deletedAt: null,
     );
   }
 
@@ -141,6 +155,8 @@ class EventModel extends Equatable {
     DateTime? createdAt,
     DateTime? updatedAt,
     SyncStatus? syncStatus,
+    bool? isDeleted,
+    DateTime? deletedAt,
   }) {
     return EventModel(
       eventUuid: eventUuid ?? this.eventUuid,
@@ -155,6 +171,8 @@ class EventModel extends Equatable {
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       syncStatus: syncStatus ?? this.syncStatus,
+      isDeleted: isDeleted ?? this.isDeleted,
+      deletedAt: deletedAt ?? this.deletedAt,
     );
   }
 
@@ -170,6 +188,9 @@ class EventModel extends Equatable {
       'out_active': outActive,
       'is_locked': isLocked,
       'updated_at': updatedAt?.toUtc().toIso8601String(),
+      'sync_status': syncStatus.name,
+      'is_deleted': isDeleted,
+      'deleted_at': deletedAt?.toUtc().toIso8601String(),
     };
   }
 }

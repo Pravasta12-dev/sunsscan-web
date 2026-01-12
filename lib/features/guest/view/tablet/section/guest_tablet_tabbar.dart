@@ -10,32 +10,11 @@ class GuestTabletTabbar extends StatelessWidget {
   GuestTabletTabbar({super.key});
 
   final List<_TabbarLabel> tabbarLabels = [
-    _TabbarLabel(
-      label: 'Dashboard',
-      assetIcon: Assets.svg.svgDashboard.path,
-      index: 0,
-    ),
+    _TabbarLabel(label: 'Dashboard', assetIcon: Assets.svg.svgDashboard.path, index: 0),
     _TabbarLabel(label: 'Scan', assetIcon: Assets.svg.svgCamera.path, index: 1),
-    _TabbarLabel(
-      label: 'List Tamu',
-      assetIcon: Assets.svg.svgUsers.path,
-      index: 2,
-    ),
-    _TabbarLabel(
-      label: 'Souvenir',
-      assetIcon: Assets.svg.svgGift.path,
-      index: 3,
-    ),
-    _TabbarLabel(
-      label: 'Layar Sapa',
-      assetIcon: Assets.svg.svgMonitor.path,
-      index: 4,
-    ),
-    _TabbarLabel(
-      label: 'Setting',
-      assetIcon: Assets.svg.svgSetting.path,
-      index: 5,
-    ),
+    _TabbarLabel(label: 'List Tamu', assetIcon: Assets.svg.svgUsers.path, index: 2),
+    _TabbarLabel(label: 'Souvenir', assetIcon: Assets.svg.svgGift.path, index: 3),
+    _TabbarLabel(label: 'Layar Sapa', assetIcon: Assets.svg.svgMonitor.path, index: 4),
   ];
 
   @override
@@ -71,10 +50,7 @@ class GuestTabletTabbar extends StatelessWidget {
                         SvgPicture.asset(
                           tab.assetIcon,
                           width: 20,
-                          colorFilter: ColorFilter.mode(
-                            AppColors.greyColor,
-                            BlendMode.srcIn,
-                          ),
+                          colorFilter: ColorFilter.mode(AppColors.greyColor, BlendMode.srcIn),
                         ),
                         const SizedBox(width: 12),
                         Tab(text: tab.label),
@@ -95,9 +71,5 @@ class _TabbarLabel {
   final String assetIcon;
   final int index;
 
-  _TabbarLabel({
-    required this.label,
-    required this.assetIcon,
-    required this.index,
-  });
+  _TabbarLabel({required this.label, required this.assetIcon, required this.index});
 }

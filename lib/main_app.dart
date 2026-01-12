@@ -6,6 +6,7 @@ import 'package:sun_scan/features/event/bloc/event/event_bloc.dart';
 import 'package:sun_scan/features/guest/bloc/guest/guest_bloc.dart';
 import 'package:sun_scan/features/splash/pages/splash_page.dart';
 
+import 'features/guest/bloc/greeting/greeting_bloc.dart';
 import 'features/guest/bloc/guest_category/guest_category_bloc.dart';
 import 'features/guest/bloc/souvenir/souvenir_bloc.dart';
 import 'features/web/bloc/event_web/event_web_bloc.dart';
@@ -50,12 +51,11 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
         BlocProvider(create: (context) => EventWebBloc()),
         BlocProvider(create: (context) => GuestWebBloc()),
         BlocProvider(create: (context) => SouvenirBloc()),
+        BlocProvider(create: (context) => GreetingBloc()),
       ],
       child: Builder(
         builder: (context) {
-          final mediaQuery = MediaQuery.of(
-            context,
-          ).copyWith(textScaler: TextScaler.linear(1.0));
+          final mediaQuery = MediaQuery.of(context).copyWith(textScaler: TextScaler.linear(1.0));
           return MediaQuery(
             data: mediaQuery,
             child: MaterialApp(
