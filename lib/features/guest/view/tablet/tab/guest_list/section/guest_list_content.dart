@@ -30,9 +30,7 @@ class _GuestListContentState extends State<GuestListContent> {
     if (keyword.isEmpty) {
       _filteredGuests = _allGuests;
     } else {
-      _filteredGuests = _allGuests
-          .where((g) => g.name.toLowerCase().contains(keyword))
-          .toList();
+      _filteredGuests = _allGuests.where((g) => g.name.toLowerCase().contains(keyword)).toList();
     }
   }
 
@@ -59,9 +57,7 @@ class _GuestListContentState extends State<GuestListContent> {
       child: BlocBuilder<GuestBloc, GuestState>(
         builder: (context, state) {
           if (state is GuestLoading) {
-            return Center(
-              child: CircularProgressIndicator(color: AppColors.primaryColor),
-            );
+            return Center(child: CircularProgressIndicator(color: AppColors.primaryColor));
           }
 
           if (state is GuestLoaded) {
@@ -71,10 +67,7 @@ class _GuestListContentState extends State<GuestListContent> {
 
           if (state is GuestError) {
             return Center(
-              child: Text(
-                'Terjadi kesalahan: ${state.message}',
-                style: AppTextStyles.bodyLarge,
-              ),
+              child: Text('Terjadi kesalahan: ${state.message}', style: AppTextStyles.bodyLarge),
             );
           }
 
@@ -95,10 +88,7 @@ class _GuestListContentState extends State<GuestListContent> {
                     Expanded(
                       child: CustomFormWidget().buildTextFormInput(
                         controller: _searchController,
-                        contentPadding: const EdgeInsets.symmetric(
-                          vertical: 12,
-                          horizontal: 16,
-                        ),
+                        contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
                         hintText: 'Cari Tamu',
                         prefixIcon: Icon(Icons.search),
                       ),
@@ -109,10 +99,7 @@ class _GuestListContentState extends State<GuestListContent> {
                 _filteredGuests.isEmpty
                     ? Expanded(
                         child: Center(
-                          child: Text(
-                            'Tamu tidak ditemukan',
-                            style: AppTextStyles.bodyLarge,
-                          ),
+                          child: Text('Tamu tidak ditemukan', style: AppTextStyles.bodyLarge),
                         ),
                       )
                     : Expanded(
@@ -134,60 +121,47 @@ class _GuestListContentState extends State<GuestListContent> {
                                 color: AppColors.lightGreyColor,
                                 borderRadius: BorderRadius.circular(10),
                               ),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
+                              decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
                               columnSpacing: 16,
-                              columns:
-                                  [
-                                        'Nama Tamu',
-                                        'No. Whatsapp',
-                                        'Kategori Tamu',
-                                        'Tag',
-                                        'Status',
-                                        'Waktu Masuk',
-                                        'Waktu Keluar',
-                                        'Aksi',
-                                      ]
-                                      .map(
-                                        (column) =>
-                                            DataColumn(label: Text(column)),
-                                      )
-                                      .toList(),
+                              columns: [
+                                'Nama Tamu',
+                                'No. Whatsapp',
+                                'Kategori Tamu',
+                                'Tag',
+                                'Status',
+                                'Waktu Masuk',
+                                'Waktu Keluar',
+                                'Aksi',
+                              ].map((column) => DataColumn(label: Text(column))).toList(),
                               rows: [
                                 for (final guest in _filteredGuests)
                                   DataRow(
                                     cells: [
                                       DataCell(Text(guest.name)),
                                       DataCell(Text(guest.phone ?? '-')),
-                                      DataCell(
-                                        Text(guest.guestCategoryName ?? '-'),
-                                      ),
+                                      DataCell(Text(guest.guestCategoryName ?? '-')),
                                       DataCell(Text(guest.tag ?? '-')),
                                       DataCell(
                                         GuestStatusBadge(
                                           isCheckedIn: guest.isCheckedIn,
-                                          isCheckedOut:
-                                              guest.checkedOutAt != null,
+                                          isCheckedOut: guest.checkedOutAt != null,
                                         ),
                                       ),
                                       DataCell(
                                         Text(
                                           guest.checkedInAt != null
-                                              ? CustomDateFormat()
-                                                    .getFormattedTime(
-                                                      date: guest.checkedInAt!,
-                                                    )
+                                              ? CustomDateFormat().getFormattedTime(
+                                                  date: guest.checkedInAt!,
+                                                )
                                               : '-',
                                         ),
                                       ),
                                       DataCell(
                                         Text(
                                           guest.checkedOutAt != null
-                                              ? CustomDateFormat()
-                                                    .getFormattedTime(
-                                                      date: guest.checkedOutAt!,
-                                                    )
+                                              ? CustomDateFormat().getFormattedTime(
+                                                  date: guest.checkedOutAt!,
+                                                )
                                               : '-',
                                         ),
                                       ),
@@ -202,19 +176,16 @@ class _GuestListContentState extends State<GuestListContent> {
                                                 onTap: () {
                                                   CustomDialog.showMainDialog(
                                                     context: context,
-                                                    child: GuestDetailPage(
-                                                      guest: guest,
-                                                    ),
+                                                    child: GuestDetailPage(guest: guest),
                                                   );
                                                 },
                                                 child: Assets.svg.svgEye.svg(
                                                   width: 16,
                                                   height: 16,
-                                                  colorFilter:
-                                                      const ColorFilter.mode(
-                                                        AppColors.whiteColor,
-                                                        BlendMode.srcIn,
-                                                      ),
+                                                  colorFilter: const ColorFilter.mode(
+                                                    AppColors.whiteColor,
+                                                    BlendMode.srcIn,
+                                                  ),
                                                 ),
                                               ),
                                               InkWell(
@@ -224,17 +195,17 @@ class _GuestListContentState extends State<GuestListContent> {
                                                     child: GuestInsertDialaog(
                                                       eventId: guest.eventUuid,
                                                       guestToEdit: guest,
+                                                      eventName: guest.eventName ?? '-',
                                                     ),
                                                   );
                                                 },
                                                 child: Assets.svg.svgPencil.svg(
                                                   width: 16,
                                                   height: 16,
-                                                  colorFilter:
-                                                      const ColorFilter.mode(
-                                                        AppColors.whiteColor,
-                                                        BlendMode.srcIn,
-                                                      ),
+                                                  colorFilter: const ColorFilter.mode(
+                                                    AppColors.whiteColor,
+                                                    BlendMode.srcIn,
+                                                  ),
                                                 ),
                                               ),
                                               InkWell(
@@ -245,24 +216,20 @@ class _GuestListContentState extends State<GuestListContent> {
                                                     message:
                                                         'Apakah Anda yakin ingin menghapus "${guest.name}?"\nTindakan ini tidak dapat dibatalkan.',
                                                     onConfirmed: () {
-                                                      context
-                                                          .read<GuestBloc>()
-                                                          .deleteGuest(
-                                                            guest.guestUuid ??
-                                                                '',
-                                                            guest.eventUuid,
-                                                          );
+                                                      context.read<GuestBloc>().deleteGuest(
+                                                        guest.guestUuid ?? '',
+                                                        guest.eventUuid,
+                                                      );
                                                     },
                                                   );
                                                 },
                                                 child: Assets.svg.svgTrash.svg(
                                                   width: 16,
                                                   height: 16,
-                                                  colorFilter:
-                                                      const ColorFilter.mode(
-                                                        AppColors.redColor,
-                                                        BlendMode.srcIn,
-                                                      ),
+                                                  colorFilter: const ColorFilter.mode(
+                                                    AppColors.redColor,
+                                                    BlendMode.srcIn,
+                                                  ),
                                                 ),
                                               ),
                                             ],

@@ -49,11 +49,7 @@ class GuestDetailPage extends StatelessWidget {
               centerTitle: false,
               leading: InkWell(
                 onTap: () => AppTransition.popTransition(context),
-                child: Icon(
-                  Icons.arrow_back_ios,
-                  color: AppColors.whiteColor,
-                  size: 12,
-                ),
+                child: Icon(Icons.arrow_back_ios, color: AppColors.whiteColor, size: 12),
               ),
             ),
             body: SafeArea(
@@ -64,6 +60,20 @@ class GuestDetailPage extends StatelessWidget {
             ),
           ),
           tabletUp: Container(
+            width: 600,
+            padding: const EdgeInsets.symmetric(vertical: 24),
+            decoration: BoxDecoration(
+              color: AppColors.headerColor,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: AppColors.lightGreyColor),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [GuestDetailDialog(guest: currentGuest)],
+            ),
+          ),
+          web: Container(
             width: 600,
             padding: const EdgeInsets.symmetric(vertical: 24),
             decoration: BoxDecoration(
@@ -124,10 +134,7 @@ class _GuestDetailContent extends StatelessWidget {
                   child: Assets.svg.svgTrash.svg(
                     width: 28,
                     height: 28,
-                    colorFilter: ColorFilter.mode(
-                      AppColors.primaryColor,
-                      BlendMode.srcIn,
-                    ),
+                    colorFilter: ColorFilter.mode(AppColors.primaryColor, BlendMode.srcIn),
                   ),
                 ),
               ),
@@ -157,9 +164,7 @@ class _GuestDetailContent extends StatelessWidget {
               const SizedBox(height: 16),
               Text(
                 guest.name,
-                style: AppTextStyles.bodyLarge.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
+                style: AppTextStyles.bodyLarge.copyWith(fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 4),
               Text(
@@ -177,13 +182,9 @@ class _GuestDetailContent extends StatelessWidget {
                         const SizedBox(height: 4),
                         Text(
                           guest.checkedInAt != null
-                              ? CustomDateFormat().getFormattedTime(
-                                  date: guest.checkedInAt!,
-                                )
+                              ? CustomDateFormat().getFormattedTime(date: guest.checkedInAt!)
                               : '-',
-                          style: AppTextStyles.bodyLarge.copyWith(
-                            fontWeight: FontWeight.w600,
-                          ),
+                          style: AppTextStyles.bodyLarge.copyWith(fontWeight: FontWeight.w600),
                         ),
                       ],
                     ),
@@ -195,13 +196,9 @@ class _GuestDetailContent extends StatelessWidget {
                         const SizedBox(height: 4),
                         Text(
                           guest.checkedOutAt != null
-                              ? CustomDateFormat().getFormattedTime(
-                                  date: guest.checkedOutAt!,
-                                )
+                              ? CustomDateFormat().getFormattedTime(date: guest.checkedOutAt!)
                               : '-',
-                          style: AppTextStyles.bodyLarge.copyWith(
-                            fontWeight: FontWeight.w600,
-                          ),
+                          style: AppTextStyles.bodyLarge.copyWith(fontWeight: FontWeight.w600),
                         ),
                       ],
                     ),

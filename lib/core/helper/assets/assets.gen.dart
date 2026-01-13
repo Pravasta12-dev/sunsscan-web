@@ -24,6 +24,16 @@ class $AssetsFontsGen {
   List<String> get values => [dMSansRegular];
 }
 
+class $AssetsGifsGen {
+  const $AssetsGifsGen();
+
+  /// File path: assets/gifs/qris.gif
+  AssetGenImage get qris => const AssetGenImage('assets/gifs/qris.gif');
+
+  /// List of all assets
+  List<AssetGenImage> get values => [qris];
+}
+
 class $AssetsImagesGen {
   const $AssetsImagesGen();
 
@@ -80,6 +90,9 @@ class $AssetsSvgGen {
 
   /// File path: assets/svg/svg_clock.svg
   SvgGenImage get svgClock => const SvgGenImage('assets/svg/svg_clock.svg');
+
+  /// File path: assets/svg/svg_crown.svg
+  SvgGenImage get svgCrown => const SvgGenImage('assets/svg/svg_crown.svg');
 
   /// File path: assets/svg/svg_dashboard.svg
   SvgGenImage get svgDashboard =>
@@ -241,6 +254,7 @@ class $AssetsSvgGen {
     svgCheckCircle,
     svgCircleRemove,
     svgClock,
+    svgCrown,
     svgDashboard,
     svgDot,
     svgDownload,
@@ -294,6 +308,7 @@ class Assets {
   const Assets._();
 
   static const $AssetsFontsGen fonts = $AssetsFontsGen();
+  static const $AssetsGifsGen gifs = $AssetsGifsGen();
   static const $AssetsImagesGen images = $AssetsImagesGen();
   static const $AssetsSvgGen svg = $AssetsSvgGen();
 }

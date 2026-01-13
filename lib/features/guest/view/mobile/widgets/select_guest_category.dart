@@ -6,7 +6,9 @@ import 'package:sun_scan/core/helper/responsive_builder.dart';
 import 'package:sun_scan/core/routes/app_transition.dart';
 import 'package:sun_scan/core/theme/app_colors.dart';
 import 'package:sun_scan/core/theme/app_text_styles.dart';
+import 'package:sun_scan/core/utils/shimmer_box.dart';
 
+import '../../../../../data/model/guest_category_model.dart';
 import '../../../bloc/guest_category/guest_category_bloc.dart';
 
 class SelectGuestCategory extends StatefulWidget {
@@ -66,9 +68,7 @@ class _SelectGuestCategoryState extends State<SelectGuestCategory> {
         tabletUp: 500,
       ),
       padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 20.0),
-      constraints: BoxConstraints(
-        maxHeight: MediaQuery.of(context).size.height * 0.6,
-      ),
+      constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.6),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -79,9 +79,7 @@ class _SelectGuestCategoryState extends State<SelectGuestCategory> {
             children: [
               Text(
                 'Kategori Tamu',
-                style: AppTextStyles.bodyLarge.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
+                style: AppTextStyles.bodyLarge.copyWith(fontWeight: FontWeight.w600),
               ),
               IconButton(
                 icon: const Icon(Icons.close),
@@ -98,90 +96,84 @@ class _SelectGuestCategoryState extends State<SelectGuestCategory> {
           Flexible(
             child: BlocBuilder<GuestCategoryBloc, GuestCategoryState>(
               builder: (context, state) {
-                if (state.status.isLoading) {
-                  return const Center(child: CircularProgressIndicator());
-                } else if (state.status.isSuccess) {
-                  final categories = state.categories;
-                  if (categories.isEmpty) {
-                    return const Center(
-                      child: Text('Belum ada kategori tamu.'),
-                    );
-                  }
-                  return SingleChildScrollView(
-                    child: Wrap(
-                      spacing: 16.0,
-                      runSpacing: 16.0,
-                      children: categories.map((category) {
-                        final isSelected =
-                            category.categoryUuid == selectedCategoryUuid;
-                        return GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              selectedCategoryUuid = category.categoryUuid;
-                              selectedCategoryName = category.name;
-                              _newCategoryController.text = category.name;
-                            });
-                            _validateForm();
-                          },
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              // Radio indicator
-                              Container(
-                                width: 20,
-                                height: 20,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  border: Border.all(
-                                    color: isSelected
-                                        ? AppColors.primaryColor
-                                        : Colors.grey.shade400,
-                                    width: 2,
-                                  ),
-                                  color: Colors.white,
-                                ),
-                                child: isSelected
-                                    ? Center(
-                                        child: Container(
-                                          width: 10,
-                                          height: 10,
-                                          decoration: BoxDecoration(
-                                            shape: BoxShape.circle,
-                                            color: Theme.of(
-                                              context,
-                                            ).primaryColor,
-                                          ),
-                                        ),
-                                      )
-                                    : null,
-                              ),
-                              const SizedBox(width: 8),
-                              // Category name
-                              Text(
-                                category.name,
-                                style: AppTextStyles.body.copyWith(
-                                  color: isSelected
-                                      ? AppColors.primaryColor
-                                      : AppColors.whiteColor,
-                                  fontWeight: isSelected
-                                      ? FontWeight.w600
-                                      : FontWeight.normal,
-                                ),
-                              ),
-                            ],
-                          ),
-                        );
-                      }).toList(),
-                    ),
-                  );
-                } else if (state.status.isFailure) {
-                  return Center(
-                    child: Text(state.errorMessage ?? 'Terjadi kesalahan.'),
-                  );
-                } else {
-                  return const SizedBox.shrink();
+                bool isLoading = state.status == GuestCategoryStatus.loading;
+
+                if (state.status.isFailure) {
+                  return Center(child: Text(state.errorMessage ?? 'Terjadi kesalahan.'));
                 }
+
+                final categories = state.status == GuestCategoryStatus.success
+                    ? state.categories
+                    : <GuestCategoryModel>[];
+
+                if (categories.isEmpty) {
+                  return const Center(child: Text('Belum ada kategori tamu.'));
+                }
+
+                return SingleChildScrollView(
+                  child: Wrap(
+                    spacing: 16.0,
+                    runSpacing: 16.0,
+                    children: categories.map((category) {
+                      final isSelected = category.categoryUuid == selectedCategoryUuid;
+
+                      if (isLoading) {
+                        return ShimmerBox(height: 40, width: 100);
+                      }
+
+                      return GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            selectedCategoryUuid = category.categoryUuid;
+                            selectedCategoryName = category.name;
+                            _newCategoryController.text = category.name;
+                          });
+                          _validateForm();
+                        },
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            // Radio indicator
+                            Container(
+                              width: 20,
+                              height: 20,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: isSelected ? AppColors.primaryColor : Colors.grey.shade400,
+                                  width: 2,
+                                ),
+                                color: Colors.white,
+                              ),
+                              child: isSelected
+                                  ? Center(
+                                      child: Container(
+                                        width: 10,
+                                        height: 10,
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          color: Theme.of(context).primaryColor,
+                                        ),
+                                      ),
+                                    )
+                                  : null,
+                            ),
+                            const SizedBox(width: 8),
+                            // Category name
+                            Text(
+                              category.name,
+                              style: AppTextStyles.body.copyWith(
+                                color: isSelected ? AppColors.primaryColor : AppColors.whiteColor,
+                                fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                );
               },
             ),
           ),
@@ -190,10 +182,7 @@ class _SelectGuestCategoryState extends State<SelectGuestCategory> {
             controller: _newCategoryController,
             label: 'Tambah Kategori Baru',
             hintText: 'Masukkan nama kategori baru',
-            contentPadding: const EdgeInsets.symmetric(
-              vertical: 16,
-              horizontal: 12,
-            ),
+            contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
             onChanged: (_) => _validateForm(),
           ),
           const SizedBox(height: 32.0),
@@ -223,9 +212,7 @@ class _SelectGuestCategoryState extends State<SelectGuestCategory> {
                     );
                   },
                   title: 'Simpan',
-                  buttonType: _isFormValid
-                      ? ButtonType.primary
-                      : ButtonType.disable,
+                  buttonType: _isFormValid ? ButtonType.primary : ButtonType.disable,
                 ),
               ),
             ],

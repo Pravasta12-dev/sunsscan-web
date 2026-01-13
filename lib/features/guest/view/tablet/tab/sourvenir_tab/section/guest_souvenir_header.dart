@@ -19,14 +19,10 @@ class GuestSouvenirHeader extends StatelessWidget {
         bool isLoading = state is SouvenirLoading;
 
         if (state is SouvenirError) {
-          return Center(
-            child: Text('Error: ${state.message}', style: AppTextStyles.body),
-          );
+          return Center(child: Text('Error: ${state.message}', style: AppTextStyles.body));
         }
 
-        final List<SouvenirModel> souvenirs = (state is SouvenirLoaded)
-            ? state.souvenirs
-            : [];
+        final List<SouvenirModel> souvenirs = (state is SouvenirLoaded) ? state.souvenirs : [];
 
         final int totalPreparedSouvenir = souvenirs.length;
 
@@ -34,8 +30,7 @@ class GuestSouvenirHeader extends StatelessWidget {
             .where((souvenir) => souvenir.status == SouvenirStatus.delivered)
             .length;
 
-        final int remainingSouvenir =
-            totalPreparedSouvenir - distributedSouvenir;
+        final int remainingSouvenir = totalPreparedSouvenir - distributedSouvenir;
 
         return Row(
           children: [
@@ -133,9 +128,7 @@ class _ActionData {
                     : Expanded(
                         child: Text(
                           data.title,
-                          style: AppTextStyles.body.copyWith(
-                            fontWeight: FontWeight.w500,
-                          ),
+                          style: AppTextStyles.body.copyWith(fontWeight: FontWeight.w500),
                         ),
                       ),
               ],
@@ -155,9 +148,7 @@ class _ActionData {
                 ? const ShimmerBox(width: double.infinity, height: 12)
                 : Text(
                     data.description,
-                    style: AppTextStyles.caption.copyWith(
-                      color: AppColors.greyColor.withAlpha(70),
-                    ),
+                    style: AppTextStyles.caption.copyWith(color: AppColors.greyColor.withAlpha(70)),
                   ),
           ],
         ),

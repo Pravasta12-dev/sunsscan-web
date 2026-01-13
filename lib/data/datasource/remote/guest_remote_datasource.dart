@@ -9,6 +9,7 @@ import '../../model/guests_model.dart';
 abstract class GuestRemoteDatasource {
   Future<List<String>> sync(List<GuestsModel> guests);
   Future<List<GuestsModel>> fetchGuestsByEventId(String eventId);
+  Future<String> deleteGuest(String guestUuid);
 }
 
 class GuestRemoteDatasourceImpl implements GuestRemoteDatasource {
@@ -60,16 +61,26 @@ class GuestRemoteDatasourceImpl implements GuestRemoteDatasource {
       // Jika response adalah object, ambil key 'guests' atau 'data'
       guestList = decoded['guests'] ?? decoded['data'] ?? [];
     } else {
-      print(
-        '[GuestRemoteDatasource] Unknown response type: ${decoded.runtimeType}',
-      );
+      print('[GuestRemoteDatasource] Unknown response type: ${decoded.runtimeType}');
       guestList = [];
     }
 
     print('[GuestRemoteDatasource] Parsed ${guestList.length} guests');
 
-    return guestList
-        .map((e) => GuestsModel.fromJsonOnline(e as Map<String, dynamic>))
-        .toList();
+    return guestList.map((e) => GuestsModel.fromJsonOnline(e as Map<String, dynamic>)).toList();
+  }
+
+  @override
+  Future<String> deleteGuest(String guestUuid) async {
+    final response = await _httpClient.delete(
+      _appEndpoint.guestDelete(guestUuid),
+      headers: AppHeader.jsonHeader,
+    );
+
+    print('[GuestRemoteDatasource] Delete response body: ${response.body}');
+
+    final decoded = jsonDecode(response.body);
+
+    return decoded['message'] ?? 'Guest deleted successfully';
   }
 }

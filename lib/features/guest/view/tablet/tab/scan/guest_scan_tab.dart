@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:sun_scan/features/guest/view/tablet/tab/scan/section/guest_scan_in.dart';
 
+import 'section/guest_scan_out.dart';
 import 'section/guest_scan_tabbar.dart';
 
 class GuestScanTab extends StatefulWidget {
@@ -34,10 +36,7 @@ class _GuestScanTabState extends State<GuestScanTab> {
             Expanded(
               child: IndexedStack(
                 index: selectedIndex,
-                children: const [
-                  Center(child: Text('Scan Masuk Content')),
-                  Center(child: Text('Scan Keluar Content')),
-                ],
+                children: const [GuestScanIn(), GuestScanOut()],
               ),
             ),
           ],

@@ -1,26 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sun_scan/features/guest/view/tablet/tab/sourvenir_tab/section/guest_souvenir_banner_info.dart';
 import 'package:sun_scan/features/guest/view/tablet/tab/sourvenir_tab/section/guest_souvenir_header.dart';
 
-import '../../../../bloc/souvenir/souvenir_bloc.dart';
 import 'section/guest_souvenir_table.dart';
 
-class GuestSourvenirTab extends StatefulWidget {
+class GuestSourvenirTab extends StatelessWidget {
   const GuestSourvenirTab({super.key, required this.eventUuid});
 
   final String eventUuid;
-
-  @override
-  State<GuestSourvenirTab> createState() => _GuestSourvenirTabState();
-}
-
-class _GuestSourvenirTabState extends State<GuestSourvenirTab> {
-  @override
-  void initState() {
-    super.initState();
-    context.read<SouvenirBloc>().loadSouvenirs(widget.eventUuid);
-  }
 
   @override
   Widget build(BuildContext context) {

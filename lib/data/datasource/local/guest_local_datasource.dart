@@ -105,13 +105,29 @@ class GuestLocalDatasource {
   Future<List<GuestsModel>> getGuestsByEventId(String eventUuid) async {
     final db = await _databaseHelper.database;
 
-    final maps = await db.query(
-      'guests',
-      where: 'event_uuid = ? AND is_deleted = ?',
-      whereArgs: [eventUuid, 0],
-    );
+    // final maps = await db.query(
+    //   'guests',
+    //   where: 'event_uuid = ? AND is_deleted = ?',
+    //   whereArgs: [eventUuid, 0],
+    // );
 
-    return maps.map(GuestsModel.fromJson).toList();
+    try {
+      final maps = await db.rawQuery(
+        '''
+      SELECT guests.*,
+        events.name AS event_name
+        FROM guests
+        INNER JOIN events ON guests.event_uuid = events.event_uuid
+      WHERE guests.event_uuid = ? AND guests.is_deleted = 0
+    ''',
+        [eventUuid],
+      );
+
+      return maps.map(GuestsModel.fromJson).toList();
+    } catch (e) {
+      print('[GuestLocalDatasource] Error getGuestsByEventId: $e');
+      throw Exception('Database query error: $e');
+    }
   }
 
   Future<GuestsModel?> getGuestByQrValue(String qrValue) async {

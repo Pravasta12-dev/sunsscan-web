@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:sun_scan/data/model/params/create_guest_category_param.dart';
+
 import '../../../core/endpoint/app_endpoint.dart';
 import '../../../core/endpoint/app_header.dart';
 import '../../../core/network/http_client.dart';
@@ -7,6 +9,8 @@ import '../../model/guest_category_model.dart';
 
 abstract class GuestCategoryRemoteDatasource {
   Future<List<String>> sync(List<GuestCategoryModel> categories);
+  Future<List<GuestCategoryModel>> fetchCategoriesByEventId(String eventId);
+  Future<void> createGuestCategory({required CreateGuestCategoryParam param});
 }
 
 class GuestCategoryRemoteDatasourceImpl implements GuestCategoryRemoteDatasource {
@@ -35,5 +39,31 @@ class GuestCategoryRemoteDatasourceImpl implements GuestCategoryRemoteDatasource
     final decoded = jsonDecode(response.body);
 
     return List<String>.from(decoded['synced_ids'] ?? []);
+  }
+
+  @override
+  Future<List<GuestCategoryModel>> fetchCategoriesByEventId(String eventId) async {
+    final response = await _httpClient.get(
+      _appEndpoint.getGuestCategories(eventId),
+      headers: AppHeader.jsonHeader,
+    );
+
+    final decoded = jsonDecode(response.body);
+    final categories = decoded['guest_categories'] as List;
+
+    return categories
+        .map((e) => GuestCategoryModel.fromSyncJson(e as Map<String, dynamic>))
+        .toList();
+  }
+
+  @override
+  Future<bool> createGuestCategory({required CreateGuestCategoryParam param}) async {
+    final response = await _httpClient.post(
+      _appEndpoint.createGuestCategory,
+      headers: AppHeader.jsonHeader,
+      body: jsonEncode(param.toJson()),
+    );
+
+    return response.statusCode == 200;
   }
 }

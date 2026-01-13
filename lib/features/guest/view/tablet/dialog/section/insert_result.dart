@@ -42,6 +42,7 @@ class InsertResult extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       RepaintBoundary(
+                        key: qrKey,
                         child: Container(
                           padding: const EdgeInsets.all(20),
                           decoration: BoxDecoration(
@@ -49,7 +50,6 @@ class InsertResult extends StatelessWidget {
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: BarcodeWidget(
-                            key: qrKey,
                             barcode: Barcode.qrCode(),
                             data: guest?.qrValue ?? '',
                             width: 200,
@@ -62,16 +62,12 @@ class InsertResult extends StatelessWidget {
                       const SizedBox(height: 16),
                       Text(
                         guest?.name ?? '-',
-                        style: AppTextStyles.bodyLarge.copyWith(
-                          fontWeight: FontWeight.w600,
-                        ),
+                        style: AppTextStyles.bodyLarge.copyWith(fontWeight: FontWeight.w600),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         guest?.phone ?? '-',
-                        style: AppTextStyles.body.copyWith(
-                          fontWeight: FontWeight.w600,
-                        ),
+                        style: AppTextStyles.body.copyWith(fontWeight: FontWeight.w600),
                       ),
                     ],
                   ),
@@ -80,24 +76,16 @@ class InsertResult extends StatelessWidget {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(
-                        Icons.qr_code_scanner_outlined,
-                        size: 50,
-                        color: AppColors.whiteColor,
-                      ),
+                      Icon(Icons.qr_code_scanner_outlined, size: 50, color: AppColors.whiteColor),
                       const SizedBox(height: 8),
                       Text(
                         'QR akan muncul disini',
-                        style: AppTextStyles.body.copyWith(
-                          color: AppColors.whiteColor,
-                        ),
+                        style: AppTextStyles.body.copyWith(color: AppColors.whiteColor),
                       ),
                       const SizedBox(height: 8),
                       Text(
                         'Lengkapi informasi pengguna dan klik ‘Generate QR’',
-                        style: AppTextStyles.caption.copyWith(
-                          color: AppColors.greyColor,
-                        ),
+                        style: AppTextStyles.caption.copyWith(color: AppColors.greyColor),
                       ),
                     ],
                   ),
@@ -112,11 +100,7 @@ class InsertResult extends StatelessWidget {
                   width: double.infinity,
                   child: CustomButton(
                     onPressed: () {
-                      exportQrToGallery(
-                        context,
-                        qrKey,
-                        'qr_${guest?.guestUuid}',
-                      );
+                      exportQrToGallery(context, qrKey, 'qr_${guest?.guestUuid}');
                     },
                     title: 'Export',
                     assetsPath: Assets.svg.svgDownload.path,
@@ -179,18 +163,13 @@ class InsertResult extends StatelessWidget {
                   Assets.svg.svgSparkles.svg(
                     width: 20,
                     height: 20,
-                    colorFilter: ColorFilter.mode(
-                      AppColors.primaryColor,
-                      BlendMode.srcIn,
-                    ),
+                    colorFilter: ColorFilter.mode(AppColors.primaryColor, BlendMode.srcIn),
                   ),
                   const SizedBox(width: 16),
                   Expanded(
                     child: Text(
                       'Tips: Pastikan file CSV memiliki kolom "name", "phone", "gender", dan "category" agar impor berjalan lancar.',
-                      style: AppTextStyles.caption.copyWith(
-                        color: AppColors.greyColor,
-                      ),
+                      style: AppTextStyles.caption.copyWith(color: AppColors.greyColor),
                       textAlign: TextAlign.left,
                     ),
                   ),
@@ -210,7 +189,7 @@ class InsertResult extends StatelessWidget {
         await openWhatsApp(
           phone: guest!.phone!,
           message:
-              'Halo Saudara/i ${guest!.name}, Anda diundang pada acara "${guest!.eventName}". Kehadiran anda sangat berarti bagi acara kami.',
+              'Halo Saudara/i *${guest!.name}*, Anda diundang pada acara "*${guest!.eventName}*". Kehadiran anda sangat berarti bagi acara kami.',
         );
       }
 

@@ -2,17 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:sun_scan/core/components/custom_button.dart';
 import 'package:sun_scan/core/routes/app_transition.dart';
 
-import '../../../../core/components/custom_form_widget.dart';
-import 'web_guest_page.dart';
+import '../../../core/components/custom_form_widget.dart';
+import 'web_dashboard.dart';
 
-class WebMainPageForm extends StatefulWidget {
-  const WebMainPageForm({super.key});
+class WebMainForm extends StatefulWidget {
+  const WebMainForm({super.key});
 
   @override
-  State<WebMainPageForm> createState() => _WebMainPageFormState();
+  State<WebMainForm> createState() => _WebMainFormState();
 }
 
-class _WebMainPageFormState extends State<WebMainPageForm> {
+class _WebMainFormState extends State<WebMainForm> {
   final TextEditingController _idController = TextEditingController();
 
   @override
@@ -40,10 +40,7 @@ class _WebMainPageFormState extends State<WebMainPageForm> {
             child: CustomButton(
               contentPadding: const EdgeInsets.symmetric(vertical: 18),
               onPressed: () {
-                AppTransition.pushTransition(
-                  context,
-                  WebGuestPage(eventCode: _idController.text),
-                );
+                AppTransition.pushTransition(context, WebDashboard(eventCode: _idController.text));
               },
               title: 'Masuk',
               buttonType: ButtonType.primary,

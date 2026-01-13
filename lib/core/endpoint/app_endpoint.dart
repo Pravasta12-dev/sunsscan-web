@@ -34,6 +34,18 @@ class AppEndpoint {
     return UriHelper.createUrl(host: _baseUrl, path: 'api/sync/pull');
   }
 
+  Uri guestDelete(String guestUuid) {
+    return UriHelper.createUrl(host: _baseUrl, path: 'api/public/guests/$guestUuid');
+  }
+
+  Uri getGuestCategories(String eventUuid) {
+    return UriHelper.createUrl(host: _baseUrl, path: 'api/public/guest-categories/$eventUuid');
+  }
+
+  Uri get createGuestCategory {
+    return UriHelper.createUrl(host: _baseUrl, path: 'api/public/guest-categories');
+  }
+
   factory AppEndpoint.create() {
     return AppEndpoint(baseUrl: Injection.baseUrl);
   }

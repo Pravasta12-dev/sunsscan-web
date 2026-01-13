@@ -46,10 +46,7 @@ class GuestBanner extends StatelessWidget {
             child: Assets.svg.svgCalendar.svg(
               width: 16,
               height: 16,
-              colorFilter: const ColorFilter.mode(
-                AppColors.whiteColor,
-                BlendMode.srcIn,
-              ),
+              colorFilter: const ColorFilter.mode(AppColors.whiteColor, BlendMode.srcIn),
             ),
           ),
           const SizedBox(width: 12),
@@ -67,15 +64,11 @@ class GuestBanner extends StatelessWidget {
                 ),
                 Text(
                   'Tanggal: ${CustomDateFormat().getFormattedFullDate(date: activeEvent.eventDateStart)}',
-                  style: AppTextStyles.caption.copyWith(
-                    color: AppColors.primaryColor,
-                  ),
+                  style: AppTextStyles.caption.copyWith(color: AppColors.primaryColor),
                 ),
                 Text(
                   'Total Tamu: $totalGuest • Masuk: $checkedIn • Keluar: $checkOut',
-                  style: AppTextStyles.caption.copyWith(
-                    color: AppColors.primaryColor,
-                  ),
+                  style: AppTextStyles.caption.copyWith(color: AppColors.primaryColor),
                 ),
               ],
             ),
@@ -88,23 +81,16 @@ class GuestBanner extends StatelessWidget {
                   context: context,
                   dialogType: DialogEnum.info,
                   title: 'Acara Terkunci',
-                  message:
-                      'Acara telah dikunci. Tidak dapat menambahkan tamu baru.',
+                  message: 'Acara telah dikunci. Tidak dapat menambahkan tamu baru.',
                 );
                 return;
               }
-              AppTransition.pushTransition(
-                context,
-                CreateEventPage(activeEvent: activeEvent),
-              );
+              AppTransition.pushTransition(context, CreateEventPage(activeEvent: activeEvent));
             },
             child: Assets.svg.svgEdit.svg(
               width: 20,
               height: 20,
-              colorFilter: const ColorFilter.mode(
-                AppColors.primaryColor,
-                BlendMode.srcIn,
-              ),
+              colorFilter: const ColorFilter.mode(AppColors.primaryColor, BlendMode.srcIn),
             ),
           ),
         ],

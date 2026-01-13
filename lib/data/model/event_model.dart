@@ -105,11 +105,11 @@ class EventModel extends Equatable {
       isActive: json['is_active'] == true, // Boolean native
       outActive: json['out_active'] == true,
       isLocked: json['is_locked'] == true,
-      createdAt: json['CreatedAt'] != null ? DateTime.parse(json['CreatedAt']) : DateTime.now(),
+      createdAt: json['created_at'] != null ? DateTime.parse(json['created_at']) : DateTime.now(),
       updatedAt: json['updated_at'] != null ? DateTime.parse(json['updated_at']) : null,
-      syncStatus: json['SyncStatus'] != null
+      syncStatus: json['sync_status'] != null
           ? SyncStatus.values.firstWhere(
-              (e) => e.name.toLowerCase() == (json['SyncStatus'] as String).toLowerCase(),
+              (e) => e.name.toLowerCase() == (json['sync_status'] as String).toLowerCase(),
               orElse: () => SyncStatus.synced,
             )
           : SyncStatus.synced,

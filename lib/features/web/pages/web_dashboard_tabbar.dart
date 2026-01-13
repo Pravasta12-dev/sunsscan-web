@@ -6,28 +6,30 @@ import 'package:sun_scan/core/theme/app_colors.dart';
 import 'package:sun_scan/core/theme/app_text_styles.dart';
 import 'package:sun_scan/features/guest/bloc/guest_tab/guest_tab_cubit.dart';
 
-class GuestTabletTabbar extends StatelessWidget {
-  GuestTabletTabbar({super.key});
+class WebDashboardTabbar extends StatelessWidget {
+  WebDashboardTabbar({super.key});
 
   final List<_TabbarLabel> tabbarLabels = [
-    _TabbarLabel(
-      label: 'Dashboard',
-      assetIcon: Assets.svg.svgDashboard.path,
-      tab: GuestTab.dashboard,
-    ),
-    _TabbarLabel(label: 'Scan', assetIcon: Assets.svg.svgCamera.path, tab: GuestTab.scan),
     _TabbarLabel(label: 'List Tamu', assetIcon: Assets.svg.svgUsers.path, tab: GuestTab.guests),
     _TabbarLabel(label: 'Souvenir', assetIcon: Assets.svg.svgGift.path, tab: GuestTab.souvenirs),
-    _TabbarLabel(label: 'Layar Sapa', assetIcon: Assets.svg.svgMonitor.path, tab: GuestTab.layers),
   ];
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<GuestTabCubit, GuestTab>(
       builder: (context, state) {
+        // Cari index yang benar dari tabbarLabels
+        var initialIndex = tabbarLabels.indexWhere((tab) => tab.tab == state);
+
+        // Jika state tidak ada (misal dashboard), default ke guests
+        if (initialIndex < 0) {
+          initialIndex = tabbarLabels.indexWhere((tab) => tab.tab == GuestTab.guests);
+          if (initialIndex < 0) initialIndex = 0;
+        }
+
         return DefaultTabController(
           length: tabbarLabels.length,
-          initialIndex: state.index,
+          initialIndex: initialIndex,
           child: Container(
             color: AppColors.headerColor,
             child: TabBar(
@@ -44,7 +46,7 @@ class GuestTabletTabbar extends StatelessWidget {
               ),
               onTap: (value) {
                 // Handle tab changes if necessary
-                context.read<GuestTabCubit>().setTab(GuestTab.values[value]);
+                context.read<GuestTabCubit>().setTab(tabbarLabels[value].tab);
               },
               tabs: tabbarLabels
                   .map(

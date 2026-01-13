@@ -8,6 +8,7 @@ import 'package:sun_scan/features/splash/pages/splash_page.dart';
 
 import 'features/guest/bloc/greeting/greeting_bloc.dart';
 import 'features/guest/bloc/guest_category/guest_category_bloc.dart';
+import 'features/guest/bloc/guest_tab/guest_tab_cubit.dart';
 import 'features/guest/bloc/souvenir/souvenir_bloc.dart';
 import 'features/web/bloc/event_web/event_web_bloc.dart';
 import 'features/web/bloc/guest_web/guest_web_bloc.dart';
@@ -49,6 +50,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
         BlocProvider(create: (_) => GuestBloc()),
         BlocProvider(create: (_) => GuestCategoryBloc()),
         BlocProvider(create: (context) => EventWebBloc()),
+        BlocProvider(create: (context) => GuestTabCubit()),
         BlocProvider(create: (context) => GuestWebBloc()),
         BlocProvider(create: (context) => SouvenirBloc()),
         BlocProvider(create: (context) => GreetingBloc()),

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart' as p;
 import 'package:sun_scan/core/components/custom_dialog.dart';
 import 'package:sun_scan/core/helper/assets/assets.gen.dart';
@@ -18,12 +17,7 @@ import '../../../../bloc/guest/guest_bloc.dart';
 import '../../../mobile/widgets/select_guest_category.dart';
 
 class InsertForm extends StatefulWidget {
-  const InsertForm({
-    super.key,
-    this.existingGuest,
-    required this.eventId,
-    this.onQrGenerated,
-  });
+  const InsertForm({super.key, this.existingGuest, required this.eventId, this.onQrGenerated});
 
   final GuestsModel? existingGuest;
   final String eventId;
@@ -104,14 +98,10 @@ class _InsertFormState extends State<InsertForm> {
       eventUuid: widget.eventId,
       name: _nameController.text.trim(),
       qrValue: qrData,
-      phone: _phoneController.text.trim().isEmpty
-          ? null
-          : _phoneController.text.trim(),
+      phone: _phoneController.text.trim().isEmpty ? null : _phoneController.text.trim(),
       isCheckedIn: false,
       createdAt: DateTime.now(),
-      tag: _tagController.text.trim().isEmpty
-          ? null
-          : _tagController.text.trim(),
+      tag: _tagController.text.trim().isEmpty ? null : _tagController.text.trim(),
       photo: _photoPath,
       guestCategoryUuid: selectedGuestCategoryUuid,
       guestCategoryName: selectedGuestCategoryName,
@@ -157,10 +147,7 @@ class _InsertFormState extends State<InsertForm> {
           CustomFormWidget().buildTextFormInput(
             controller: _nameController,
             label: 'Nama Tamu',
-            contentPadding: const EdgeInsets.symmetric(
-              vertical: 12,
-              horizontal: 16,
-            ),
+            contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
             hintText: 'Contoh: Agnes Jennifer',
             onChanged: (_) => _validateForm(),
             validator: (value) {
@@ -175,10 +162,7 @@ class _InsertFormState extends State<InsertForm> {
           CustomFormWidget().buildTextFormInput(
             controller: _phoneController,
             label: 'No. WhatsApp',
-            contentPadding: const EdgeInsets.symmetric(
-              vertical: 12,
-              horizontal: 16,
-            ),
+            contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
             hintText: 'Contoh: 081234567890',
             keyboardType: TextInputType.phone,
             onChanged: (_) => _validateForm(),
@@ -196,21 +180,20 @@ class _InsertFormState extends State<InsertForm> {
             label: 'Kategori Tamu',
             onTap: () async {
               // open bottomsheet
-              final selectedCategory =
-                  await CustomDialog.showMainDialog<Map<String, dynamic>>(
-                    context: context,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: AppColors.headerColor,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: SelectGuestCategory(
-                        eventUuid: widget.eventId,
-                        selectedCategoryUuid: selectedGuestCategoryUuid,
-                        selectedCategoryName: selectedGuestCategoryName,
-                      ),
-                    ),
-                  );
+              final selectedCategory = await CustomDialog.showMainDialog<Map<String, dynamic>>(
+                context: context,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: AppColors.headerColor,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: SelectGuestCategory(
+                    eventUuid: widget.eventId,
+                    selectedCategoryUuid: selectedGuestCategoryUuid,
+                    selectedCategoryName: selectedGuestCategoryName,
+                  ),
+                ),
+              );
 
               if (selectedCategory != null) {
                 setState(() {
@@ -248,10 +231,7 @@ class _InsertFormState extends State<InsertForm> {
           CustomFormWidget().buildTextFormInput(
             controller: _tagController,
             label: 'Tag',
-            contentPadding: const EdgeInsets.symmetric(
-              vertical: 12,
-              horizontal: 16,
-            ),
+            contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
             hintText: 'Contoh: Tamu dari mempelai Pria',
             keyboardType: TextInputType.text,
             onChanged: (_) => _validateForm(),
@@ -267,7 +247,7 @@ class _InsertFormState extends State<InsertForm> {
           CustomFormWidget().buildFormSelectFile(
             title: _photoFileName,
             onTap: () async {
-              final source = await CustomDialog.showMainDialog(
+              final source = await CustomDialog.showMainDialog<PickImageSource>(
                 context: context,
                 child: Container(
                   width: 300,
@@ -279,33 +259,24 @@ class _InsertFormState extends State<InsertForm> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      ListTile(
-                        leading: Assets.svg.svgCamera.svg(
-                          width: 24,
-                          height: 24,
-                          colorFilter: ColorFilter.mode(
-                            AppColors.primaryColor,
-                            BlendMode.srcIn,
+                      if (ImagePickerHelper.canUseCamera())
+                        ListTile(
+                          leading: Assets.svg.svgCamera.svg(
+                            width: 24,
+                            height: 24,
+                            colorFilter: ColorFilter.mode(AppColors.primaryColor, BlendMode.srcIn),
                           ),
+                          title: Text('Ambil Foto', style: AppTextStyles.body),
+                          onTap: () => Navigator.pop(context, PickImageSource.camera),
                         ),
-                        title: Text('Ambil Foto', style: AppTextStyles.body),
-                        onTap: () => Navigator.pop(context, ImageSource.camera),
-                      ),
                       ListTile(
                         leading: Assets.svg.svgImage.svg(
                           width: 24,
                           height: 24,
-                          colorFilter: ColorFilter.mode(
-                            AppColors.primaryColor,
-                            BlendMode.srcIn,
-                          ),
+                          colorFilter: ColorFilter.mode(AppColors.primaryColor, BlendMode.srcIn),
                         ),
-                        title: Text(
-                          'Pilih dari Galeri',
-                          style: AppTextStyles.body,
-                        ),
-                        onTap: () =>
-                            Navigator.pop(context, ImageSource.gallery),
+                        title: Text('Pilih dari Galeri', style: AppTextStyles.body),
+                        onTap: () => Navigator.pop(context, PickImageSource.gallery),
                       ),
                     ],
                   ),
@@ -314,9 +285,7 @@ class _InsertFormState extends State<InsertForm> {
 
               if (source == null) return;
 
-              final photoPath = await ImagePickerHelper.pickAndSaveImage(
-                source: source,
-              );
+              final photoPath = await ImagePickerHelper.pickAndSave(source: source);
 
               if (photoPath != null) {
                 setState(() {
@@ -355,9 +324,7 @@ class _InsertFormState extends State<InsertForm> {
               Expanded(
                 child: CustomButton(
                   title: 'Generate QR',
-                  buttonType: _isValid
-                      ? ButtonType.primary
-                      : ButtonType.disable,
+                  buttonType: _isValid ? ButtonType.primary : ButtonType.disable,
                   onPressed: () {
                     if (_isValid) {
                       _submit();

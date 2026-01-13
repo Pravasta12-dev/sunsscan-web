@@ -9,6 +9,7 @@ import 'package:sun_scan/features/guest/view/tablet/tab/sourvenir_tab/guest_sour
 
 import '../../../../data/model/event_model.dart';
 import '../../bloc/guest/guest_bloc.dart';
+import '../../bloc/souvenir/souvenir_bloc.dart';
 import 'tab/scan/guest_scan_tab.dart';
 
 class GuestTabletView extends StatefulWidget {
@@ -25,81 +26,39 @@ class _GuestTabletViewState extends State<GuestTabletView> {
   void initState() {
     super.initState();
     context.read<GuestBloc>().loadGuests(widget.activeEvent.eventUuid ?? '');
+    context.read<SouvenirBloc>().loadSouvenirs(widget.activeEvent.eventUuid ?? '');
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => GuestTabCubit(),
-      child: Scaffold(
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            GuestTabletBanner(event: widget.activeEvent),
+    return Scaffold(
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          GuestTabletBanner(eventUuid: widget.activeEvent.eventUuid ?? ''),
 
-            Expanded(
-              child: BlocBuilder<GuestTabCubit, GuestTab>(
-                builder: (context, state) {
-                  switch (state) {
-                    case GuestTab.dashboard:
-                      return GuestDashboaardTab();
-                    case GuestTab.guests:
-                      return GuestListTab(eventUuid: widget.activeEvent.eventUuid ?? '');
-                    case GuestTab.scan:
-                      return GuestScanTab();
-                    case GuestTab.souvenirs:
-                      return GuestSourvenirTab(eventUuid: widget.activeEvent.eventUuid ?? '');
-                    case GuestTab.layers:
-                      return GuestGreetingScreen(eventUuid: widget.activeEvent.eventUuid ?? '');
-                  }
-                },
-              ),
+          Expanded(
+            child: BlocBuilder<GuestTabCubit, GuestTab>(
+              builder: (context, state) {
+                switch (state) {
+                  case GuestTab.dashboard:
+                    return GuestDashboaardTab();
+                  case GuestTab.guests:
+                    return GuestListTab(
+                      eventUuid: widget.activeEvent.eventUuid ?? '',
+                      eventName: widget.activeEvent.name,
+                    );
+                  case GuestTab.scan:
+                    return GuestScanTab();
+                  case GuestTab.souvenirs:
+                    return GuestSourvenirTab(eventUuid: widget.activeEvent.eventUuid ?? '');
+                  case GuestTab.layers:
+                    return GuestGreetingScreen(eventUuid: widget.activeEvent.eventUuid ?? '');
+                }
+              },
             ),
-
-            // Expanded(
-            //   child: BlocBuilder<GuestBloc, GuestState>(
-            //     builder: (context, state) {
-            //       if (state is GuestLoading) {
-            //         return GuestLoadingWidget();
-            //       }
-
-            //       if (state is GuestError) {
-            //         return GuestErrorWidget();
-            //       }
-
-            //       if (state is GuestLoaded) {
-            //         final guests = state.guests;
-
-            //         return Column(
-            //           spacing: 30.0,
-            //           children: [
-            //             Expanded(
-            //               child: Column(
-            //                 children: [
-            //                   Flexible(
-            //                     flex: 1,
-            //                     child: GuestTabletContentHeader(
-            //                       eventId: widget.activeEvent.eventUuid ?? '',
-            //                     ),
-            //                   ),
-            //                   SizedBox(height: 24),
-            //                   Flexible(
-            //                     flex: 3,
-            //                     child: GuestTabletContentBottom(guests: guests),
-            //                   ),
-            //                 ],
-            //               ),
-            //             ),
-            //           ],
-            //         );
-            //       }
-
-            //       return SizedBox.shrink();
-            //     },
-            //   ),
-            // ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

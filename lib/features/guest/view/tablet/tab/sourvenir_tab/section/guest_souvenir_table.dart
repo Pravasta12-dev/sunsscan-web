@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sun_scan/core/components/custom_button.dart';
+import 'package:sun_scan/core/helper/assets/assets.gen.dart';
 
 import '../../../../../../../core/components/custom_form_widget.dart';
 import '../../../../../../../core/enum/enum.dart';
@@ -56,14 +57,10 @@ class _GuestSouvenirTableState extends State<GuestSouvenirTable> {
       child: BlocBuilder<SouvenirBloc, SouvenirState>(
         builder: (context, state) {
           if (state is SouvenirLoading) {
-            return Center(
-              child: CircularProgressIndicator(color: AppColors.primaryColor),
-            );
+            return Center(child: CircularProgressIndicator(color: AppColors.primaryColor));
           }
           if (state is SouvenirError) {
-            return Center(
-              child: Text('Error: ${state.message}', style: AppTextStyles.body),
-            );
+            return Center(child: Text('Error: ${state.message}', style: AppTextStyles.body));
           }
 
           if (state is SouvenirLoaded) {
@@ -88,10 +85,7 @@ class _GuestSouvenirTableState extends State<GuestSouvenirTable> {
                     Expanded(
                       child: CustomFormWidget().buildTextFormInput(
                         controller: _searchController,
-                        contentPadding: const EdgeInsets.symmetric(
-                          vertical: 12,
-                          horizontal: 16,
-                        ),
+                        contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
                         hintText: 'Cari Tamu',
                         prefixIcon: Icon(Icons.search),
                       ),
@@ -127,61 +121,78 @@ class _GuestSouvenirTableState extends State<GuestSouvenirTable> {
                                 color: AppColors.lightGreyColor,
                                 borderRadius: BorderRadius.circular(10),
                               ),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
+                              decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
                               columnSpacing: 16,
-                              columns:
-                                  [
-                                        'Guest Name',
-                                        'Category',
-                                        'Attendance Status',
-                                        'Souvenir Status',
-                                        'Time Received',
-                                        'Actions',
-                                      ]
-                                      .map(
-                                        (column) =>
-                                            DataColumn(label: Text(column)),
-                                      )
-                                      .toList(),
+                              columns: [
+                                'Guest Name',
+                                'Category',
+                                'Attendance Status',
+                                'Souvenir Status',
+                                'Time Received',
+                                'Actions',
+                              ].map((column) => DataColumn(label: Text(column))).toList(),
                               rows: [
                                 for (final souvenir in _filteredSouvenirs)
                                   DataRow(
                                     cells: [
-                                      DataCell(Text(souvenir.guestName ?? '-')),
                                       DataCell(
-                                        Text(souvenir.guestCategoryName ?? '-'),
-                                      ),
-                                      DataCell(
-                                        _buildCheckinStatusBadge(
-                                          souvenir.checkinStatus == true,
+                                        Row(
+                                          children: [
+                                            Text(souvenir.guestName ?? '-'),
+                                            if (souvenir.guestCategoryName == 'VIP') ...[
+                                              const SizedBox(width: 6),
+                                              Assets.svg.svgCrown.svg(
+                                                width: 16,
+                                                height: 16,
+                                                colorFilter: const ColorFilter.mode(
+                                                  AppColors.primaryColor,
+                                                  BlendMode.srcIn,
+                                                ),
+                                              ),
+                                            ],
+                                          ],
                                         ),
                                       ),
                                       DataCell(
-                                        _buildSouvenirStatusBadge(
-                                          souvenir.status,
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            vertical: 6,
+                                            horizontal: 12,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: souvenir.guestCategoryName == 'VIP'
+                                                ? AppColors.primaryColor.withAlpha(60)
+                                                : AppColors.purpleColor.withAlpha(60),
+                                            borderRadius: BorderRadius.circular(16),
+                                          ),
+                                          child: Text(
+                                            souvenir.guestCategoryName ?? '-',
+                                            style: AppTextStyles.caption.copyWith(
+                                              fontWeight: FontWeight.w500,
+                                              color: souvenir.guestCategoryName == 'VIP'
+                                                  ? AppColors.primaryColor
+                                                  : AppColors.purpleColor,
+                                            ),
+                                          ),
                                         ),
                                       ),
+                                      DataCell(
+                                        _buildCheckinStatusBadge(souvenir.checkinStatus == true),
+                                      ),
+                                      DataCell(_buildSouvenirStatusBadge(souvenir.status)),
 
                                       DataCell(
                                         Text(
                                           souvenir.receivedAt != null
-                                              ? CustomDateFormat()
-                                                    .getFormattedTime(
-                                                      date:
-                                                          souvenir.receivedAt!,
-                                                    )
+                                              ? CustomDateFormat().getFormattedTime(
+                                                  date: souvenir.receivedAt!,
+                                                )
                                               : '-',
                                         ),
                                       ),
 
                                       DataCell(
-                                        Center(
-                                          child: _buildSouvenirActions(
-                                            souvenir: souvenir,
-                                          ),
-                                        ),
+                                        Center(child: _buildSouvenirActions(souvenir: souvenir)),
                                       ),
                                     ],
                                   ),
@@ -202,9 +213,7 @@ class _GuestSouvenirTableState extends State<GuestSouvenirTable> {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
       decoration: BoxDecoration(
-        color: isCheckedIn
-            ? AppColors.greenColor.withAlpha(30)
-            : AppColors.redColor.withAlpha(30),
+        color: isCheckedIn ? AppColors.greenColor.withAlpha(30) : AppColors.redColor.withAlpha(30),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Text(
@@ -238,10 +247,7 @@ class _GuestSouvenirTableState extends State<GuestSouvenirTable> {
       ),
       child: Text(
         status.name.toUpperCase(),
-        style: AppTextStyles.caption.copyWith(
-          color: badgeColor,
-          fontWeight: FontWeight.w500,
-        ),
+        style: AppTextStyles.caption.copyWith(color: badgeColor, fontWeight: FontWeight.w500),
       ),
     );
   }

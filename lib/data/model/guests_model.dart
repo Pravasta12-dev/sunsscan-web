@@ -116,6 +116,7 @@ class GuestsModel extends Equatable {
       ),
       isDeleted: json['is_deleted'] == 1,
       deletedAt: json['deleted_at'] != null ? DateTime.parse(json['deleted_at']) : null,
+      eventName: json['event_name'], // FIX: Added eventName from json
     );
   }
 

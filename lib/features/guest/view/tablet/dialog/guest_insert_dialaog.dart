@@ -11,10 +11,12 @@ class GuestInsertDialaog extends StatefulWidget {
     super.key,
     required this.eventId,
     this.guestToEdit,
+    required this.eventName,
   });
 
   final String eventId;
   final GuestsModel? guestToEdit;
+  final String eventName;
 
   @override
   State<GuestInsertDialaog> createState() => _GuestInsertDialaogState();
