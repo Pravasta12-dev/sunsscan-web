@@ -1,4 +1,5 @@
 import '../../../core/exception/custom_exception.dart';
+import '../../../core/sync/sync_dispatcher.dart';
 import '../../datasource/local/greeting_local_datasource.dart';
 import '../../model/greeting_screen_model.dart';
 
@@ -22,6 +23,7 @@ class GreetingLocalRepositoryImpl implements GreetingLocalRepository {
   Future<void> insertGreetingScreen({required GreetingScreenModel greetingScreen}) async {
     try {
       await _greetingLocalDatasource.insertGreetingScreen(greetingScreen: greetingScreen);
+      SyncDispatcher.onLocalChange();
     } catch (e) {
       return _dbError();
     }
@@ -31,6 +33,7 @@ class GreetingLocalRepositoryImpl implements GreetingLocalRepository {
   Future<void> updateGreetingScreen({required GreetingScreenModel greetingScreen}) async {
     try {
       await _greetingLocalDatasource.updateGreetingScreen(greetingScreen: greetingScreen);
+      SyncDispatcher.onLocalChange();
     } catch (e) {
       return _dbError();
     }
@@ -40,6 +43,7 @@ class GreetingLocalRepositoryImpl implements GreetingLocalRepository {
   Future<void> deleteGreetingScreen({required String greetingUuid}) async {
     try {
       await _greetingLocalDatasource.deleteGreetingScreen(greetingUuid: greetingUuid);
+      SyncDispatcher.onLocalChange();
     } catch (e) {
       return _dbError();
     }

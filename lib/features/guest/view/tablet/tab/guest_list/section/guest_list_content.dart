@@ -11,6 +11,7 @@ import 'package:sun_scan/features/guest/view/tablet/dialog/guest_insert_dialaog.
 import '../../../../../../../core/components/custom_form_widget.dart';
 import '../../../../../../../core/theme/app_colors.dart';
 import '../../../../../../../core/theme/app_text_styles.dart';
+import '../../../../../../../core/utils/shimmer_box.dart';
 import '../../../../../bloc/guest/guest_bloc.dart';
 
 class GuestListContent extends StatefulWidget {
@@ -56,13 +57,17 @@ class _GuestListContentState extends State<GuestListContent> {
     return Expanded(
       child: BlocBuilder<GuestBloc, GuestState>(
         builder: (context, state) {
-          if (state is GuestLoading) {
-            return Center(child: CircularProgressIndicator(color: AppColors.primaryColor));
-          }
+          bool isLoading = state is GuestLoading;
 
           if (state is GuestLoaded) {
             _allGuests = state.guests;
             _filterGuests();
+          }
+
+          if (_filteredGuests.isEmpty && !isLoading) {
+            return Center(
+              child: Text('Tidak ada data tamu tersedia', style: AppTextStyles.bodyLarge),
+            );
           }
 
           if (state is GuestError) {
@@ -96,44 +101,44 @@ class _GuestListContentState extends State<GuestListContent> {
                   ],
                 ),
                 const SizedBox(height: 16),
-                _filteredGuests.isEmpty
-                    ? Expanded(
-                        child: Center(
-                          child: Text('Tamu tidak ditemukan', style: AppTextStyles.bodyLarge),
+                Expanded(
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: SingleChildScrollView(
+                      child: DataTable(
+                        dataTextStyle: AppTextStyles.body.copyWith(fontWeight: FontWeight.w300),
+                        headingTextStyle: AppTextStyles.body.copyWith(fontWeight: FontWeight.w500),
+                        headingRowColor: WidgetStateProperty.all(
+                          AppColors.lightGreyColor.withAlpha(20),
                         ),
-                      )
-                    : Expanded(
-                        child: SizedBox(
-                          width: double.infinity,
-                          child: SingleChildScrollView(
-                            child: DataTable(
-                              dataTextStyle: AppTextStyles.body.copyWith(
-                                fontWeight: FontWeight.w300,
-                              ),
-                              headingTextStyle: AppTextStyles.body.copyWith(
-                                fontWeight: FontWeight.w500,
-                              ),
-                              headingRowColor: WidgetStateProperty.all(
-                                AppColors.lightGreyColor.withAlpha(20),
-                              ),
-                              showBottomBorder: false,
-                              border: TableBorder.all(
-                                color: AppColors.lightGreyColor,
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
-                              columnSpacing: 16,
-                              columns: [
-                                'Nama Tamu',
-                                'No. Whatsapp',
-                                'Kategori Tamu',
-                                'Tag',
-                                'Status',
-                                'Waktu Masuk',
-                                'Waktu Keluar',
-                                'Aksi',
-                              ].map((column) => DataColumn(label: Text(column))).toList(),
-                              rows: [
+                        showBottomBorder: false,
+                        border: TableBorder.all(
+                          color: AppColors.lightGreyColor,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
+                        columnSpacing: 16,
+                        columns: [
+                          'Nama Tamu',
+                          'No. Whatsapp',
+                          'Kategori Tamu',
+                          'Tag',
+                          'Status',
+                          'Waktu Masuk',
+                          'Waktu Keluar',
+                          'Aksi',
+                        ].map((column) => DataColumn(label: Text(column))).toList(),
+                        rows: isLoading
+                            ? List.generate(
+                                5,
+                                (index) => DataRow(
+                                  cells: List.generate(
+                                    8,
+                                    (cellIndex) => DataCell(ShimmerBox(height: 16, width: 120)),
+                                  ),
+                                ),
+                              )
+                            : [
                                 for (final guest in _filteredGuests)
                                   DataRow(
                                     cells: [
@@ -239,10 +244,10 @@ class _GuestListContentState extends State<GuestListContent> {
                                     ],
                                   ),
                               ],
-                            ),
-                          ),
-                        ),
                       ),
+                    ),
+                  ),
+                ),
               ],
             ),
           );

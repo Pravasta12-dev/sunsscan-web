@@ -22,6 +22,10 @@ class AppEndpoint {
     return UriHelper.createUrl(host: _baseUrl, path: 'api/sync/souvenirs');
   }
 
+  Uri get greetingsUrl {
+    return UriHelper.createUrl(host: _baseUrl, path: 'api/sync/greetings');
+  }
+
   Uri fetchPublicEventByCode(String eventCode) {
     return UriHelper.createUrl(host: _baseUrl, path: 'api/public/events/code/$eventCode');
   }

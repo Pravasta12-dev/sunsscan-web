@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:sun_scan/core/components/custom_button.dart';
+import 'package:sun_scan/core/components/custom_dialog.dart';
 import 'package:sun_scan/core/theme/app_colors.dart';
 import 'package:sun_scan/core/theme/app_text_styles.dart';
+import 'package:sun_scan/features/guest/view/tablet/tab/greeting_screen/insert_greeting.dart';
 
 class GuestGreetingHeader extends StatelessWidget {
-  const GuestGreetingHeader({super.key});
+  const GuestGreetingHeader({super.key, required this.eventUuid});
+
+  final String eventUuid;
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +24,7 @@ class GuestGreetingHeader extends StatelessWidget {
               ),
               const SizedBox(height: 4),
               Text(
-                'Atur tampilan layar sapa untuk menyambut tamu Anda dengan pesan khusus.',
+                'Manage content displayed on the greeting screen',
                 style: AppTextStyles.bodyLarge.copyWith(
                   color: AppColors.greyColor.withAlpha(150),
                   fontWeight: FontWeight.w300,
@@ -32,6 +36,10 @@ class GuestGreetingHeader extends StatelessWidget {
         CustomButton(
           onPressed: () {
             // Handle add content action
+            CustomDialog.showMainDialog(
+              context: context,
+              child: InsertGreeting(eventUuid: eventUuid),
+            );
           },
           title: 'Add Content',
           buttonType: ButtonType.primary,

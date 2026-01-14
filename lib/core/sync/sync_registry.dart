@@ -10,9 +10,12 @@ import 'package:sun_scan/data/datasource/remote/event_remote_datasource.dart';
 import 'package:sun_scan/data/datasource/remote/guest_category_remote_datasource.dart';
 import 'package:sun_scan/data/datasource/remote/guest_remote_datasource.dart';
 import 'package:sun_scan/data/model/event_model.dart';
+import 'package:sun_scan/data/model/greeting_screen_model.dart';
 import 'package:sun_scan/data/model/guest_category_model.dart';
 import 'package:sun_scan/data/model/guests_model.dart';
 
+import '../../data/datasource/local/greeting_local_datasource.dart';
+import '../../data/datasource/remote/greeting_remote_datasource.dart';
 import '../../data/datasource/remote/souvenir_remote_datasource.dart';
 import '../../data/model/souvenir_model.dart';
 
@@ -26,6 +29,8 @@ class SyncRegistry {
     required GuestCategoryRemoteDatasource guestCategoryRemoteDatasource,
     required SouvenirLocalDataSource souvenirLocalDatasource,
     required SouvenirRemoteDatasource souvenirRemoteDatasource,
+    required GreetingLocalDatasource greetingLocalDatasource,
+    required GreetingRemoteDatasource greetingRemoteDatasource,
   }) {
     final eventRunner = SyncRunner<EventModel>(
       queue: SyncQueue(
@@ -63,9 +68,18 @@ class SyncRegistry {
       getId: (souvenir) => souvenir.souvenirUuid,
     );
 
+    final greetingRunner = SyncRunner<GreetingScreenModel>(
+      queue: SyncQueue(
+        fetchPending: greetingLocalDatasource.getPendingGreetingScreens,
+        markAsSynced: greetingLocalDatasource.markGreetingScreensAsSynced,
+      ),
+      pushRemote: greetingRemoteDatasource.sync,
+      getId: (greeting) => greeting.greetingUuid ?? '',
+    );
+
     return SyncEngine(
       config: SyncConfig(interval: Duration(seconds: 8), batchSize: 20),
-      runners: [eventRunner, guestRunner, guestCategoryRunner, souvenirRunner],
+      runners: [eventRunner, guestRunner, guestCategoryRunner, souvenirRunner, greetingRunner],
     );
   }
 }

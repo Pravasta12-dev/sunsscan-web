@@ -2,6 +2,7 @@ import 'package:sun_scan/data/datasource/local/guest_category_datasource.dart';
 import 'package:sun_scan/data/datasource/local/souvenir_local_datasource.dart';
 
 import '../../data/datasource/local/event_local_datasource.dart';
+import '../../data/datasource/local/greeting_local_datasource.dart';
 import '../../data/datasource/local/guest_local_datasource.dart';
 import '../../data/datasource/remote/event_remote_datasource.dart';
 import 'sync_state_storage.dart';
@@ -13,6 +14,7 @@ class SyncPullService {
   final SyncStateStorage _syncState;
   final GuestCategoryDatasource _guestCategoryLocal;
   final SouvenirLocalDataSource _souvenirLocal;
+  final GreetingLocalDatasource _greetingLocal;
 
   SyncPullService({
     required EventRemoteDatasource remote,
@@ -21,12 +23,14 @@ class SyncPullService {
     required SyncStateStorage syncState,
     required GuestCategoryDatasource guestCategoryLocal,
     required SouvenirLocalDataSource souvenirLocal,
+    required GreetingLocalDatasource greetingLocal,
   }) : _remote = remote,
        _eventLocal = eventLocal,
        _guestLocal = guestLocal,
        _syncState = syncState,
        _guestCategoryLocal = guestCategoryLocal,
-       _souvenirLocal = souvenirLocal;
+       _souvenirLocal = souvenirLocal,
+       _greetingLocal = greetingLocal;
 
   Future<void> pull() async {
     final lastSyncAt = await _syncState.getLastSyncAt();
@@ -100,6 +104,20 @@ class SyncPullService {
       }
     } else {
       print('[SyncPullService] ⚠️ Tidak ada souvenirs dari server');
+    }
+
+    if (response.greetingScreens != null && response.greetingScreens!.isNotEmpty) {
+      print('[SyncPullService] 👋 Memproses ${response.greetingScreens!.length} greetings...');
+      for (final greeting in response.greetingScreens!) {
+        try {
+          await _greetingLocal.upsertFormRemote(greeting);
+        } catch (e, st) {
+          print('[SyncPullService] ❌ Failed to upsert greeting: $e');
+          print('[SyncPullService] Stack trace: $st');
+        }
+      }
+    } else {
+      print('[SyncPullService] ⚠️ Tidak ada greetings dari server');
     }
 
     /// 🔹 SAVE SERVER TIME

@@ -9,9 +9,11 @@ import 'core/sync/sync_state_storage.dart';
 import 'core/ws/event_ws_controller.dart';
 import 'core/ws/event_ws_service.dart';
 import 'data/datasource/local/event_local_datasource.dart';
+import 'data/datasource/local/greeting_local_datasource.dart';
 import 'data/datasource/local/guest_local_datasource.dart';
 import 'data/datasource/local/souvenir_local_datasource.dart';
 import 'data/datasource/remote/event_remote_datasource.dart';
+import 'data/datasource/remote/greeting_remote_datasource.dart';
 import 'data/datasource/remote/guest_category_remote_datasource.dart';
 import 'data/datasource/remote/guest_remote_datasource.dart';
 import 'data/datasource/remote/souvenir_remote_datasource.dart';
@@ -28,11 +30,13 @@ class AppBootstrap {
     final guestLocal = GuestLocalDatasource.create();
     final guestCategoryLocal = GuestCategoryDatasource.create();
     final souvenirLocal = SouvenirLocalDataSource.create();
+    final greetingLocal = GreetingLocalDatasource.create();
 
     final eventRemote = EventRemoteDatasourceImpl.create();
     final guestRemote = GuestRemoteDatasourceImpl.create();
     final guestCategoryRemote = GuestCategoryRemoteDatasourceImpl.create();
     final souvenirRemote = SouvenirRemoteDatasourceImpl.create();
+    final greetingRemote = GreetingRemoteDatasourceImpl.create();
 
     final syncState = SyncStateStorageImpl();
 
@@ -44,6 +48,7 @@ class AppBootstrap {
       syncState: syncState,
       guestCategoryLocal: guestCategoryLocal,
       souvenirLocal: souvenirLocal,
+      greetingLocal: greetingLocal,
     );
 
     /// Initial pull to sync data from server to local
@@ -64,6 +69,8 @@ class AppBootstrap {
       guestCategoryRemoteDatasource: guestCategoryRemote,
       souvenirLocalDatasource: souvenirLocal,
       souvenirRemoteDatasource: souvenirRemote,
+      greetingLocalDatasource: greetingLocal,
+      greetingRemoteDatasource: greetingRemote,
     );
 
     _connectivity = ConnectivityObserver(_syncEngine!, _syncPullService!);

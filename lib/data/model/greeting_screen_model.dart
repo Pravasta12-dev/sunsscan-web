@@ -6,7 +6,7 @@ enum GreetingType { image, video }
 enum GreetingAddingBy { admin, client }
 
 class GreetingScreenModel extends Equatable {
-  final String greetingUuid;
+  final String? greetingUuid;
   final String eventUuid;
   final GreetingType greetingType;
   final String name;
@@ -19,7 +19,7 @@ class GreetingScreenModel extends Equatable {
   final DateTime? deletedAt;
 
   const GreetingScreenModel({
-    required this.greetingUuid,
+    this.greetingUuid,
     required this.eventUuid,
     required this.greetingType,
     required this.name,
@@ -55,17 +55,33 @@ class GreetingScreenModel extends Equatable {
       'content_type': greetingType.name,
       'name': name,
       'content_path': contentPath,
-      'created_at': createdAt.toIso8601String(),
-      'updated_at': updatedAt?.toIso8601String(),
+      'created_at': createdAt.toUtc().toIso8601String(),
+      'updated_at': updatedAt?.toUtc().toIso8601String(),
       'sync_status': syncStatus.name,
       'is_deleted': isDeleted ? 1 : 0,
-      'deleted_at': deletedAt?.toIso8601String(),
+      'deleted_at': deletedAt?.toUtc().toIso8601String(),
+      'added_by': addedBy.name,
+    };
+  }
+
+  Map<String, dynamic> toOnlineJson() {
+    return {
+      'greeting_uuid': greetingUuid,
+      'event_uuid': eventUuid,
+      'content_type': greetingType.name,
+      'name': name,
+      'content_path': contentPath,
+      'created_at': createdAt.toUtc().toIso8601String(),
+      'updated_at': updatedAt?.toUtc().toIso8601String(),
+      'sync_status': syncStatus.name,
+      'is_deleted': isDeleted,
+      'deleted_at': deletedAt?.toUtc().toIso8601String(),
       'added_by': addedBy.name,
     };
   }
 
   // fromJson
-  factory GreetingScreenModel.fromJson(Map<String, dynamic> json) {
+  factory GreetingScreenModel.fromJson(Map<String, dynamic> json, {bool isOnline = false}) {
     return GreetingScreenModel(
       greetingUuid: json['greeting_uuid'],
       eventUuid: json['event_uuid'],
@@ -81,7 +97,7 @@ class GreetingScreenModel extends Equatable {
         (e) => e.name == json['sync_status'],
         orElse: () => SyncStatus.pending,
       ),
-      isDeleted: json['is_deleted'] == 1,
+      isDeleted: isOnline ? json['is_deleted'] == true : json['is_deleted'] == 1,
       deletedAt: json['deleted_at'] != null ? DateTime.parse(json['deleted_at']) : null,
       addedBy: GreetingAddingBy.values.firstWhere(
         (e) => e.name == json['added_by'],
