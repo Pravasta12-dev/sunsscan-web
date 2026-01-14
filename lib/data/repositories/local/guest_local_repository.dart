@@ -101,10 +101,10 @@ class GuestLocalRepositoryImpl implements GuestLocalRepository {
     }
   }
 
-  dynamic _dbError() => throw CustomException('Terjadi kesalahan database', code: 'DATABASE_ERROR');
-
   factory GuestLocalRepositoryImpl.create() {
     final datasource = GuestLocalDatasource.create();
     return GuestLocalRepositoryImpl(datasource: datasource);
   }
 }
+
+dynamic _dbError() => throw CustomException('Terjadi kesalahan database', code: -2);

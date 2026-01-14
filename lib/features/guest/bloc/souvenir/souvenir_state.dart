@@ -20,6 +20,8 @@ final class SouvenirLoaded extends SouvenirState {
   List<Object> get props => [souvenirs];
 }
 
+final class SouvenirNoInternet extends SouvenirState {}
+
 final class SouvenirError extends SouvenirState {
   final String message;
 

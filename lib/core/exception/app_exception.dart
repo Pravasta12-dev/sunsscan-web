@@ -1,6 +1,6 @@
 class AppException {
   final String message;
-  final String? code;
+  final int? code;
 
   AppException({required this.message, this.code});
 

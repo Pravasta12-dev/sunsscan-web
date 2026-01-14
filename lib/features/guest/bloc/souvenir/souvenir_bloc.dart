@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:sun_scan/core/network/result.dart';
 import 'package:sun_scan/data/repositories/local/souvenir_local_repository.dart';
 
 import '../../../../data/model/souvenir_model.dart';
@@ -16,11 +17,15 @@ class SouvenirBloc extends Cubit<SouvenirState> {
 
   Future<void> loadSouvenirs(String eventUuid) async {
     emit(SouvenirLoading());
-    try {
-      final souvenirs = await _souvenirRepository.fetchSouvenirs(eventUuid: eventUuid);
-      emit(SouvenirLoaded(souvenirs: souvenirs));
-    } catch (e) {
-      emit(SouvenirError(message: e.toString()));
+
+    final result = await _souvenirRepository.fetchSouvenirs(eventUuid: eventUuid);
+
+    if (result.status == Status.success) {
+      emit(SouvenirLoaded(souvenirs: result.data));
+    } else if (result.status == Status.noInternet) {
+      emit(SouvenirNoInternet());
+    } else {
+      emit(SouvenirError(message: result.message));
     }
   }
 

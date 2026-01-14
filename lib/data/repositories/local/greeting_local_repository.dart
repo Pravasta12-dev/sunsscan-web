@@ -57,4 +57,4 @@ class GreetingLocalRepositoryImpl implements GreetingLocalRepository {
   }
 }
 
-dynamic _dbError() => throw CustomException('Terjadi kesalahan database', code: 'DATABASE_ERROR');
+dynamic _dbError() => throw CustomException('Terjadi kesalahan database', code: -2);

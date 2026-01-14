@@ -21,22 +21,13 @@ class CustomHttpClient implements HttpClient {
   CustomHttpClient(this._client, {this.timeout = const Duration(seconds: 30)});
 
   factory CustomHttpClient.create({Duration? timeout}) {
-    return CustomHttpClient(
-      http.Client(),
-      timeout: timeout ?? const Duration(seconds: 15),
-    );
+    return CustomHttpClient(http.Client(), timeout: timeout ?? const Duration(seconds: 15));
   }
 
   @override
-  Future<http.Response> delete(
-    Uri url, {
-    Map<String, String>? headers,
-    Object? body,
-  }) async {
+  Future<http.Response> delete(Uri url, {Map<String, String>? headers, Object? body}) async {
     try {
-      final response = await _client
-          .delete(url, headers: headers, body: body)
-          .timeout(timeout);
+      final response = await _client.delete(url, headers: headers, body: body).timeout(timeout);
 
       appNetworkLogger(
         endpoint: url.toString(),
@@ -45,17 +36,14 @@ class CustomHttpClient implements HttpClient {
       );
 
       if (response.statusCode < 200 || response.statusCode >= 300) {
-        throw ApiErrorHandler.handlerError(
-          statusCode: response.statusCode,
-          message: response.body,
-        );
+        throw ApiErrorHandler.handlerError(statusCode: response.statusCode, message: response.body);
       }
 
       return response;
     } on SocketException {
       throw NoInternetException();
     } on TimeoutException {
-      throw RequestTimeoutException();
+      throw TimeoutNetworkException();
     } catch (exception) {
       rethrow;
     }
@@ -64,9 +52,7 @@ class CustomHttpClient implements HttpClient {
   @override
   Future<http.Response> get(Uri url, {Map<String, String>? headers}) async {
     try {
-      final response = await _client
-          .get(url, headers: headers)
-          .timeout(timeout);
+      final response = await _client.get(url, headers: headers).timeout(timeout);
       appNetworkLogger(
         endpoint: url.toString(),
         payload: headers.toString(),
@@ -74,32 +60,23 @@ class CustomHttpClient implements HttpClient {
       );
 
       if (response.statusCode < 200 || response.statusCode >= 300) {
-        throw ApiErrorHandler.handlerError(
-          statusCode: response.statusCode,
-          message: response.body,
-        );
+        throw ApiErrorHandler.handlerError(statusCode: response.statusCode, message: response.body);
       }
 
       return response;
     } on SocketException {
       throw NoInternetException();
     } on TimeoutException {
-      throw RequestTimeoutException();
+      throw TimeoutNetworkException();
     } catch (exception) {
       rethrow;
     }
   }
 
   @override
-  Future<http.Response> patch(
-    Uri url, {
-    Map<String, String>? headers,
-    Object? body,
-  }) async {
+  Future<http.Response> patch(Uri url, {Map<String, String>? headers, Object? body}) async {
     try {
-      final response = await _client
-          .patch(url, headers: headers, body: body)
-          .timeout(timeout);
+      final response = await _client.patch(url, headers: headers, body: body).timeout(timeout);
 
       appNetworkLogger(
         endpoint: url.toString(),
@@ -108,32 +85,23 @@ class CustomHttpClient implements HttpClient {
       );
 
       if (response.statusCode < 200 || response.statusCode >= 300) {
-        throw ApiErrorHandler.handlerError(
-          statusCode: response.statusCode,
-          message: response.body,
-        );
+        throw ApiErrorHandler.handlerError(statusCode: response.statusCode, message: response.body);
       }
 
       return response;
     } on SocketException {
       throw NoInternetException();
     } on TimeoutException {
-      throw RequestTimeoutException();
+      throw TimeoutNetworkException();
     } catch (exception) {
       rethrow;
     }
   }
 
   @override
-  Future<http.Response> post(
-    Uri url, {
-    Map<String, String>? headers,
-    Object? body,
-  }) async {
+  Future<http.Response> post(Uri url, {Map<String, String>? headers, Object? body}) async {
     try {
-      final response = await _client
-          .post(url, headers: headers, body: body)
-          .timeout(timeout);
+      final response = await _client.post(url, headers: headers, body: body).timeout(timeout);
 
       appNetworkLogger(
         endpoint: url.toString(),
@@ -142,32 +110,23 @@ class CustomHttpClient implements HttpClient {
       );
 
       if (response.statusCode < 200 || response.statusCode >= 300) {
-        throw ApiErrorHandler.handlerError(
-          statusCode: response.statusCode,
-          message: response.body,
-        );
+        throw ApiErrorHandler.handlerError(statusCode: response.statusCode, message: response.body);
       }
 
       return response;
     } on SocketException {
       throw NoInternetException();
     } on TimeoutException {
-      throw RequestTimeoutException();
+      throw TimeoutNetworkException();
     } catch (exception) {
       rethrow;
     }
   }
 
   @override
-  Future<http.Response> put(
-    Uri url, {
-    Map<String, String>? headers,
-    Object? body,
-  }) async {
+  Future<http.Response> put(Uri url, {Map<String, String>? headers, Object? body}) async {
     try {
-      final response = await _client
-          .put(url, headers: headers, body: body)
-          .timeout(timeout);
+      final response = await _client.put(url, headers: headers, body: body).timeout(timeout);
 
       appNetworkLogger(
         endpoint: url.toString(),
@@ -176,17 +135,14 @@ class CustomHttpClient implements HttpClient {
       );
 
       if (response.statusCode < 200 || response.statusCode >= 300) {
-        throw ApiErrorHandler.handlerError(
-          statusCode: response.statusCode,
-          message: response.body,
-        );
+        throw ApiErrorHandler.handlerError(statusCode: response.statusCode, message: response.body);
       }
 
       return response;
     } on SocketException {
       throw NoInternetException();
     } on TimeoutException {
-      throw RequestTimeoutException();
+      throw TimeoutNetworkException();
     } catch (exception) {
       rethrow;
     }

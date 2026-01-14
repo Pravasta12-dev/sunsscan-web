@@ -39,5 +39,4 @@ class SouvenirLocalRepositoryImpl implements SouvenirLocalRepository {
   }
 }
 
-dynamic _dbError() =>
-    throw CustomException('Terjadi kesalahan database', code: 'DATABASE_ERROR');
+dynamic _dbError() => throw CustomException('Terjadi kesalahan database', code: -2);

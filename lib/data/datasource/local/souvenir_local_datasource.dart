@@ -1,4 +1,5 @@
 import 'package:sqflite/sqflite.dart';
+import 'package:sun_scan/core/exception/custom_exception.dart';
 import 'package:sun_scan/core/storage/database.dart';
 import 'package:sun_scan/data/model/souvenir_model.dart';
 
@@ -38,7 +39,7 @@ class SouvenirLocalDataSource {
 
       return maps.map((map) => SouvenirModel.fromJson(map)).toList();
     } catch (e) {
-      throw Exception('Failed to get souvenirs by event: $e');
+      throw CustomException('Failed to fetch souvenirs: $e');
     }
   }
 

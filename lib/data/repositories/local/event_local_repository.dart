@@ -82,4 +82,4 @@ class EventLocalRepositoryImpl implements EventLocalRepository {
   }
 }
 
-dynamic _dbError() => throw CustomException('Terjadi kesalahan database', code: 'DATABASE_ERROR');
+dynamic _dbError() => throw CustomException('Terjadi kesalahan database', code: -2);

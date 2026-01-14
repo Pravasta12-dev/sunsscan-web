@@ -37,6 +37,6 @@ class GuestCategoryRepositoryImpl implements GuestCategoryRepository {
       return _dbError();
     }
   }
-
-  dynamic _dbError() => throw CustomException('Terjadi kesalahan database', code: 'DATABASE_ERROR');
 }
+
+dynamic _dbError() => throw CustomException('Terjadi kesalahan database', code: -2);
