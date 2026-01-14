@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sun_scan/data/model/guests_model.dart';
+import 'package:sun_scan/features/guest/bloc/souvenir/souvenir_bloc.dart';
 import 'package:sun_scan/features/guest/view/tablet/dialog/section/insert_form.dart';
 import 'package:sun_scan/features/guest/view/tablet/dialog/section/insert_result.dart';
 
@@ -78,6 +80,9 @@ class _GuestInsertDialaogState extends State<GuestInsertDialaog> {
                         setState(() {
                           guest = guests;
                         });
+                        context.read<SouvenirBloc>().loadSouvenirs(
+                          widget.eventId,
+                        );
                       },
                     ),
                   ),

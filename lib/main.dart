@@ -26,7 +26,9 @@ void main() async {
     final isTabletUp = logicalWidth >= 600;
 
     if (!isTabletUp) {
-      await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+      await SystemChrome.setPreferredOrientations([
+        DeviceOrientation.portraitUp,
+      ]);
     }
   }
 

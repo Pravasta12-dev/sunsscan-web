@@ -12,7 +12,7 @@ class GuestScanOut extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Image.asset(Assets.gifs.qris.path, width: 350, height: 350),
+          Image.asset(Assets.gifs.qris.path, width: 300, height: 300),
           const SizedBox(height: 32),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),

@@ -237,6 +237,9 @@ class $AssetsSvgGen {
   /// File path: assets/svg/svg_users.svg
   SvgGenImage get svgUsers => const SvgGenImage('assets/svg/svg_users.svg');
 
+  /// File path: assets/svg/svg_vip.svg
+  SvgGenImage get svgVip => const SvgGenImage('assets/svg/svg_vip.svg');
+
   /// File path: assets/svg/svg_wallet.svg
   SvgGenImage get svgWallet => const SvgGenImage('assets/svg/svg_wallet.svg');
 
@@ -300,6 +303,7 @@ class $AssetsSvgGen {
     svgUser,
     svgUserCheck,
     svgUsers,
+    svgVip,
     svgWallet,
   ];
 }

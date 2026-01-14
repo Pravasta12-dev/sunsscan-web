@@ -43,6 +43,29 @@ class SouvenirLocalDataSource {
     }
   }
 
+  Future<void> markSouvenirToReceivedByGuestUuid(
+    String guestUuid,
+    DateTime receivedAt,
+  ) async {
+    final db = await _databaseHelper.database;
+
+    try {
+      await db.update(
+        'souvenirs',
+        {
+          'souvenir_status': SouvenirStatus.delivered.name,
+          'received_at': receivedAt.toIso8601String(),
+          'updated_at': DateTime.now().toIso8601String(),
+          'sync_status': SyncStatus.pending.name,
+        },
+        where: 'guest_uuid = ? AND is_deleted = 0',
+        whereArgs: [guestUuid],
+      );
+    } catch (e) {
+      throw Exception('Failed to mark souvenir as received: $e');
+    }
+  }
+
   Future<void> updateSouvenir(SouvenirModel souvenir) async {
     final db = await _databaseHelper.database;
 
@@ -132,7 +155,9 @@ class SouvenirLocalDataSource {
         return;
       }
 
-      final localUpdatedAt = DateTime.tryParse(existing.first['updated_at'] as String? ?? '');
+      final localUpdatedAt = DateTime.tryParse(
+        existing.first['updated_at'] as String? ?? '',
+      );
 
       if (localUpdatedAt != null &&
           souvenir.updatedAt != null &&
@@ -142,6 +167,10 @@ class SouvenirLocalDataSource {
       }
     }
 
-    await db.insert('souvenirs', souvenir.toJson(), conflictAlgorithm: ConflictAlgorithm.replace);
+    await db.insert(
+      'souvenirs',
+      souvenir.toJson(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
   }
 }

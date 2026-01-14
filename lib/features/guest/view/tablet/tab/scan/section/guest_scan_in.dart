@@ -3,6 +3,8 @@ import 'package:sun_scan/core/helper/assets/assets.gen.dart';
 import 'package:sun_scan/core/theme/app_colors.dart';
 import 'package:sun_scan/core/theme/app_text_styles.dart';
 
+import '../test_scan/guest_scan_test_scan.dart';
+
 class GuestScanIn extends StatelessWidget {
   const GuestScanIn({super.key});
 
@@ -12,7 +14,7 @@ class GuestScanIn extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Image.asset(Assets.gifs.qris.path, width: 350, height: 350),
+          Image.asset(Assets.gifs.qris.path, width: 300, height: 300),
           const SizedBox(height: 32),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -29,6 +31,8 @@ class GuestScanIn extends StatelessWidget {
               ),
             ),
           ),
+          const SizedBox(height: 16),
+          const GuestScanTest(scanMode: ScanMode.scanIn),
         ],
       ),
     );

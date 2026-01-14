@@ -12,7 +12,8 @@ part 'guest_state.dart';
 class GuestBloc extends Cubit<GuestState> {
   GuestBloc() : super(GuestInitial());
 
-  final GuestLocalRepositoryImpl _guestLocalRepository = GuestLocalRepositoryImpl.create();
+  final GuestLocalRepositoryImpl _guestLocalRepository =
+      GuestLocalRepositoryImpl.create();
 
   Future<void> loadGuests(String eventUuid) async {
     emit(GuestLoading());
@@ -74,7 +75,9 @@ class GuestBloc extends Cubit<GuestState> {
 
         // Parse category dengan trim yang benar
         final categoryStr = row['category']?.trim();
-        final category = (categoryStr == null || categoryStr.isEmpty) ? null : categoryStr;
+        final category = (categoryStr == null || categoryStr.isEmpty)
+            ? null
+            : categoryStr;
 
         return GuestsModel(
           eventUuid: eventUuid,
@@ -146,10 +149,14 @@ class GuestBloc extends Cubit<GuestState> {
       }
 
       // Check-in process
-      final checkInTime = DateTime.now().toIso8601String();
+      final checkInTime = DateTime.now().toUtc().toIso8601String();
       await _guestLocalRepository.checkInGuest(guest.guestUuid!, checkInTime);
       SyncDispatcher.onLocalChange();
-      emit(GuestScanSuccess(guest.copyWith(isCheckedIn: true, checkedInAt: DateTime.now())));
+      emit(
+        GuestScanSuccess(
+          guest.copyWith(isCheckedIn: true, checkedInAt: DateTime.now()),
+        ),
+      );
     } catch (e) {
       emit(GuestScanFailure(e.toString()));
     }
@@ -176,10 +183,14 @@ class GuestBloc extends Cubit<GuestState> {
       }
 
       // Check-out process
-      final checkOutTime = DateTime.now().toIso8601String();
+      final checkOutTime = DateTime.now().toUtc().toIso8601String();
       await _guestLocalRepository.checkOutGuest(guest.guestUuid!, checkOutTime);
       SyncDispatcher.onLocalChange();
-      emit(GuestScanSuccess(guest.copyWith(isCheckedIn: false, checkedOutAt: DateTime.now())));
+      emit(
+        GuestScanSuccess(
+          guest.copyWith(isCheckedIn: false, checkedOutAt: DateTime.now()),
+        ),
+      );
     } catch (e) {
       emit(GuestScanFailure(e.toString()));
     }
@@ -202,9 +213,16 @@ class GuestBloc extends Cubit<GuestState> {
       if (guest.isCheckedIn) {
         // Check-out process
         final checkOutTime = DateTime.now().toIso8601String();
-        await _guestLocalRepository.checkOutGuest(guest.guestUuid!, checkOutTime);
+        await _guestLocalRepository.checkOutGuest(
+          guest.guestUuid!,
+          checkOutTime,
+        );
         SyncDispatcher.onLocalChange();
-        emit(GuestScanSuccess(guest.copyWith(isCheckedIn: false, checkedOutAt: DateTime.now())));
+        emit(
+          GuestScanSuccess(
+            guest.copyWith(isCheckedIn: false, checkedOutAt: DateTime.now()),
+          ),
+        );
         return;
       }
 
@@ -212,7 +230,11 @@ class GuestBloc extends Cubit<GuestState> {
       final checkInTime = DateTime.now().toIso8601String();
       await _guestLocalRepository.checkInGuest(guest.guestUuid!, checkInTime);
       SyncDispatcher.onLocalChange();
-      emit(GuestScanSuccess(guest.copyWith(isCheckedIn: true, checkedInAt: DateTime.now())));
+      emit(
+        GuestScanSuccess(
+          guest.copyWith(isCheckedIn: true, checkedInAt: DateTime.now()),
+        ),
+      );
     } catch (e) {
       emit(GuestScanFailure(e.toString()));
     }

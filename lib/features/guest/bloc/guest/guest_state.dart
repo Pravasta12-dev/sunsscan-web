@@ -29,6 +29,8 @@ final class GuestError extends GuestState {
   List<Object> get props => [message];
 }
 
+final class GuestScanLoading extends GuestState {}
+
 final class GuestScanSuccess extends GuestState {
   final GuestsModel guest;
 
