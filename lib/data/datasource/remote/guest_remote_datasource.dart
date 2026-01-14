@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:sun_scan/core/endpoint/app_endpoint.dart';
 import 'package:sun_scan/core/network/http_client.dart';
+import 'package:sun_scan/data/model/params/create_guest_param.dart';
 
 import '../../../core/endpoint/app_header.dart';
 import '../../model/guests_model.dart';
@@ -10,6 +11,8 @@ abstract class GuestRemoteDatasource {
   Future<List<String>> sync(List<GuestsModel> guests);
   Future<List<GuestsModel>> fetchGuestsByEventId(String eventId);
   Future<String> deleteGuest(String guestUuid);
+  Future<String> createGuest(CreateGuestParam param);
+  Future<String> updateGuest(CreateGuestParam param);
 }
 
 class GuestRemoteDatasourceImpl implements GuestRemoteDatasource {
@@ -82,5 +85,31 @@ class GuestRemoteDatasourceImpl implements GuestRemoteDatasource {
     final decoded = jsonDecode(response.body);
 
     return decoded['message'] ?? 'Guest deleted successfully';
+  }
+
+  @override
+  Future<String> createGuest(CreateGuestParam param) async {
+    final response = await _httpClient.post(
+      _appEndpoint.createGuest,
+      headers: AppHeader.jsonHeader,
+      body: jsonEncode(param.toJson()),
+    );
+
+    final decoded = jsonDecode(response.body);
+
+    return decoded['message'] ?? 'Guest created successfully';
+  }
+
+  @override
+  Future<String> updateGuest(CreateGuestParam param) async {
+    final response = await _httpClient.put(
+      _appEndpoint.updateGuest(param.guestUuid ?? ''),
+      headers: AppHeader.jsonHeader,
+      body: jsonEncode(param.toJson()),
+    );
+
+    final decoded = jsonDecode(response.body);
+
+    return decoded['message'] ?? 'Guest updated successfully';
   }
 }

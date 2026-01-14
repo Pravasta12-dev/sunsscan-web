@@ -7,6 +7,7 @@ import '../../model/souvenir_model.dart';
 
 abstract class SouvenirRemoteDatasource {
   Future<List<String>> sync(List<SouvenirModel> souvenirs);
+  Future<List<SouvenirModel>> fetchAll(String eventUuid);
 }
 
 class SouvenirRemoteDatasourceImpl implements SouvenirRemoteDatasource {
@@ -35,5 +36,18 @@ class SouvenirRemoteDatasourceImpl implements SouvenirRemoteDatasource {
     final decoded = jsonDecode(response.body);
 
     return List<String>.from(decoded['synced_ids'] ?? []);
+  }
+
+  @override
+  Future<List<SouvenirModel>> fetchAll(String eventUuid) async {
+    final response = await _httpClient.get(
+      _appEndpoint.getSouvenirByEventUuid(eventUuid),
+      headers: AppHeader.jsonHeader,
+    );
+
+    final decoded = jsonDecode(response.body);
+    final souvenirs = decoded['souvenirs'] as List;
+
+    return souvenirs.map((e) => SouvenirModel.fromJson(e as Map<String, dynamic>)).toList();
   }
 }

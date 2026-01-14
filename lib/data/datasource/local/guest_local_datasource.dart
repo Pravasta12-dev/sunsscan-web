@@ -39,7 +39,8 @@ class GuestLocalDatasource {
           'category_uuid': catUuid,
           'event_uuid': guestData.eventUuid,
           'name': categoryName,
-          'created_at': DateTime.now().toIso8601String(),
+          'created_at': DateTime.now().toUtc().toIso8601String(),
+          'updated_at': DateTime.now().toUtc().toIso8601String(),
           'sync_status': SyncStatus.pending.name,
         });
       }
@@ -60,7 +61,7 @@ class GuestLocalDatasource {
         'guest_category_uuid': categoryUuid ?? catUuid,
         'souvenir_status': SouvenirStatus.pending.name,
         'received_at': null,
-        'created_at': DateTime.now().toIso8601String(),
+        'created_at': DateTime.now().toUtc().toIso8601String(),
         'updated_at': null,
         'sync_status': SyncStatus.pending.name,
       });

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:sun_scan/core/components/custom_button.dart';
-import 'package:sun_scan/core/routes/app_transition.dart';
 
 import '../../../core/components/custom_form_widget.dart';
 import 'web_dashboard.dart';
@@ -40,7 +39,12 @@ class _WebMainFormState extends State<WebMainForm> {
             child: CustomButton(
               contentPadding: const EdgeInsets.symmetric(vertical: 18),
               onPressed: () {
-                AppTransition.pushTransition(context, WebDashboard(eventCode: _idController.text));
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => WebDashboard(eventCode: _idController.text),
+                  ),
+                );
               },
               title: 'Masuk',
               buttonType: ButtonType.primary,

@@ -1,8 +1,11 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:path/path.dart' as p;
 import 'package:sun_scan/core/components/custom_dialog.dart';
 import 'package:sun_scan/core/helper/assets/assets.gen.dart';
+import 'package:sun_scan/data/model/params/create_guest_param.dart';
+import 'package:sun_scan/features/web/bloc/guest_web/guest_web_bloc.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../../../../core/components/custom_button.dart';
@@ -122,6 +125,23 @@ class _InsertFormState extends State<InsertForm> {
       }
     } else {
       // Add new guests
+      if (kIsWeb) {
+        final data = CreateGuestParam(
+          eventId: widget.eventId,
+          name: _nameController.text.trim(),
+          qrValue: qrData,
+          gender: selectedGender,
+          phone: _phoneController.text.trim().isEmpty ? null : _phoneController.text.trim(),
+          tag: _tagController.text.trim().isEmpty ? null : _tagController.text.trim(),
+          guestCategoryUuid: guest.guestCategoryUuid,
+          guestCategoryName: guest.guestCategoryName,
+          photo: _photoPath,
+        );
+
+        context.read<GuestWebBloc>().createGuest(data);
+        widget.onQrGenerated?.call(guest);
+        return;
+      }
       context.read<GuestBloc>().addGuest(guest);
       if (widget.onQrGenerated != null) {
         widget.onQrGenerated!(guest);

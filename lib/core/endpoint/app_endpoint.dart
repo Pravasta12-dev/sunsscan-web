@@ -46,6 +46,18 @@ class AppEndpoint {
     return UriHelper.createUrl(host: _baseUrl, path: 'api/public/guest-categories');
   }
 
+  Uri get createGuest {
+    return UriHelper.createUrl(host: _baseUrl, path: 'api/public/guests');
+  }
+
+  Uri updateGuest(String guestUuid) {
+    return UriHelper.createUrl(host: _baseUrl, path: 'api/public/guests/$guestUuid');
+  }
+
+  Uri getSouvenirByEventUuid(String eventUuid) {
+    return UriHelper.createUrl(host: _baseUrl, path: 'api/public/souvenirs/$eventUuid');
+  }
+
   factory AppEndpoint.create() {
     return AppEndpoint(baseUrl: Injection.baseUrl);
   }

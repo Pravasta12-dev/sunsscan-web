@@ -12,6 +12,7 @@ import '../../../../../core/theme/app_text_styles.dart';
 import '../../../../../core/utils/date_format.dart';
 import '../../../../../data/model/guests_model.dart';
 import '../../../../guest/view/mobile/widgets/guest_status_badge.dart';
+import '../../../../guest/view/tablet/dialog/guest_insert_dialaog.dart';
 
 class WebGuestTable extends StatefulWidget {
   const WebGuestTable({super.key});
@@ -124,7 +125,7 @@ class _WebGuestTableState extends State<WebGuestTable> {
                             );
                           }).toList(),
                       rows: isLoading
-                          ? List.generate(10, (index) {
+                          ? List.generate(5, (index) {
                               return DataRow(
                                 cells: List.generate(8, (cellIndex) {
                                   return DataCell(ShimmerBox(height: 16, width: 100));
@@ -207,14 +208,14 @@ class _WebGuestTableState extends State<WebGuestTable> {
                                             ),
                                             InkWell(
                                               onTap: () {
-                                                // CustomDialog.showMainDialog(
-                                                //   context: context,
-                                                //   child: GuestInsertDialaog(
-                                                //     eventId: guest.eventUuid,
-                                                //     guestToEdit: guest,
-                                                //     eventName: guest.eventName ?? '-',
-                                                //   ),
-                                                // );
+                                                CustomDialog.showMainDialog(
+                                                  context: context,
+                                                  child: GuestInsertDialaog(
+                                                    eventId: guest.eventUuid,
+                                                    guestToEdit: guest,
+                                                    eventName: guest.eventName ?? '-',
+                                                  ),
+                                                );
                                               },
                                               child: Assets.svg.svgPencil.svg(
                                                 width: 16,

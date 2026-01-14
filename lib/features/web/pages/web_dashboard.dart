@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:sun_scan/core/theme/app_text_styles.dart';
 import 'package:sun_scan/data/model/event_model.dart';
 import 'package:sun_scan/features/web/bloc/event_web/event_web_bloc.dart';
+import 'package:sun_scan/features/web/pages/souvenirs/web_souvenir_list.dart';
 import 'package:sun_scan/features/web/pages/web_dashboard_banner.dart';
 import 'package:sun_scan/features/web/pages/guests/web_guest_list.dart';
+import 'package:sun_scan/features/web/pages/widgets/empty_page.dart';
 
 import '../../guest/bloc/guest_tab/guest_tab_cubit.dart';
 
@@ -33,11 +34,12 @@ class _WebDashboardState extends State<WebDashboard> {
           bool isLoading = stateEvent is EventWebLoading;
 
           if (stateEvent is EventWebError) {
-            return Center(
-              child: Text(
-                'Error loading event: ${stateEvent.message}',
-                style: AppTextStyles.bodyLarge,
-              ),
+            return EmptyPage(
+              type: EmptyPageType.error,
+              errorMessage: stateEvent.message,
+              onRetry: (_) {
+                context.read<EventWebBloc>().fetchEventByCode(widget.eventCode);
+              },
             );
           }
 
@@ -49,33 +51,22 @@ class _WebDashboardState extends State<WebDashboard> {
               Expanded(
                 child: isLoading
                     ? Center(child: CircularProgressIndicator())
-                    : stateEvent is EventWebError
-                    ? Center(
-                        child: Text(
-                          'Error event: ${stateEvent.message}',
-                          style: AppTextStyles.bodyLarge,
-                        ),
-                      )
-                    : Expanded(
-                        child: BlocBuilder<GuestTabCubit, GuestTab>(
-                          builder: (context, state) {
-                            switch (state) {
-                              case GuestTab.guests:
-                                return WebGuestList(
-                                  eventId: eventWeb?.eventUuid ?? '',
-                                  eventName: eventWeb?.name ?? '',
-                                );
-                              case GuestTab.souvenirs:
-                                return Center(
-                                  child: Text('Souvenir Tab is under construction on Web.'),
-                                );
-                              default:
-                                return Center(
-                                  child: Text('Tab ${state.name} is not available on Web.'),
-                                );
-                            }
-                          },
-                        ),
+                    : BlocBuilder<GuestTabCubit, GuestTab>(
+                        builder: (context, state) {
+                          switch (state) {
+                            case GuestTab.guests:
+                              return WebGuestList(
+                                eventId: eventWeb?.eventUuid ?? '',
+                                eventName: eventWeb?.name ?? '',
+                              );
+                            case GuestTab.souvenirs:
+                              return WebSouvenirList(eventId: eventWeb?.eventUuid ?? '');
+                            default:
+                              return Center(
+                                child: Text('Tab ${state.name} is not available on Web.'),
+                              );
+                          }
+                        },
                       ),
               ),
             ],

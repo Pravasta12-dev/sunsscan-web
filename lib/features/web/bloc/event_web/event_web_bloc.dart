@@ -7,8 +7,7 @@ import '../../../../data/model/event_model.dart';
 part 'event_web_state.dart';
 
 class EventWebBloc extends Cubit<EventWebState> {
-  final EventRemoteRepository _eventRemoteRepository =
-      EventRemoteRepositoryImpl.create();
+  final EventRemoteRepository _eventRemoteRepository = EventRemoteRepositoryImpl.create();
 
   EventWebBloc() : super(EventWebInitial());
 
@@ -16,6 +15,7 @@ class EventWebBloc extends Cubit<EventWebState> {
     emit(EventWebLoading());
     try {
       final event = await _eventRemoteRepository.fetchEventByCode(eventCode);
+
       emit(EventWebLoaded(event: event));
     } catch (e) {
       emit(EventWebError(message: e.toString()));
