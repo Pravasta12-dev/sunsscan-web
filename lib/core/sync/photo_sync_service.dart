@@ -1,6 +1,6 @@
 import 'package:sun_scan/data/datasource/remote/guest_photo_remote_datasource.dart';
 
-import 'data/datasource/local/guest_photo_local_datasource.dart';
+import '../../data/datasource/local/guest_photo_local_datasource.dart';
 
 class PhotoSyncService {
   final GuestPhotoLocalDatasource _guestPhotoLocalDatasource;

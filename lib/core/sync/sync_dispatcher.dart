@@ -1,5 +1,5 @@
 import 'package:sun_scan/core/sync/sync_engine.dart';
-import 'package:sun_scan/photo_sync_service.dart';
+import 'package:sun_scan/core/sync/photo_sync_service.dart';
 
 class SyncDispatcher {
   static SyncEngine? _engine;

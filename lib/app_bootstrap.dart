@@ -19,7 +19,7 @@ import 'data/datasource/remote/guest_category_remote_datasource.dart';
 import 'data/datasource/remote/guest_photo_remote_datasource.dart';
 import 'data/datasource/remote/guest_remote_datasource.dart';
 import 'data/datasource/remote/souvenir_remote_datasource.dart';
-import 'photo_sync_service.dart';
+import 'core/sync/photo_sync_service.dart';
 
 class AppBootstrap {
   static SyncEngine? _syncEngine;
