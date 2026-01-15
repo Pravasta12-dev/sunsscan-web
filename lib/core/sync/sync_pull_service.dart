@@ -4,6 +4,7 @@ import 'package:sun_scan/data/datasource/local/souvenir_local_datasource.dart';
 import '../../data/datasource/local/event_local_datasource.dart';
 import '../../data/datasource/local/greeting_local_datasource.dart';
 import '../../data/datasource/local/guest_local_datasource.dart';
+import '../../data/datasource/local/guest_photo_local_datasource.dart';
 import '../../data/datasource/remote/event_remote_datasource.dart';
 import 'sync_state_storage.dart';
 
@@ -15,6 +16,7 @@ class SyncPullService {
   final GuestCategoryDatasource _guestCategoryLocal;
   final SouvenirLocalDataSource _souvenirLocal;
   final GreetingLocalDatasource _greetingLocal;
+  final GuestPhotoLocalDatasource _guestPhotoLocal;
 
   SyncPullService({
     required EventRemoteDatasource remote,
@@ -24,13 +26,15 @@ class SyncPullService {
     required GuestCategoryDatasource guestCategoryLocal,
     required SouvenirLocalDataSource souvenirLocal,
     required GreetingLocalDatasource greetingLocal,
+    required GuestPhotoLocalDatasource guestPhotoLocal,
   }) : _remote = remote,
        _eventLocal = eventLocal,
        _guestLocal = guestLocal,
        _syncState = syncState,
        _guestCategoryLocal = guestCategoryLocal,
        _souvenirLocal = souvenirLocal,
-       _greetingLocal = greetingLocal;
+       _greetingLocal = greetingLocal,
+       _guestPhotoLocal = guestPhotoLocal;
 
   Future<void> pull() async {
     final lastSyncAt = await _syncState.getLastSyncAt();
@@ -118,6 +122,22 @@ class SyncPullService {
       }
     } else {
       print('[SyncPullService] ⚠️ Tidak ada greetings dari server');
+    }
+
+    /// 🔹 GUEST PHOTOS
+    if (response.guestPhotos != null && response.guestPhotos!.isNotEmpty) {
+      print('[SyncPullService] 📸 Memproses ${response.guestPhotos!.length} guest photos...');
+
+      for (final photo in response.guestPhotos!) {
+        try {
+          await _guestPhotoLocal.upsertFromRemote(photo);
+        } catch (e, st) {
+          print('[SyncPullService] ❌ Failed to upsert guest photo: $e');
+          print('[SyncPullService] Stack trace: $st');
+        }
+      }
+    } else {
+      print('[SyncPullService] ⚠️ Tidak ada guest photos dari server');
     }
 
     /// 🔹 SAVE SERVER TIME

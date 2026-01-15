@@ -67,7 +67,6 @@ class _GuestInsertPageState extends State<GuestInsertPage> {
     if (widget.existingGuest != null) {
       _nameController.text = widget.existingGuest!.name;
       _phoneController.text = widget.existingGuest!.phone ?? '';
-      _photoPath = widget.existingGuest!.photo;
       selectedGuestCategoryUuid = widget.existingGuest!.guestCategoryUuid;
       selectedGuestCategoryName = widget.existingGuest!.guestCategoryName;
       selectedGender = widget.existingGuest!.gender;
@@ -110,7 +109,6 @@ class _GuestInsertPageState extends State<GuestInsertPage> {
       isCheckedIn: false,
       createdAt: DateTime.now(),
       tag: _tagController.text.trim().isEmpty ? null : _tagController.text.trim(),
-      photo: _photoPath,
       guestCategoryUuid: selectedGuestCategoryUuid,
       guestCategoryName: selectedGuestCategoryName,
       gender: selectedGender,
@@ -118,11 +116,7 @@ class _GuestInsertPageState extends State<GuestInsertPage> {
 
     if (widget.existingGuest != null) {
       // Update existing guest
-      final updatedGuest = widget.existingGuest!.copyWith(
-        name: guest.name,
-        phone: guest.phone,
-        photo: guest.photo,
-      );
+      final updatedGuest = widget.existingGuest!.copyWith(name: guest.name, phone: guest.phone);
       context.read<GuestBloc>().updateGuest(updatedGuest);
 
       AppTransition.popTransition(context); // Kembali ke guest detail page

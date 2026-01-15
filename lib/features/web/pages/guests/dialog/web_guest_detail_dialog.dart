@@ -1,5 +1,7 @@
 import 'package:barcode_widget/barcode_widget.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:sun_scan/core/helper/guest_photo_helper.dart';
 
 import '../../../../../core/components/custom_button.dart';
 import '../../../../../core/helper/assets/assets.gen.dart';
@@ -81,10 +83,15 @@ class WebGuestDetailDialog extends StatelessWidget {
                         borderRadius: BorderRadius.circular(12),
                       ),
                       height: 190,
-                      child: Assets.svg.svgUser.svg(
-                        width: 24,
-                        height: 24,
-                        colorFilter: ColorFilter.mode(AppColors.whiteColor, BlendMode.srcIn),
+                      child: CachedNetworkImage(
+                        imageUrl: GuestPhotoHelper.urlImages(guest.photoUrl ?? ''),
+                        fit: BoxFit.cover,
+                        placeholder: (context, url) {
+                          return Center(child: Assets.svg.svgUser.svg(width: 24, height: 24));
+                        },
+                        errorWidget: (context, url, error) {
+                          return Center(child: Assets.svg.svgUser.svg(width: 24, height: 24));
+                        },
                       ),
                     ),
                   ),

@@ -11,12 +11,15 @@ import 'core/ws/event_ws_service.dart';
 import 'data/datasource/local/event_local_datasource.dart';
 import 'data/datasource/local/greeting_local_datasource.dart';
 import 'data/datasource/local/guest_local_datasource.dart';
+import 'data/datasource/local/guest_photo_local_datasource.dart';
 import 'data/datasource/local/souvenir_local_datasource.dart';
 import 'data/datasource/remote/event_remote_datasource.dart';
 import 'data/datasource/remote/greeting_remote_datasource.dart';
 import 'data/datasource/remote/guest_category_remote_datasource.dart';
+import 'data/datasource/remote/guest_photo_remote_datasource.dart';
 import 'data/datasource/remote/guest_remote_datasource.dart';
 import 'data/datasource/remote/souvenir_remote_datasource.dart';
+import 'photo_sync_service.dart';
 
 class AppBootstrap {
   static SyncEngine? _syncEngine;
@@ -31,12 +34,19 @@ class AppBootstrap {
     final guestCategoryLocal = GuestCategoryDatasource.create();
     final souvenirLocal = SouvenirLocalDataSource.create();
     final greetingLocal = GreetingLocalDatasource.create();
+    final guestPhotoLocal = GuestPhotoLocalDatasource.create();
 
     final eventRemote = EventRemoteDatasourceImpl.create();
     final guestRemote = GuestRemoteDatasourceImpl.create();
     final guestCategoryRemote = GuestCategoryRemoteDatasourceImpl.create();
     final souvenirRemote = SouvenirRemoteDatasourceImpl.create();
     final greetingRemote = GreetingRemoteDatasourceImpl.create();
+    final guestPhotoRemote = GuestPhotoRemoteDatasourceImpl.create();
+
+    final photoSyncService = PhotoSyncService(
+      guestPhotoLocalDatasource: guestPhotoLocal,
+      guestPhotoRemoteDatasource: guestPhotoRemote,
+    );
 
     final syncState = SyncStateStorageImpl();
 
@@ -49,6 +59,7 @@ class AppBootstrap {
       guestCategoryLocal: guestCategoryLocal,
       souvenirLocal: souvenirLocal,
       greetingLocal: greetingLocal,
+      guestPhotoLocal: guestPhotoLocal,
     );
 
     /// Initial pull to sync data from server to local
@@ -77,7 +88,7 @@ class AppBootstrap {
     _connectivity!.start();
 
     /// 🔹 INITIALIZE SYNC DISPATCHER
-    SyncDispatcher.init(_syncEngine!);
+    SyncDispatcher.init(_syncEngine!, photoService: photoSyncService);
   }
 
   static void dispose() {

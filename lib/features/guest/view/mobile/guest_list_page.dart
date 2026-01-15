@@ -19,11 +19,7 @@ import 'guest_detail_page.dart';
 class GuestListPage extends StatefulWidget {
   final String eventId;
 
-  const GuestListPage({
-    super.key,
-    required this.eventId,
-    required this.eventName,
-  });
+  const GuestListPage({super.key, required this.eventId, required this.eventName});
   final String eventName;
 
   @override
@@ -54,9 +50,7 @@ class _GuestListPageState extends State<GuestListPage> {
       if (keyword.isEmpty) {
         _filteredGuests = guests;
       } else {
-        _filteredGuests = guests
-            .where((g) => g.name.toLowerCase().contains(keyword))
-            .toList();
+        _filteredGuests = guests.where((g) => g.name.toLowerCase().contains(keyword)).toList();
       }
     });
   }
@@ -69,11 +63,7 @@ class _GuestListPageState extends State<GuestListPage> {
         centerTitle: true,
         leading: InkWell(
           onTap: () => AppTransition.popTransition(context),
-          child: Icon(
-            Icons.arrow_back_ios,
-            color: AppColors.whiteColor,
-            size: 12,
-          ),
+          child: Icon(Icons.arrow_back_ios, color: AppColors.whiteColor, size: 12),
         ),
       ),
       body: BlocBuilder<GuestBloc, GuestState>(
@@ -111,10 +101,7 @@ class _GuestListPageState extends State<GuestListPage> {
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: CustomFormWidget().buildTextFormInput(
                       controller: _searchController,
-                      contentPadding: const EdgeInsets.symmetric(
-                        vertical: 12,
-                        horizontal: 16,
-                      ),
+                      contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
                       hintText: 'Cari Tamu',
                       prefixIcon: Icon(Icons.search),
                       onChanged: (_) => _filterGuests(guests),
@@ -136,40 +123,31 @@ class _GuestListPageState extends State<GuestListPage> {
                               return ListTile(
                                 leading: CircleAvatar(
                                   radius: 24,
-                                  backgroundImage:
-                                      guest.photo != null &&
-                                          File(guest.photo!).existsSync()
-                                      ? FileImage(File(guest.photo!))
-                                      : null,
                                   backgroundColor: AppColors.lightBlackColor,
-                                  child: guest.photo == null
+                                  backgroundImage:
+                                      guest.photoPath != null && File(guest.photoPath!).existsSync()
+                                      ? FileImage(File(guest.photoPath!))
+                                      : null,
+                                  child: guest.photoPath == null
                                       ? Assets.svg.svgUser.svg(
                                           width: 24,
                                           height: 24,
-                                          colorFilter: ColorFilter.mode(
-                                            AppColors.whiteColor,
+                                          colorFilter: const ColorFilter.mode(
+                                            Colors.white,
                                             BlendMode.srcIn,
                                           ),
                                         )
                                       : null,
                                 ),
-                                title: Text(
-                                  guest.name,
-                                  style: AppTextStyles.body,
-                                ),
+                                title: Text(guest.name, style: AppTextStyles.body),
                                 subtitle: guest.phone != null
-                                    ? Text(
-                                        guest.phone!,
-                                        style: AppTextStyles.body,
-                                      )
+                                    ? Text(guest.phone!, style: AppTextStyles.body)
                                     : null,
                                 onTap: () {
                                   AppTransition.pushTransition(
                                     context,
                                     GuestDetailPage(
-                                      guest: guest.copyWith(
-                                        eventName: widget.eventName,
-                                      ),
+                                      guest: guest.copyWith(eventName: widget.eventName),
                                     ),
                                   );
                                 },
@@ -179,9 +157,7 @@ class _GuestListPageState extends State<GuestListPage> {
                                 ),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(8),
-                                  side: BorderSide(
-                                    color: AppColors.lightGreyColor,
-                                  ),
+                                  side: BorderSide(color: AppColors.lightGreyColor),
                                 ),
                               );
                             },

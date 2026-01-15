@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -15,6 +17,7 @@ import '../../../../../../core/enum/enum.dart';
 import '../../../../../../core/helper/image_picker_helper.dart';
 import '../../../../../../core/theme/app_colors.dart';
 import '../../../../../../core/theme/app_text_styles.dart';
+import '../../../../../../data/model/guest_photo_model.dart';
 import '../../../../../../data/model/guests_model.dart';
 import '../../../../bloc/guest/guest_bloc.dart';
 import '../../../mobile/widgets/select_guest_category.dart';
@@ -56,12 +59,13 @@ class _InsertFormState extends State<InsertForm> {
   void initState() {
     super.initState();
     if (widget.existingGuest != null) {
+      print('[asdasd] : ${widget.existingGuest?.toJson()}');
       _nameController.text = widget.existingGuest!.name;
       _phoneController.text = widget.existingGuest!.phone ?? '';
-      _photoPath = widget.existingGuest!.photo;
       selectedGuestCategoryUuid = widget.existingGuest!.guestCategoryUuid;
       selectedGuestCategoryName = widget.existingGuest!.guestCategoryName;
       selectedGender = widget.existingGuest!.gender;
+      _photoPath = widget.existingGuest!.photoPath;
       _tagController.text = widget.existingGuest!.tag ?? '';
       qrCode = widget.existingGuest!.qrValue;
     }
@@ -83,6 +87,8 @@ class _InsertFormState extends State<InsertForm> {
     }
   }
 
+  GuestPhotoModel? identityPhoto;
+
   String get _photoFileName {
     if (_photoPath == null) return 'Upload Foto Tamu';
     return p.basename(_photoPath!);
@@ -98,6 +104,7 @@ class _InsertFormState extends State<InsertForm> {
     debugPrint('Guest Photo Path: $_photoPath');
 
     final guest = GuestsModel(
+      guestUuid: widget.existingGuest?.guestUuid ?? const Uuid().v4(),
       eventUuid: widget.eventId,
       name: _nameController.text.trim(),
       qrValue: qrData,
@@ -105,21 +112,38 @@ class _InsertFormState extends State<InsertForm> {
       isCheckedIn: false,
       createdAt: DateTime.now(),
       tag: _tagController.text.trim().isEmpty ? null : _tagController.text.trim(),
-      photo: _photoPath,
       guestCategoryUuid: selectedGuestCategoryUuid,
       guestCategoryName: selectedGuestCategoryName,
       gender: selectedGender,
     );
+
+    if (_photoPath != null) {
+      identityPhoto = GuestPhotoModel(
+        photoUuid: const Uuid().v4(),
+        guestUuid: guest.guestUuid!, // nanti dijelaskan
+        eventUuid: widget.eventId,
+        photoType: PhotoType.identity,
+        fileName: p.basename(_photoPath!),
+        filePath: _photoPath!,
+        fileSize: await File(_photoPath!).length(),
+        mimeType: 'image/jpeg',
+        source: PickImageSource.camera, // atau gallery
+        isPrimary: true,
+        createdAt: DateTime.now(),
+      );
+    }
 
     if (widget.existingGuest != null) {
       // Update existing guest
       final updatedGuest = widget.existingGuest!.copyWith(
         name: guest.name,
         phone: guest.phone,
-        photo: guest.photo,
-        qrValue: qrCode,
+        guestUuid: guest.guestUuid,
       );
-      context.read<GuestBloc>().updateGuest(updatedGuest);
+
+      debugPrint('update : ${updatedGuest.toJson()}');
+      context.read<GuestBloc>().updateGuestWithPhoto(updatedGuest, photo: identityPhoto);
+
       if (widget.onQrGenerated != null) {
         widget.onQrGenerated!(updatedGuest);
       }
@@ -142,7 +166,7 @@ class _InsertFormState extends State<InsertForm> {
         widget.onQrGenerated?.call(guest);
         return;
       }
-      context.read<GuestBloc>().addGuest(guest);
+      context.read<GuestBloc>().addGuest(guest, photo: identityPhoto);
       if (widget.onQrGenerated != null) {
         widget.onQrGenerated!(guest);
       }

@@ -12,6 +12,13 @@ abstract class HttpClient<T> {
   Future<T> put(Uri url, {Map<String, String>? headers, Object? body});
   Future<T> delete(Uri url, {Map<String, String>? headers});
   Future<T> patch(Uri url, {Map<String, String>? headers, Object? body});
+  //Multipart requests
+  Future<T> postMultipart(
+    Uri url, {
+    Map<String, String>? headers,
+    Map<String, String>? fields,
+    List<http.MultipartFile>? files,
+  });
 }
 
 class CustomHttpClient implements HttpClient {
@@ -131,6 +138,52 @@ class CustomHttpClient implements HttpClient {
       appNetworkLogger(
         endpoint: url.toString(),
         payload: body?.toString() ?? '',
+        response: response.toString(),
+      );
+
+      if (response.statusCode < 200 || response.statusCode >= 300) {
+        throw ApiErrorHandler.handlerError(statusCode: response.statusCode, message: response.body);
+      }
+
+      return response;
+    } on SocketException {
+      throw NoInternetException();
+    } on TimeoutException {
+      throw TimeoutNetworkException();
+    } catch (exception) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<http.Response> postMultipart(
+    Uri url, {
+    Map<String, String>? headers,
+    Map<String, String>? fields,
+    List<http.MultipartFile>? files,
+  }) async {
+    try {
+      final request = http.MultipartRequest('POST', url);
+
+      if (headers != null) {
+        request.headers.addAll(headers);
+      }
+
+      if (fields != null) {
+        request.fields.addAll(fields);
+      }
+
+      if (files != null) {
+        request.files.addAll(files);
+      }
+
+      final streamedResponse = await request.send().timeout(timeout);
+      final response = await http.Response.fromStream(streamedResponse);
+
+      appNetworkLogger(
+        endpoint: url.toString(),
+        payload:
+            'Fields: ${fields.toString()}, Files: ${files?.map((f) => f.filename).toList().toString() ?? '[]'}',
         response: response.toString(),
       );
 

@@ -136,9 +136,48 @@ class _WebGuestTableState extends State<WebGuestTable> {
                               for (final guest in _filteredGuests)
                                 DataRow(
                                   cells: [
-                                    DataCell(Text(guest.name)),
+                                    DataCell(
+                                      Row(
+                                        children: [
+                                          Text(guest.name),
+                                          if (guest.guestCategoryName == 'VIP') ...[
+                                            const SizedBox(width: 6),
+                                            Assets.svg.svgCrown.svg(
+                                              width: 16,
+                                              height: 16,
+                                              colorFilter: const ColorFilter.mode(
+                                                AppColors.primaryColor,
+                                                BlendMode.srcIn,
+                                              ),
+                                            ),
+                                          ],
+                                        ],
+                                      ),
+                                    ),
                                     DataCell(Text(guest.phone ?? '-')),
-                                    DataCell(Text(guest.guestCategoryName ?? '-')),
+                                    DataCell(
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          vertical: 6,
+                                          horizontal: 12,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: guest.guestCategoryName == 'VIP'
+                                              ? AppColors.primaryColor.withAlpha(60)
+                                              : AppColors.purpleColor.withAlpha(60),
+                                          borderRadius: BorderRadius.circular(16),
+                                        ),
+                                        child: Text(
+                                          guest.guestCategoryName ?? '-',
+                                          style: AppTextStyles.caption.copyWith(
+                                            fontWeight: FontWeight.w500,
+                                            color: guest.guestCategoryName == 'VIP'
+                                                ? AppColors.primaryColor
+                                                : AppColors.purpleColor,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
                                     DataCell(Text(guest.tag ?? '-')),
                                     DataCell(
                                       GuestStatusBadge(

@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sun_scan/core/components/custom_form_widget.dart';
@@ -8,6 +6,7 @@ import 'package:sun_scan/core/theme/app_text_styles.dart';
 import 'package:sun_scan/core/utils/shimmer_box.dart';
 
 import '../../../../../../../core/helper/assets/assets.gen.dart';
+import '../../../../../../../core/helper/guest_photo_helper.dart';
 import '../../../../../../../data/model/guests_model.dart';
 import '../../../../../bloc/guest/guest_bloc.dart';
 
@@ -15,8 +14,7 @@ class DashboardHistoryActivity extends StatefulWidget {
   const DashboardHistoryActivity({super.key});
 
   @override
-  State<DashboardHistoryActivity> createState() =>
-      _DashboardHistoryActivityState();
+  State<DashboardHistoryActivity> createState() => _DashboardHistoryActivityState();
 }
 
 class _DashboardHistoryActivityState extends State<DashboardHistoryActivity> {
@@ -79,10 +77,7 @@ class _DashboardHistoryActivityState extends State<DashboardHistoryActivity> {
             controller: _searchController,
             hintText: 'Cari Acara...',
             prefixIcon: const Icon(Icons.search),
-            contentPadding: const EdgeInsets.symmetric(
-              vertical: 12,
-              horizontal: 12,
-            ),
+            contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
           ),
           Expanded(
             child: BlocBuilder<GuestBloc, GuestState>(
@@ -91,9 +86,7 @@ class _DashboardHistoryActivityState extends State<DashboardHistoryActivity> {
                   return Center(
                     child: Text(
                       'Terjadi kesalahan saat memuat data tamu.',
-                      style: AppTextStyles.body.copyWith(
-                        color: AppColors.whiteColor,
-                      ),
+                      style: AppTextStyles.body.copyWith(color: AppColors.whiteColor),
                     ),
                   );
                 }
@@ -107,9 +100,7 @@ class _DashboardHistoryActivityState extends State<DashboardHistoryActivity> {
                   return Center(
                     child: Text(
                       'Tamu tidak ditemukan',
-                      style: AppTextStyles.body.copyWith(
-                        color: AppColors.whiteColor,
-                      ),
+                      style: AppTextStyles.body.copyWith(color: AppColors.whiteColor),
                     ),
                   );
                 }
@@ -120,10 +111,7 @@ class _DashboardHistoryActivityState extends State<DashboardHistoryActivity> {
                     itemCount: _filteredGuests.length,
                     itemBuilder: (context, index) {
                       final guest = _filteredGuests[index];
-                      return _GuestActivityCard(
-                        guest: guest,
-                        isLoading: state is GuestLoading,
-                      );
+                      return _GuestActivityCard(guest: guest, isLoading: state is GuestLoading);
                     },
                   ),
                 );
@@ -144,21 +132,18 @@ class _GuestActivityCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final avatarImage = GuestPhotoHelper.guestAvatarProvider(guest);
+
     return ListTile(
       leading: CircleAvatar(
         radius: 24,
-        backgroundImage: guest.photo != null && File(guest.photo!).existsSync()
-            ? FileImage(File(guest.photo!))
-            : null,
         backgroundColor: AppColors.lightBlackColor,
-        child: guest.photo == null
+        backgroundImage: avatarImage,
+        child: avatarImage == null
             ? Assets.svg.svgUser.svg(
                 width: 24,
                 height: 24,
-                colorFilter: ColorFilter.mode(
-                  AppColors.whiteColor,
-                  BlendMode.srcIn,
-                ),
+                colorFilter: ColorFilter.mode(AppColors.whiteColor, BlendMode.srcIn),
               )
             : null,
       ),

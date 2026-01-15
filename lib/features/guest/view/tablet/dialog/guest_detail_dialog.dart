@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:barcode_widget/barcode_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:sun_scan/core/components/custom_button.dart';
@@ -9,6 +7,7 @@ import 'package:sun_scan/core/utils/date_format.dart';
 import 'package:sun_scan/data/model/guests_model.dart';
 
 import '../../../../../core/helper/assets/assets.gen.dart';
+import '../../../../../core/helper/guest_photo_helper.dart';
 
 class GuestDetailDialog extends StatelessWidget {
   const GuestDetailDialog({super.key, required this.guest});
@@ -32,12 +31,12 @@ class GuestDetailDialog extends StatelessWidget {
       _RowText(
         label: 'Scan Keluar',
         value: guest.checkedOutAt != null
-            ? CustomDateFormat().getFormattedEventDate(
-                date: guest.checkedOutAt!,
-              )
+            ? CustomDateFormat().getFormattedEventDate(date: guest.checkedOutAt!)
             : '-',
       ),
     ];
+
+    final avatarImage = GuestPhotoHelper.guestAvatarProvider(guest);
 
     return Column(
       children: [
@@ -45,7 +44,12 @@ class GuestDetailDialog extends StatelessWidget {
           padding: const EdgeInsets.only(right: 20.0),
           child: Align(
             alignment: Alignment.topRight,
-            child: Icon(Icons.close, size: 24, color: AppColors.primaryColor),
+            child: GestureDetector(
+              onTap: () {
+                Navigator.of(context).pop();
+              },
+              child: Icon(Icons.close, size: 24, color: AppColors.primaryColor),
+            ),
           ),
         ),
         const SizedBox(height: 16),
@@ -63,9 +67,7 @@ class GuestDetailDialog extends StatelessWidget {
                 child: Center(
                   child: Text(
                     guest.guestCategoryName ?? 'No Category',
-                    style: AppTextStyles.bodyLarge.copyWith(
-                      color: AppColors.primaryColor,
-                    ),
+                    style: AppTextStyles.bodyLarge.copyWith(color: AppColors.primaryColor),
                   ),
                 ),
               ),
@@ -82,16 +84,12 @@ class GuestDetailDialog extends StatelessWidget {
                         borderRadius: BorderRadius.circular(12),
                       ),
                       height: 190,
-                      child:
-                          guest.photo != null && File(guest.photo!).existsSync()
-                          ? Image.file(File(guest.photo!), fit: BoxFit.cover)
+                      child: avatarImage != null
+                          ? Image(image: avatarImage, fit: BoxFit.cover)
                           : Assets.svg.svgUser.svg(
                               width: 24,
                               height: 24,
-                              colorFilter: ColorFilter.mode(
-                                AppColors.whiteColor,
-                                BlendMode.srcIn,
-                              ),
+                              colorFilter: ColorFilter.mode(AppColors.whiteColor, BlendMode.srcIn),
                             ),
                     ),
                   ),
@@ -168,16 +166,10 @@ class _RowText {
     return Row(
       children: [
         Expanded(
-          child: Text(
-            label,
-            style: AppTextStyles.caption.copyWith(color: AppColors.greyColor),
-          ),
+          child: Text(label, style: AppTextStyles.caption.copyWith(color: AppColors.greyColor)),
         ),
         const SizedBox(width: 8),
-        Text(
-          value,
-          style: AppTextStyles.caption.copyWith(fontWeight: FontWeight.w600),
-        ),
+        Text(value, style: AppTextStyles.caption.copyWith(fontWeight: FontWeight.w600)),
       ],
     );
   }

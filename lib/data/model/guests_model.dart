@@ -12,7 +12,6 @@ class GuestsModel extends Equatable {
   final String? tag; // Tambahkan properti tag
   final String? guestCategoryUuid;
   final String? guestCategoryName;
-  final String? photo;
   final DateTime? checkedInAt;
   final DateTime? checkedOutAt;
   final DateTime createdAt;
@@ -22,6 +21,8 @@ class GuestsModel extends Equatable {
   final DateTime? deletedAt;
 
   final String? eventName; // Tambahkan properti eventName
+  final String? photoPath; // Tambahkan properti photoPath
+  final String? photoUrl; // Tambahkan properti photoUrl
 
   const GuestsModel({
     this.guestUuid,
@@ -34,7 +35,6 @@ class GuestsModel extends Equatable {
     this.guestCategoryName,
     this.tag,
     this.gender = Gender.male,
-    this.photo,
     this.checkedInAt,
     this.checkedOutAt,
     required this.createdAt,
@@ -43,6 +43,8 @@ class GuestsModel extends Equatable {
     this.eventName,
     this.isDeleted = false,
     this.deletedAt,
+    this.photoPath,
+    this.photoUrl,
   });
 
   @override
@@ -56,7 +58,7 @@ class GuestsModel extends Equatable {
     guestCategoryName,
     tag,
     isCheckedIn,
-    photo,
+
     checkedInAt,
     checkedOutAt,
     createdAt,
@@ -66,6 +68,8 @@ class GuestsModel extends Equatable {
     eventName,
     isDeleted,
     deletedAt,
+    photoPath,
+    photoUrl,
   ];
 
   // tojson
@@ -81,7 +85,7 @@ class GuestsModel extends Equatable {
       'guest_category_uuid': guestCategoryUuid,
       'guest_category_name': guestCategoryName,
       'gender': gender.name,
-      'photo': photo,
+
       'checked_in_at': checkedInAt?.toIso8601String(),
       'checked_out_at': checkedOutAt?.toIso8601String(),
       'created_at': createdAt.toIso8601String(),
@@ -105,7 +109,6 @@ class GuestsModel extends Equatable {
       guestCategoryUuid: json['guest_category_uuid'],
       guestCategoryName: json['guest_category_name'],
       gender: Gender.values.firstWhere((e) => e.name == json['gender'], orElse: () => Gender.male),
-      photo: json['photo'], // FIX: Changed from 'base64_photo' to 'photo'
       checkedInAt: json['checked_in_at'] != null ? DateTime.parse(json['checked_in_at']) : null,
       checkedOutAt: json['checked_out_at'] != null ? DateTime.parse(json['checked_out_at']) : null,
       createdAt: DateTime.parse(json['created_at']),
@@ -117,6 +120,8 @@ class GuestsModel extends Equatable {
       isDeleted: json['is_deleted'] == 1,
       deletedAt: json['deleted_at'] != null ? DateTime.parse(json['deleted_at']) : null,
       eventName: json['event_name'], // FIX: Added eventName from json
+      photoPath: json['photo_path'], // FIX: Added photoPath from json
+      photoUrl: json['photo_url'], // FIX: Added photoUrl from json
     );
   }
 
@@ -132,7 +137,6 @@ class GuestsModel extends Equatable {
     String? guestCategoryUuid,
     String? guestCategoryName,
     Gender? gender,
-    String? photo,
     DateTime? checkedInAt,
     DateTime? checkedOutAt,
     DateTime? createdAt,
@@ -141,6 +145,8 @@ class GuestsModel extends Equatable {
     String? eventName,
     bool? isDeleted,
     DateTime? deletedAt,
+    String? photoPath,
+    String? photoUrl,
   }) {
     return GuestsModel(
       guestUuid: guestUuid ?? this.guestUuid,
@@ -148,7 +154,7 @@ class GuestsModel extends Equatable {
       name: name ?? this.name,
       phone: phone ?? this.phone,
       qrValue: qrValue ?? this.qrValue,
-      photo: photo ?? this.photo,
+
       isCheckedIn: isCheckedIn ?? this.isCheckedIn,
       tag: tag ?? this.tag,
       guestCategoryUuid: guestCategoryUuid ?? this.guestCategoryUuid,
@@ -162,6 +168,8 @@ class GuestsModel extends Equatable {
       eventName: eventName ?? this.eventName,
       isDeleted: isDeleted ?? this.isDeleted,
       deletedAt: deletedAt ?? this.deletedAt,
+      photoPath: photoPath ?? this.photoPath,
+      photoUrl: photoUrl ?? this.photoUrl,
     );
   }
 
@@ -177,7 +185,6 @@ class GuestsModel extends Equatable {
       'gender': gender.name,
       'guest_category_uuid': guestCategoryUuid,
       'guest_category_name': guestCategoryName,
-      'photo_path': photo, // ✅ Changed key to 'photo_path'
       'checked_in_at': checkedInAt?.toUtc().toIso8601String(), // ✅ Convert ke string
       'checked_out_at': checkedOutAt?.toUtc().toIso8601String(), // ✅ Convert ke string
       'created_at': createdAt.toUtc().toIso8601String(), // ✅ Convert ke string
@@ -200,7 +207,6 @@ class GuestsModel extends Equatable {
       gender: Gender.values.firstWhere((e) => e.name == json['gender'], orElse: () => Gender.male),
       guestCategoryUuid: json['guest_category_uuid'],
       guestCategoryName: json['guest_category_name'],
-      photo: json['photo_path'], // FIX: Changed from 'base64_photo' to 'photo_path'
       checkedInAt: json['checked_in_at'] != null ? DateTime.parse(json['checked_in_at']) : null,
       checkedOutAt: json['checked_out_at'] != null ? DateTime.parse(json['checked_out_at']) : null,
       createdAt: DateTime.parse(json['created_at']),
@@ -213,6 +219,8 @@ class GuestsModel extends Equatable {
           : SyncStatus.synced,
       isDeleted: json['is_deleted'] == true,
       deletedAt: json['deleted_at'] != null ? DateTime.parse(json['deleted_at']) : null,
+      photoPath: json['photo_path'],
+      photoUrl: json['photo_url'],
     );
   }
 }

@@ -24,11 +24,7 @@ class GuestLocalDatasource {
     final categoryUuid = guestData.guestCategoryUuid;
     final categoryName = guestData.guestCategoryName;
 
-    final newGuest = guestData.copyWith(
-      guestUuid: const Uuid().v4(),
-      updatedAt: DateTime.now(),
-      syncStatus: SyncStatus.pending,
-    );
+    final newGuest = guestData.copyWith(updatedAt: DateTime.now(), syncStatus: SyncStatus.pending);
 
     // await db.insert('guests', newGuest.toJson());
     await db.transaction((txn) async {
@@ -116,9 +112,15 @@ class GuestLocalDatasource {
       final maps = await db.rawQuery(
         '''
       SELECT guests.*,
-        events.name AS event_name
+        events.name AS event_name,
+        gp.file_path AS photo_path,
+        gp.file_url AS photo_url
         FROM guests
         INNER JOIN events ON guests.event_uuid = events.event_uuid
+        LEFT JOIN guest_photos gp
+          ON gp.guest_uuid = guests.guest_uuid
+          AND gp.is_primary = 1
+          AND gp.is_deleted = 0
       WHERE guests.event_uuid = ? AND guests.is_deleted = 0
     ''',
         [eventUuid],
@@ -134,7 +136,22 @@ class GuestLocalDatasource {
   Future<GuestsModel?> getGuestByQrValue(String qrValue) async {
     final db = await _databaseHelper.database;
 
-    final maps = await db.query('guests', where: 'qr_value = ?', whereArgs: [qrValue], limit: 1);
+    final maps = await db.rawQuery(
+      '''
+      SELECT guests.*,
+        events.name AS event_name,
+        gp.file_path AS photo_path,
+        gp.file_url AS photo_url
+        FROM guests
+        INNER JOIN events ON guests.event_uuid = events.event_uuid
+        LEFT JOIN guest_photos gp
+          ON gp.guest_uuid = guests.guest_uuid
+          AND gp.is_primary = 1
+          AND gp.is_deleted = 0
+      WHERE guests.qr_value = ? AND guests.is_deleted = 0
+    ''',
+      [qrValue],
+    );
 
     print('getGuestByQrValue: found ${maps.length} records for qrValue=$qrValue');
 
@@ -201,17 +218,45 @@ class GuestLocalDatasource {
     final db = await _databaseHelper.database;
 
     // Soft delete: update is_deleted and deleted_at
-    await db.update(
-      'guests',
-      {
-        'is_deleted': 1,
-        'deleted_at': DateTime.now().toUtc().toIso8601String(),
-        'updated_at': DateTime.now().toUtc().toIso8601String(),
-        'sync_status': SyncStatus.pending.name,
-      },
-      where: 'guest_uuid = ?',
-      whereArgs: [guestUuid],
-    );
+    await db.transaction((txn) async {
+      await txn.update(
+        'guests',
+        {
+          'is_deleted': 1,
+          'deleted_at': DateTime.now().toUtc().toIso8601String(),
+          'updated_at': DateTime.now().toUtc().toIso8601String(),
+          'sync_status': SyncStatus.pending.name,
+        },
+        where: 'guest_uuid = ?',
+        whereArgs: [guestUuid],
+      );
+
+      // Also soft delete related souvenirs
+      await txn.update(
+        'souvenirs',
+        {
+          'is_deleted': 1,
+          'deleted_at': DateTime.now().toUtc().toIso8601String(),
+          'updated_at': DateTime.now().toUtc().toIso8601String(),
+          'sync_status': SyncStatus.pending.name,
+        },
+        where: 'guest_uuid = ?',
+        whereArgs: [guestUuid],
+      );
+
+      // Also soft delete related guest photos
+      await txn.update(
+        'guest_photos',
+        {
+          'is_deleted': 1,
+          'deleted_at': DateTime.now().toUtc().toIso8601String(),
+          'updated_at': DateTime.now().toUtc().toIso8601String(),
+          'sync_status': SyncStatus.pending.name,
+        },
+        where: 'guest_uuid = ?',
+        whereArgs: [guestUuid],
+      );
+    });
   }
 
   // =====================================================

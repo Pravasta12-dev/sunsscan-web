@@ -52,7 +52,6 @@ class DatabaseHelper {
         name TEXT NOT NULL,
         phone TEXT,
         qr_value TEXT NOT NULL UNIQUE,
-        photo TEXT,
         tag TEXT,
         is_checked_in INTEGER NOT NULL DEFAULT 0,
         gender VARCHAR(16) NOT NULL DEFAULT 'male',
@@ -119,6 +118,29 @@ class DatabaseHelper {
       );
     ''');
 
+    await db.execute('''
+      CREATE TABLE guest_photos (
+        photo_uuid TEXT PRIMARY KEY,
+        guest_uuid TEXT NOT NULL,
+        event_uuid TEXT NOT NULL,
+        photo_type TEXT NOT NULL,
+        file_name TEXT NOT NULL,
+        file_path TEXT NOT NULL,
+        file_size INTEGER,
+        mime_type TEXT,
+        source TEXT NOT NULL DEFAULT 'camera',
+        is_primary INTEGER NOT NULL DEFAULT 0,
+        file_url TEXT,
+        sync_status TEXT NOT NULL DEFAULT 'pending',
+        created_at TEXT NOT NULL,
+        updated_at TEXT,
+        is_deleted INTEGER NOT NULL DEFAULT 0,
+        deleted_at TEXT,
+        FOREIGN KEY (guest_uuid) REFERENCES guests (guest_uuid) ON DELETE CASCADE,
+        FOREIGN KEY (event_uuid) REFERENCES events (event_uuid) ON DELETE CASCADE
+      )
+    ''');
+
     await db.execute('CREATE INDEX idx_guests_qr_value ON guests (qr_value);');
     await db.execute('CREATE INDEX idx_guests_event_uuid ON guests (event_uuid);');
     await db.execute('CREATE INDEX idx_souvenirs_event_uuid ON souvenirs (event_uuid);');
@@ -129,5 +151,7 @@ class DatabaseHelper {
     await db.execute(
       'CREATE INDEX idx_greeting_screens_event_uuid ON greeting_screens (event_uuid);',
     );
+    await db.execute('CREATE INDEX idx_guest_photos_guest_uuid ON guest_photos (guest_uuid);');
+    await db.execute('CREATE INDEX idx_guest_photos_event_uuid ON guest_photos (event_uuid);');
   }
 }

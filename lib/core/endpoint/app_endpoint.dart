@@ -14,6 +14,14 @@ class AppEndpoint {
     return UriHelper.createUrl(host: _baseUrl, path: 'api/sync/guests');
   }
 
+  Uri get guestPhotoUrl {
+    return UriHelper.createUrl(host: _baseUrl, path: 'api/sync/guest-photos');
+  }
+
+  Uri get uploadGuestPhotoUrl {
+    return UriHelper.createUrl(host: _baseUrl, path: 'api/guest-photos/upload');
+  }
+
   Uri get guestCategoriesUrl {
     return UriHelper.createUrl(host: _baseUrl, path: 'api/sync/guest-categories');
   }
