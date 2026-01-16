@@ -41,15 +41,6 @@ class SyncRegistry {
       getId: (event) => event.eventUuid ?? '',
     );
 
-    final guestRunner = SyncRunner<GuestsModel>(
-      queue: SyncQueue(
-        fetchPending: guestLocalDatasource.getPendingSyncGuests,
-        markAsSynced: guestLocalDatasource.markGuestsAsSynced,
-      ),
-      pushRemote: guestRemoteDatasource.sync,
-      getId: (guest) => guest.guestUuid ?? '',
-    );
-
     final guestCategoryRunner = SyncRunner<GuestCategoryModel>(
       queue: SyncQueue(
         fetchPending: guestCategoryDatasource.getPendingSyncGuestsCategories,
@@ -57,6 +48,15 @@ class SyncRegistry {
       ),
       pushRemote: guestCategoryRemoteDatasource.sync,
       getId: (category) => category.categoryUuid ?? '',
+    );
+
+    final guestRunner = SyncRunner<GuestsModel>(
+      queue: SyncQueue(
+        fetchPending: guestLocalDatasource.getPendingSyncGuests,
+        markAsSynced: guestLocalDatasource.markGuestsAsSynced,
+      ),
+      pushRemote: guestRemoteDatasource.sync,
+      getId: (guest) => guest.guestUuid ?? '',
     );
 
     final souvenirRunner = SyncRunner<SouvenirModel>(
@@ -79,7 +79,13 @@ class SyncRegistry {
 
     return SyncEngine(
       config: SyncConfig(interval: Duration(seconds: 8), batchSize: 20),
-      runners: [eventRunner, guestRunner, guestCategoryRunner, souvenirRunner, greetingRunner],
+      runners: [
+        eventRunner,
+        guestCategoryRunner,
+        guestRunner,
+        souvenirRunner,
+        greetingRunner,
+      ],
     );
   }
 }

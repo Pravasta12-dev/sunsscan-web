@@ -59,6 +59,15 @@ class _SelectGuestCategoryState extends State<SelectGuestCategory> {
     }
   }
 
+  void _setNewCategoryMode() {
+    setState(() {
+      // Unselect kategori existing sebagai tanda bahwa ini kategori baru
+      selectedCategoryUuid = null;
+      selectedCategoryName = null;
+    });
+    _validateForm();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -68,7 +77,9 @@ class _SelectGuestCategoryState extends State<SelectGuestCategory> {
         tabletUp: 500,
       ),
       padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 20.0),
-      constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.6),
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.of(context).size.height * 0.6,
+      ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -79,7 +90,9 @@ class _SelectGuestCategoryState extends State<SelectGuestCategory> {
             children: [
               Text(
                 'Kategori Tamu',
-                style: AppTextStyles.bodyLarge.copyWith(fontWeight: FontWeight.w600),
+                style: AppTextStyles.bodyLarge.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
               ),
               IconButton(
                 icon: const Icon(Icons.close),
@@ -99,7 +112,9 @@ class _SelectGuestCategoryState extends State<SelectGuestCategory> {
                 bool isLoading = state.status == GuestCategoryStatus.loading;
 
                 if (state.status.isFailure) {
-                  return Center(child: Text(state.errorMessage ?? 'Terjadi kesalahan.'));
+                  return Center(
+                    child: Text(state.errorMessage ?? 'Terjadi kesalahan.'),
+                  );
                 }
 
                 final categories = state.status == GuestCategoryStatus.success
@@ -115,7 +130,8 @@ class _SelectGuestCategoryState extends State<SelectGuestCategory> {
                     spacing: 16.0,
                     runSpacing: 16.0,
                     children: categories.map((category) {
-                      final isSelected = category.categoryUuid == selectedCategoryUuid;
+                      final isSelected =
+                          category.categoryUuid == selectedCategoryUuid;
 
                       if (isLoading) {
                         return ShimmerBox(height: 40, width: 100);
@@ -141,7 +157,9 @@ class _SelectGuestCategoryState extends State<SelectGuestCategory> {
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
                                 border: Border.all(
-                                  color: isSelected ? AppColors.primaryColor : Colors.grey.shade400,
+                                  color: isSelected
+                                      ? AppColors.primaryColor
+                                      : Colors.grey.shade400,
                                   width: 2,
                                 ),
                                 color: Colors.white,
@@ -164,8 +182,12 @@ class _SelectGuestCategoryState extends State<SelectGuestCategory> {
                             Text(
                               category.name,
                               style: AppTextStyles.body.copyWith(
-                                color: isSelected ? AppColors.primaryColor : AppColors.whiteColor,
-                                fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                                color: isSelected
+                                    ? AppColors.primaryColor
+                                    : AppColors.whiteColor,
+                                fontWeight: isSelected
+                                    ? FontWeight.w600
+                                    : FontWeight.normal,
                               ),
                             ),
                           ],
@@ -182,8 +204,19 @@ class _SelectGuestCategoryState extends State<SelectGuestCategory> {
             controller: _newCategoryController,
             label: 'Tambah Kategori Baru',
             hintText: 'Masukkan nama kategori baru',
-            contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
-            onChanged: (_) => _validateForm(),
+            contentPadding: const EdgeInsets.symmetric(
+              vertical: 16,
+              horizontal: 12,
+            ),
+            onChanged: (value) {
+              final trimmed = value.trim();
+              if (selectedCategoryUuid != null &&
+                  trimmed.isNotEmpty &&
+                  trimmed != (selectedCategoryName ?? '').trim()) {
+                _setNewCategoryMode();
+              }
+              _validateForm();
+            },
           ),
           const SizedBox(height: 32.0),
           Row(
@@ -212,7 +245,9 @@ class _SelectGuestCategoryState extends State<SelectGuestCategory> {
                     );
                   },
                   title: 'Simpan',
-                  buttonType: _isFormValid ? ButtonType.primary : ButtonType.disable,
+                  buttonType: _isFormValid
+                      ? ButtonType.primary
+                      : ButtonType.disable,
                 ),
               ),
             ],

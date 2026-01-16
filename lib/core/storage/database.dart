@@ -64,7 +64,8 @@ class DatabaseHelper {
         sync_status TEXT NOT NULL DEFAULT 'pending',
         is_deleted INTEGER NOT NULL DEFAULT 0,
         deleted_at TEXT,
-        FOREIGN KEY (event_uuid) REFERENCES events (event_uuid) ON DELETE CASCADE
+        FOREIGN KEY (event_uuid) REFERENCES events (event_uuid) ON DELETE CASCADE,
+        FOREIGN KEY (guest_category_uuid) REFERENCES guest_categories (category_uuid) ON DELETE SET NULL
       );
     ''');
 
@@ -142,16 +143,26 @@ class DatabaseHelper {
     ''');
 
     await db.execute('CREATE INDEX idx_guests_qr_value ON guests (qr_value);');
-    await db.execute('CREATE INDEX idx_guests_event_uuid ON guests (event_uuid);');
-    await db.execute('CREATE INDEX idx_souvenirs_event_uuid ON souvenirs (event_uuid);');
-    await db.execute('CREATE INDEX idx_souvenirs_guest_uuid ON souvenirs (guest_uuid);');
+    await db.execute(
+      'CREATE INDEX idx_guests_event_uuid ON guests (event_uuid);',
+    );
+    await db.execute(
+      'CREATE INDEX idx_souvenirs_event_uuid ON souvenirs (event_uuid);',
+    );
+    await db.execute(
+      'CREATE INDEX idx_souvenirs_guest_uuid ON souvenirs (guest_uuid);',
+    );
     await db.execute(
       'CREATE INDEX idx_souvenirs_guest_category_uuid ON souvenirs (guest_category_uuid);',
     );
     await db.execute(
       'CREATE INDEX idx_greeting_screens_event_uuid ON greeting_screens (event_uuid);',
     );
-    await db.execute('CREATE INDEX idx_guest_photos_guest_uuid ON guest_photos (guest_uuid);');
-    await db.execute('CREATE INDEX idx_guest_photos_event_uuid ON guest_photos (event_uuid);');
+    await db.execute(
+      'CREATE INDEX idx_guest_photos_guest_uuid ON guest_photos (guest_uuid);',
+    );
+    await db.execute(
+      'CREATE INDEX idx_guest_photos_event_uuid ON guest_photos (event_uuid);',
+    );
   }
 }
