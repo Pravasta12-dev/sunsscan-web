@@ -298,6 +298,7 @@ class CustomDialog {
     required String title,
     required String message,
     VoidCallback? onPressed,
+    double? width,
   }) async {
     String? imagePath;
     Color? bgIconColor;
@@ -343,10 +344,14 @@ class CustomDialog {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
-                width: MediaQuery.of(context).size.width * 0.9,
+                width: ResponsiveBuilder.getGenericValue<double>(
+                  context: context,
+                  mobile: width ?? MediaQuery.of(context).size.width * 0.9,
+                  tabletUp: width ?? MediaQuery.of(context).size.width * 0.4,
+                ),
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: AppColors.whiteColor,
+                  color: AppColors.lightBlackColor,
                   borderRadius: BorderRadius.circular(16.0),
                 ),
                 child: Column(
@@ -371,7 +376,7 @@ class CustomDialog {
                     Text(
                       title,
                       style: AppTextStyles.bodyLarge.copyWith(
-                        color: AppColors.textPrimary,
+                        color: AppColors.whiteColor,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -380,7 +385,7 @@ class CustomDialog {
                       message,
                       textAlign: TextAlign.center,
                       style: AppTextStyles.caption.copyWith(
-                        color: AppColors.textSecondary,
+                        color: AppColors.greyColor,
                         fontWeight: FontWeight.w400,
                       ),
                     ),

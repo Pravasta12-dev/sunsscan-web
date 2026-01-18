@@ -9,7 +9,7 @@ import 'package:sun_scan/core/storage/database.dart';
 
 import 'main_app.dart';
 
-Environment appEnvironment = Environment.production;
+Environment appEnvironment = Environment.development;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

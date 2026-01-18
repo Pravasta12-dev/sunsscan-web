@@ -33,20 +33,22 @@ final class GuestScanLoading extends GuestState {}
 
 final class GuestScanSuccess extends GuestState {
   final GuestsModel guest;
+  final DateTime timestamp; // Unique per scan event
 
-  const GuestScanSuccess(this.guest);
+  GuestScanSuccess(this.guest) : timestamp = DateTime.now();
 
   @override
-  List<Object> get props => [guest];
+  List<Object> get props => [guest, timestamp]; // Include timestamp in props
 }
 
 final class GuestScanFailure extends GuestState {
   final String message;
+  final DateTime timestamp; // Unique per scan event
 
-  const GuestScanFailure(this.message);
+  GuestScanFailure(this.message) : timestamp = DateTime.now();
 
   @override
-  List<Object> get props => [message];
+  List<Object> get props => [message, timestamp]; // Include timestamp in props
 }
 
 final class GuestsImportLoading extends GuestState {}

@@ -23,7 +23,12 @@ import '../../../../bloc/guest/guest_bloc.dart';
 import '../../../mobile/widgets/select_guest_category.dart';
 
 class InsertForm extends StatefulWidget {
-  const InsertForm({super.key, this.existingGuest, required this.eventId, this.onQrGenerated});
+  const InsertForm({
+    super.key,
+    this.existingGuest,
+    required this.eventId,
+    this.onQrGenerated,
+  });
 
   final GuestsModel? existingGuest;
   final String eventId;
@@ -107,11 +112,15 @@ class _InsertFormState extends State<InsertForm> {
       guestUuid: widget.existingGuest?.guestUuid ?? const Uuid().v4(),
       eventUuid: widget.eventId,
       name: _nameController.text.trim(),
-      qrValue: qrData,
-      phone: _phoneController.text.trim().isEmpty ? null : _phoneController.text.trim(),
+      qrValue: qrData.trim(),
+      phone: _phoneController.text.trim().isEmpty
+          ? null
+          : _phoneController.text.trim(),
       isCheckedIn: false,
       createdAt: DateTime.now(),
-      tag: _tagController.text.trim().isEmpty ? null : _tagController.text.trim(),
+      tag: _tagController.text.trim().isEmpty
+          ? null
+          : _tagController.text.trim(),
       guestCategoryUuid: selectedGuestCategoryUuid,
       guestCategoryName: selectedGuestCategoryName,
       gender: selectedGender,
@@ -142,7 +151,10 @@ class _InsertFormState extends State<InsertForm> {
       );
 
       debugPrint('update : ${updatedGuest.toJson()}');
-      context.read<GuestBloc>().updateGuestWithPhoto(updatedGuest, photo: identityPhoto);
+      context.read<GuestBloc>().updateGuestWithPhoto(
+        updatedGuest,
+        photo: identityPhoto,
+      );
 
       if (widget.onQrGenerated != null) {
         widget.onQrGenerated!(updatedGuest);
@@ -153,10 +165,14 @@ class _InsertFormState extends State<InsertForm> {
         final data = CreateGuestParam(
           eventId: widget.eventId,
           name: _nameController.text.trim(),
-          qrValue: qrData,
+          qrValue: qrData.trim(),
           gender: selectedGender,
-          phone: _phoneController.text.trim().isEmpty ? null : _phoneController.text.trim(),
-          tag: _tagController.text.trim().isEmpty ? null : _tagController.text.trim(),
+          phone: _phoneController.text.trim().isEmpty
+              ? null
+              : _phoneController.text.trim(),
+          tag: _tagController.text.trim().isEmpty
+              ? null
+              : _tagController.text.trim(),
           guestCategoryUuid: guest.guestCategoryUuid,
           guestCategoryName: guest.guestCategoryName,
           photo: _photoPath,
@@ -191,7 +207,10 @@ class _InsertFormState extends State<InsertForm> {
           CustomFormWidget().buildTextFormInput(
             controller: _nameController,
             label: 'Nama Tamu',
-            contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+            contentPadding: const EdgeInsets.symmetric(
+              vertical: 12,
+              horizontal: 16,
+            ),
             hintText: 'Contoh: Agnes Jennifer',
             onChanged: (_) => _validateForm(),
             validator: (value) {
@@ -206,7 +225,10 @@ class _InsertFormState extends State<InsertForm> {
           CustomFormWidget().buildTextFormInput(
             controller: _phoneController,
             label: 'No. WhatsApp',
-            contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+            contentPadding: const EdgeInsets.symmetric(
+              vertical: 12,
+              horizontal: 16,
+            ),
             hintText: 'Contoh: 081234567890',
             keyboardType: TextInputType.phone,
             onChanged: (_) => _validateForm(),
@@ -224,20 +246,21 @@ class _InsertFormState extends State<InsertForm> {
             label: 'Kategori Tamu',
             onTap: () async {
               // open bottomsheet
-              final selectedCategory = await CustomDialog.showMainDialog<Map<String, dynamic>>(
-                context: context,
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: AppColors.headerColor,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: SelectGuestCategory(
-                    eventUuid: widget.eventId,
-                    selectedCategoryUuid: selectedGuestCategoryUuid,
-                    selectedCategoryName: selectedGuestCategoryName,
-                  ),
-                ),
-              );
+              final selectedCategory =
+                  await CustomDialog.showMainDialog<Map<String, dynamic>>(
+                    context: context,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: AppColors.headerColor,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: SelectGuestCategory(
+                        eventUuid: widget.eventId,
+                        selectedCategoryUuid: selectedGuestCategoryUuid,
+                        selectedCategoryName: selectedGuestCategoryName,
+                      ),
+                    ),
+                  );
 
               if (selectedCategory != null) {
                 setState(() {
@@ -275,7 +298,10 @@ class _InsertFormState extends State<InsertForm> {
           CustomFormWidget().buildTextFormInput(
             controller: _tagController,
             label: 'Tag',
-            contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+            contentPadding: const EdgeInsets.symmetric(
+              vertical: 12,
+              horizontal: 16,
+            ),
             hintText: 'Contoh: Tamu dari mempelai Pria',
             keyboardType: TextInputType.text,
             onChanged: (_) => _validateForm(),
@@ -308,19 +334,30 @@ class _InsertFormState extends State<InsertForm> {
                           leading: Assets.svg.svgCamera.svg(
                             width: 24,
                             height: 24,
-                            colorFilter: ColorFilter.mode(AppColors.primaryColor, BlendMode.srcIn),
+                            colorFilter: ColorFilter.mode(
+                              AppColors.primaryColor,
+                              BlendMode.srcIn,
+                            ),
                           ),
                           title: Text('Ambil Foto', style: AppTextStyles.body),
-                          onTap: () => Navigator.pop(context, PickImageSource.camera),
+                          onTap: () =>
+                              Navigator.pop(context, PickImageSource.camera),
                         ),
                       ListTile(
                         leading: Assets.svg.svgImage.svg(
                           width: 24,
                           height: 24,
-                          colorFilter: ColorFilter.mode(AppColors.primaryColor, BlendMode.srcIn),
+                          colorFilter: ColorFilter.mode(
+                            AppColors.primaryColor,
+                            BlendMode.srcIn,
+                          ),
                         ),
-                        title: Text('Pilih dari Galeri', style: AppTextStyles.body),
-                        onTap: () => Navigator.pop(context, PickImageSource.gallery),
+                        title: Text(
+                          'Pilih dari Galeri',
+                          style: AppTextStyles.body,
+                        ),
+                        onTap: () =>
+                            Navigator.pop(context, PickImageSource.gallery),
                       ),
                     ],
                   ),
@@ -329,7 +366,9 @@ class _InsertFormState extends State<InsertForm> {
 
               if (source == null) return;
 
-              final photoPath = await ImagePickerHelper.pickAndSave(source: source);
+              final photoPath = await ImagePickerHelper.pickAndSave(
+                source: source,
+              );
 
               if (photoPath != null) {
                 setState(() {
@@ -368,7 +407,9 @@ class _InsertFormState extends State<InsertForm> {
               Expanded(
                 child: CustomButton(
                   title: 'Generate QR',
-                  buttonType: _isValid ? ButtonType.primary : ButtonType.disable,
+                  buttonType: _isValid
+                      ? ButtonType.primary
+                      : ButtonType.disable,
                   onPressed: () {
                     if (_isValid) {
                       _submit();

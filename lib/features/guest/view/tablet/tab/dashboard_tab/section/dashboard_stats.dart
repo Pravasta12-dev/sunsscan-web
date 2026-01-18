@@ -33,10 +33,11 @@ class DashboardStats extends StatelessWidget {
         final regularGuests = guests.where((g) => !_isVip(g)).toList();
 
         int attendedCount(List<GuestsModel> list) => list.length;
+        // Tamu masuk: isCheckedIn = true ATAU checkedOutAt != null (sudah pernah check-in lalu check-out)
         int checkedInCount(List<GuestsModel> list) =>
-            list.where((g) => g.isCheckedIn).length;
+            list.where((g) => g.isCheckedIn || g.checkedOutAt != null).length;
         int notCheckedInCount(List<GuestsModel> list) =>
-            list.where((g) => !g.isCheckedIn).length;
+            list.where((g) => !g.isCheckedIn && g.checkedOutAt == null).length;
 
         return Container(
           width: double.infinity,
