@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sun_scan/features/guest/bloc/guest_session/guest_session_bloc.dart';
 import 'package:sun_scan/features/guest/view/tablet/tab/scan/section/guest_scan_in.dart';
 
 import '../../../../../../core/components/custom_dialog.dart';
@@ -43,49 +44,92 @@ class _GuestScanTabState extends State<GuestScanTab> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<GuestBloc, GuestState>(
-      listenWhen: (previous, current) {
-        if (current is GuestScanSuccess || current is GuestScanFailure) {
-          return previous != current;
-        }
-        return false;
-      },
-      listener: (context, stateListener) {
-        if (stateListener is GuestScanFailure) {
-          setState(() {
-            // Reset any state if needed after scan failure
-          });
-          CustomDialog.showCustomDialog(
-            context: context,
-            dialogType: DialogEnum.error,
-            title: 'Gagal Scan',
-            message: stateListener.message,
-          );
-          return;
-        }
+    return MultiBlocListener(
+      listeners: [
+        BlocListener<GuestBloc, GuestState>(
+          listenWhen: (previous, current) {
+            if (current is GuestScanSuccess || current is GuestScanFailure) {
+              return previous != current;
+            }
+            return false;
+          },
+          listener: (context, stateListener) {
+            if (stateListener is GuestScanFailure) {
+              setState(() {
+                // Reset any state if needed after scan failure
+              });
+              CustomDialog.showCustomDialog(
+                context: context,
+                dialogType: DialogEnum.error,
+                title: 'Gagal Scan',
+                message: stateListener.message,
+              );
+              return;
+            }
 
-        if (stateListener is GuestScanSuccess) {
-          setState(() {
-            // Reset any state if needed after scan success
-          });
-          if (selectedIndex == 0) {
-            CustomDialog.showMainDialog(
-              context: context,
-              child: GuestCheckinSuccess(guest: stateListener.guest),
-            );
-            return;
-          } else {
-            CustomDialog.showCustomDialog(
-              context: context,
-              dialogType: DialogEnum.success,
-              title: 'Berhasil Check-Out',
-              message:
-                  'Tamu ${stateListener.guest.name} berhasil melakukan check-out.',
-            );
-            return;
-          }
-        }
-      },
+            if (stateListener is GuestScanSuccess) {
+              setState(() {
+                // Reset any state if needed after scan success
+              });
+              if (selectedIndex == 0) {
+                CustomDialog.showMainDialog(
+                  context: context,
+                  child: GuestCheckinSuccess(guest: stateListener.guest),
+                );
+                return;
+              } else {
+                CustomDialog.showCustomDialog(
+                  context: context,
+                  dialogType: DialogEnum.success,
+                  title: 'Berhasil Check-Out',
+                  message:
+                      'Tamu ${stateListener.guest.name} berhasil melakukan check-out.',
+                );
+                return;
+              }
+            }
+          },
+        ),
+        BlocListener<GuestSessionBloc, GuestSessionState>(
+          listener: (context, stateSession) {
+            if (stateSession is GuestSessionChecking) {
+              CustomDialog.showLoadingDialog(context: context);
+            }
+
+            if (stateSession is GuestCheckInSuccess) {
+              Navigator.of(context).pop(); // Close loading dialog
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    'Tamu ${stateSession.session.guestUuid} berhasil melakukan check-in.',
+                  ),
+                ),
+              );
+            }
+
+            if (stateSession is GuestCheckOutSuccess) {
+              Navigator.of(context).pop(); // Close loading dialog
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    'Tamu ${stateSession.session.guestUuid} berhasil melakukan check-out.',
+                  ),
+                ),
+              );
+            }
+
+            if (stateSession is GuestSessionError) {
+              Navigator.of(context).pop(); // Close loading dialog
+              CustomDialog.showCustomDialog(
+                context: context,
+                dialogType: DialogEnum.error,
+                title: 'Gagal Scan',
+                message: stateSession.message,
+              );
+            }
+          },
+        ),
+      ],
       child: Stack(
         children: [
           Padding(

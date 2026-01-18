@@ -44,7 +44,7 @@ void main() async {
   // Initialize database dan bootstrap hanya untuk mobile/desktop
   if (!kIsWeb) {
     await DatabaseHelper().database;
-    await AppBootstrap.initialized();
+    // await AppBootstrap.initialized();
   } else {
     // Untuk web, skip database dan sync (tidak support)
     print('[Web] Running in web mode - database and sync disabled');

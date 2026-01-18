@@ -70,6 +70,23 @@ class DatabaseHelper {
     ''');
 
     await db.execute('''
+      CREATE TABLE guest_sessions (
+        session_uuid TEXT PRIMARY KEY,
+        guest_uuid TEXT NOT NULL,
+        event_uuid TEXT NOT NULL,
+        checkin_at TEXT NOT NULL,
+        checkout_at TEXT,
+        sync_status TEXT NOT NULL DEFAULT 'pending',
+        created_at TEXT NOT NULL,
+        updated_at TEXT,
+        is_deleted INTEGER NOT NULL DEFAULT 0,
+        deleted_at TEXT,
+        FOREIGN KEY (guest_uuid) REFERENCES guests (guest_uuid) ON DELETE CASCADE,
+        FOREIGN KEY (event_uuid) REFERENCES events (event_uuid) ON DELETE CASCADE
+      );
+    ''');
+
+    await db.execute('''
       CREATE TABLE guest_categories (
         category_uuid TEXT PRIMARY KEY,
         event_uuid TEXT NOT NULL,
@@ -145,6 +162,18 @@ class DatabaseHelper {
     await db.execute('CREATE INDEX idx_guests_qr_value ON guests (qr_value);');
     await db.execute(
       'CREATE INDEX idx_guests_event_uuid ON guests (event_uuid);',
+    );
+    await db.execute(
+      'CREATE INDEX idx_guest_categories_event_uuid ON guest_categories (event_uuid);',
+    );
+    await db.execute(
+      'CREATE INDEX idx_guest_sessions_guest_uuid ON guest_sessions (guest_uuid);',
+    );
+    await db.execute(
+      'CREATE INDEX idx_guest_sessions_event_uuid ON guest_sessions (event_uuid);',
+    );
+    await db.execute(
+      'CREATE INDEX idx_guest_sessions_active ON guest_sessions (guest_uuid, checkout_at);',
     );
     await db.execute(
       'CREATE INDEX idx_souvenirs_event_uuid ON souvenirs (event_uuid);',

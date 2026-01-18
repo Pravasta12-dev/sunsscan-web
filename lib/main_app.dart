@@ -8,6 +8,7 @@ import 'package:sun_scan/features/splash/pages/splash_page.dart';
 
 import 'features/guest/bloc/greeting/greeting_bloc.dart';
 import 'features/guest/bloc/guest_category/guest_category_bloc.dart';
+import 'features/guest/bloc/guest_session/guest_session_bloc.dart';
 import 'features/guest/bloc/guest_tab/guest_tab_cubit.dart';
 import 'features/guest/bloc/souvenir/souvenir_bloc.dart';
 import 'features/web/bloc/event_web/event_web_bloc.dart';
@@ -48,16 +49,19 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       providers: [
         BlocProvider(create: (_) => EventBloc()..loadEvents()),
         BlocProvider(create: (_) => GuestBloc()),
+        BlocProvider(create: (_) => GuestSessionBloc()),
         BlocProvider(create: (_) => GuestCategoryBloc()),
-        BlocProvider(create: (context) => EventWebBloc()),
-        BlocProvider(create: (context) => GuestTabCubit()),
-        BlocProvider(create: (context) => GuestWebBloc()),
-        BlocProvider(create: (context) => SouvenirBloc()),
-        BlocProvider(create: (context) => GreetingBloc()),
+        BlocProvider(create: (_) => EventWebBloc()),
+        BlocProvider(create: (_) => GuestTabCubit()),
+        BlocProvider(create: (_) => GuestWebBloc()),
+        BlocProvider(create: (_) => SouvenirBloc()),
+        BlocProvider(create: (_) => GreetingBloc()),
       ],
       child: Builder(
         builder: (context) {
-          final mediaQuery = MediaQuery.of(context).copyWith(textScaler: TextScaler.linear(1.0));
+          final mediaQuery = MediaQuery.of(
+            context,
+          ).copyWith(textScaler: TextScaler.linear(1.0));
           return MediaQuery(
             data: mediaQuery,
             child: MaterialApp(

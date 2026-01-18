@@ -3,9 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sun_scan/core/helper/assets/assets.gen.dart';
 import 'package:sun_scan/core/theme/app_colors.dart';
 import 'package:sun_scan/core/theme/app_text_styles.dart';
+import 'package:sun_scan/features/guest/bloc/guest_session/guest_session_bloc.dart';
 
 import '../../../../../../../core/helper/qr_scan_helper.dart';
-import '../../../../../bloc/guest/guest_bloc.dart';
 
 class GuestScanIn extends StatelessWidget {
   const GuestScanIn({super.key});
@@ -42,7 +42,7 @@ class GuestScanIn extends StatelessWidget {
     try {
       final qrValue = QrScanHelper.parse(barcode);
       final raw = qrValue.raw.trim();
-      context.read<GuestBloc>().scanCheckIn(raw);
+      context.read<GuestSessionBloc>().scanQr(raw);
     } catch (e) {
       print('[GuestScanPage] Error: ${e.toString()}');
     }
