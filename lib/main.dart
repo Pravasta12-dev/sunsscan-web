@@ -9,7 +9,7 @@ import 'package:sun_scan/core/storage/database.dart';
 
 import 'main_app.dart';
 
-Environment appEnvironment = Environment.development;
+Environment appEnvironment = Environment.production;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,9 +26,7 @@ void main() async {
     final isTabletUp = logicalWidth >= 600;
 
     if (!isTabletUp) {
-      await SystemChrome.setPreferredOrientations([
-        DeviceOrientation.portraitUp,
-      ]);
+      await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
     }
   }
 
@@ -44,7 +42,7 @@ void main() async {
   // Initialize database dan bootstrap hanya untuk mobile/desktop
   if (!kIsWeb) {
     await DatabaseHelper().database;
-    // await AppBootstrap.initialized();
+    await AppBootstrap.initialized();
   } else {
     // Untuk web, skip database dan sync (tidak support)
     print('[Web] Running in web mode - database and sync disabled');

@@ -12,12 +12,14 @@ import 'data/datasource/local/event_local_datasource.dart';
 import 'data/datasource/local/greeting_local_datasource.dart';
 import 'data/datasource/local/guest_local_datasource.dart';
 import 'data/datasource/local/guest_photo_local_datasource.dart';
+import 'data/datasource/local/guest_session_local_datasource.dart';
 import 'data/datasource/local/souvenir_local_datasource.dart';
 import 'data/datasource/remote/event_remote_datasource.dart';
 import 'data/datasource/remote/greeting_remote_datasource.dart';
 import 'data/datasource/remote/guest_category_remote_datasource.dart';
 import 'data/datasource/remote/guest_photo_remote_datasource.dart';
 import 'data/datasource/remote/guest_remote_datasource.dart';
+import 'data/datasource/remote/guest_session_remote_datasource.dart';
 import 'data/datasource/remote/souvenir_remote_datasource.dart';
 import 'core/sync/photo_sync_service.dart';
 
@@ -35,6 +37,7 @@ class AppBootstrap {
     final souvenirLocal = SouvenirLocalDataSource.create();
     final greetingLocal = GreetingLocalDatasource.create();
     final guestPhotoLocal = GuestPhotoLocalDatasource.create();
+    final guestSessionLocal = GuestSessionLocalDatasource.create();
 
     final eventRemote = EventRemoteDatasourceImpl.create();
     final guestRemote = GuestRemoteDatasourceImpl.create();
@@ -42,6 +45,7 @@ class AppBootstrap {
     final souvenirRemote = SouvenirRemoteDatasourceImpl.create();
     final greetingRemote = GreetingRemoteDatasourceImpl.create();
     final guestPhotoRemote = GuestPhotoRemoteDatasourceImpl.create();
+    final guestSessionRemote = GuestSessionRemoteDatasourceImpl.create();
 
     final photoSyncService = PhotoSyncService(
       guestPhotoLocalDatasource: guestPhotoLocal,
@@ -60,6 +64,7 @@ class AppBootstrap {
       souvenirLocal: souvenirLocal,
       greetingLocal: greetingLocal,
       guestPhotoLocal: guestPhotoLocal,
+      guestSessionLocal: guestSessionLocal,
     );
 
     /// Initial pull to sync data from server to local
@@ -82,6 +87,8 @@ class AppBootstrap {
       souvenirRemoteDatasource: souvenirRemote,
       greetingLocalDatasource: greetingLocal,
       greetingRemoteDatasource: greetingRemote,
+      guestSessionLocalDatasource: guestSessionLocal,
+      guestSessionRemoteDatasource: guestSessionRemote,
     );
 
     _connectivity = ConnectivityObserver(_syncEngine!, _syncPullService!);

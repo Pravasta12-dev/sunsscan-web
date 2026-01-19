@@ -40,7 +40,6 @@ class _GuestCheckinSuccessState extends State<GuestCheckinSuccess> {
 
   @override
   Widget build(BuildContext context) {
-    bool isCheckedIn = widget.guest.isCheckedIn;
     bool isVip = widget.guest.guestCategoryName == 'VIP';
     return Center(
       child: Column(
@@ -57,10 +56,8 @@ class _GuestCheckinSuccessState extends State<GuestCheckinSuccess> {
             child: Column(
               children: [
                 Text(
-                  'Scan ${isCheckedIn ? 'Masuk' : 'Keluar'} Berhasil',
-                  style: AppTextStyles.bodyLarge.copyWith(
-                    fontWeight: FontWeight.w500,
-                  ),
+                  'Scan Masuk Berhasil',
+                  style: AppTextStyles.bodyLarge.copyWith(fontWeight: FontWeight.w500),
                 ),
                 const SizedBox(height: 16),
                 isVip
@@ -71,10 +68,7 @@ class _GuestCheckinSuccessState extends State<GuestCheckinSuccess> {
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(16),
                           color: AppColors.greenColor.withAlpha(30),
-                          border: Border.all(
-                            color: AppColors.greenColor,
-                            width: 1,
-                          ),
+                          border: Border.all(color: AppColors.greenColor, width: 1),
                         ),
                         child: Center(
                           child: Text(
@@ -112,20 +106,13 @@ class _GuestCheckinSuccessState extends State<GuestCheckinSuccess> {
                             height: 180,
                             decoration: BoxDecoration(
                               color: AppColors.lightGreyColor.withAlpha(50),
-                              border: Border.all(
-                                color: AppColors.lightBlackColor,
-                              ),
+                              border: Border.all(color: AppColors.lightBlackColor),
                               borderRadius: BorderRadius.circular(12),
                             ),
-                            child:
-                                _photoPath != null &&
-                                    File(_photoPath!).existsSync()
+                            child: _photoPath != null && File(_photoPath!).existsSync()
                                 ? ClipRRect(
                                     borderRadius: BorderRadius.circular(12),
-                                    child: Image.file(
-                                      File(_photoPath!),
-                                      fit: BoxFit.cover,
-                                    ),
+                                    child: Image.file(File(_photoPath!), fit: BoxFit.cover),
                                   )
                                 : Icon(
                                     Icons.camera_alt_outlined,
@@ -142,9 +129,7 @@ class _GuestCheckinSuccessState extends State<GuestCheckinSuccess> {
 
                           decoration: BoxDecoration(
                             color: AppColors.lightGreyColor.withAlpha(50),
-                            border: Border.all(
-                              color: AppColors.lightBlackColor,
-                            ),
+                            border: Border.all(color: AppColors.lightBlackColor),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           height: 180,
@@ -182,9 +167,7 @@ class _GuestCheckinSuccessState extends State<GuestCheckinSuccess> {
                 const SizedBox(height: 16),
                 Text(
                   widget.guest.name,
-                  style: AppTextStyles.body.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
+                  style: AppTextStyles.body.copyWith(fontWeight: FontWeight.w600),
                 ),
                 const SizedBox(height: 8),
                 Text(
@@ -196,9 +179,7 @@ class _GuestCheckinSuccessState extends State<GuestCheckinSuccess> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  isCheckedIn
-                      ? 'Scan Masuk: ${CustomDateFormat().getFormattedEventDate(date: widget.guest.checkedInAt!)}'
-                      : 'Waktu Check-Out: ${CustomDateFormat().getFormattedEventDate(date: widget.guest.checkedOutAt!)}',
+                  'Scan Masuk: ${CustomDateFormat().getFormattedEventDate(date: widget.guest.lastCheckInAt!)}',
                   style: AppTextStyles.body.copyWith(
                     fontWeight: FontWeight.w400,
                     color: AppColors.textGreyColor,
@@ -241,17 +222,14 @@ class _GuestCheckinSuccessState extends State<GuestCheckinSuccess> {
                     Expanded(
                       child: CustomButton(
                         onPressed: () async {
-                          final souvenirLocalDataSource =
-                              SouvenirLocalDataSource.create();
-                          final guestPhotoLocalDataSource =
-                              GuestPhotoLocalDatasource.create();
+                          final souvenirLocalDataSource = SouvenirLocalDataSource.create();
+                          final guestPhotoLocalDataSource = GuestPhotoLocalDatasource.create();
                           if (_hasSouvenirReceived) {
                             // Here you can handle the logic to mark souvenir as received
-                            await souvenirLocalDataSource
-                                .markSouvenirToReceivedByGuestUuid(
-                                  widget.guest.guestUuid ?? '',
-                                  DateTime.now(),
-                                );
+                            await souvenirLocalDataSource.markSouvenirToReceivedByGuestUuid(
+                              widget.guest.guestUuid ?? '',
+                              DateTime.now(),
+                            );
                             SyncDispatcher.onLocalChange();
                           }
 
@@ -279,12 +257,8 @@ class _GuestCheckinSuccessState extends State<GuestCheckinSuccess> {
                           }
 
                           Navigator.of(context).pop();
-                          context.read<GuestBloc>().loadGuests(
-                            widget.guest.eventUuid,
-                          );
-                          context.read<SouvenirBloc>().loadSouvenirs(
-                            widget.guest.eventUuid,
-                          );
+                          context.read<GuestBloc>().loadGuests(widget.guest.eventUuid);
+                          context.read<SouvenirBloc>().loadSouvenirs(widget.guest.eventUuid);
                         },
                         title: 'Selesai',
                         buttonType: ButtonType.primary,
@@ -307,9 +281,7 @@ class _GuestCheckinSuccessState extends State<GuestCheckinSuccess> {
     final folder = Directory('${dir.path}/guest_photos');
     await folder.create(recursive: true);
 
-    final file = File(
-      '${folder.path}/${DateTime.now().millisecondsSinceEpoch}.jpg',
-    );
+    final file = File('${folder.path}/${DateTime.now().millisecondsSinceEpoch}.jpg');
     await file.writeAsBytes(bytes);
 
     return file.path;

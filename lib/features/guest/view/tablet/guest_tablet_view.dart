@@ -9,6 +9,7 @@ import 'package:sun_scan/features/guest/view/tablet/tab/sourvenir_tab/guest_sour
 
 import '../../../../data/model/event_model.dart';
 import '../../bloc/guest/guest_bloc.dart';
+import '../../bloc/guest_session/guest_session_bloc.dart';
 import '../../bloc/souvenir/souvenir_bloc.dart';
 import 'tab/scan/guest_scan_tab.dart';
 
@@ -27,6 +28,7 @@ class _GuestTabletViewState extends State<GuestTabletView> {
     super.initState();
     context.read<GuestBloc>().loadGuests(widget.activeEvent.eventUuid ?? '');
     context.read<SouvenirBloc>().loadSouvenirs(widget.activeEvent.eventUuid ?? '');
+    context.read<GuestSessionBloc>().getGuestActivities(widget.activeEvent.eventUuid ?? '');
   }
 
   @override
@@ -42,14 +44,14 @@ class _GuestTabletViewState extends State<GuestTabletView> {
               builder: (context, state) {
                 switch (state) {
                   case GuestTab.dashboard:
-                    return GuestDashboaardTab();
+                    return const GuestDashboaardTab();
                   case GuestTab.guests:
                     return GuestListTab(
                       eventUuid: widget.activeEvent.eventUuid ?? '',
                       eventName: widget.activeEvent.name,
                     );
                   case GuestTab.scan:
-                    return GuestScanTab();
+                    return const GuestScanTab();
                   case GuestTab.souvenirs:
                     return GuestSourvenirTab(eventUuid: widget.activeEvent.eventUuid ?? '');
                   case GuestTab.layers:

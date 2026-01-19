@@ -188,24 +188,24 @@ class _GuestListContentState extends State<GuestListContent> {
                                       DataCell(Text(guest.tag ?? '-')),
                                       DataCell(
                                         GuestStatusBadge(
-                                          isCheckedIn: guest.isCheckedIn,
-                                          isCheckedOut: guest.checkedOutAt != null,
+                                          isCheckedIn: guest.lastCheckInAt != null,
+                                          isCheckedOut: guest.lastCheckOutAt != null,
                                         ),
                                       ),
                                       DataCell(
                                         Text(
-                                          guest.checkedInAt != null
-                                              ? CustomDateFormat().getFormattedTime(
-                                                  date: guest.checkedInAt!,
+                                          guest.lastCheckInAt != null
+                                              ? CustomDateFormat().getFormattedEventDate(
+                                                  date: guest.lastCheckInAt!,
                                                 )
                                               : '-',
                                         ),
                                       ),
                                       DataCell(
                                         Text(
-                                          guest.checkedOutAt != null
-                                              ? CustomDateFormat().getFormattedTime(
-                                                  date: guest.checkedOutAt!,
+                                          guest.lastCheckOutAt != null
+                                              ? CustomDateFormat().getFormattedEventDate(
+                                                  date: guest.lastCheckOutAt!,
                                                 )
                                               : '-',
                                         ),

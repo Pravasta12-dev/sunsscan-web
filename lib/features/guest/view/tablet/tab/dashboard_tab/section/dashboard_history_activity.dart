@@ -4,11 +4,11 @@ import 'package:sun_scan/core/components/custom_form_widget.dart';
 import 'package:sun_scan/core/theme/app_colors.dart';
 import 'package:sun_scan/core/theme/app_text_styles.dart';
 import 'package:sun_scan/core/utils/shimmer_box.dart';
+import 'package:sun_scan/data/model/guest_activity_model.dart';
+import 'package:sun_scan/features/guest/bloc/guest_session/guest_session_bloc.dart';
 
 import '../../../../../../../core/helper/assets/assets.gen.dart';
 import '../../../../../../../core/helper/guest_photo_helper.dart';
-import '../../../../../../../data/model/guests_model.dart';
-import '../../../../../bloc/guest/guest_bloc.dart';
 
 class DashboardHistoryActivity extends StatefulWidget {
   const DashboardHistoryActivity({super.key});
@@ -19,27 +19,22 @@ class DashboardHistoryActivity extends StatefulWidget {
 
 class _DashboardHistoryActivityState extends State<DashboardHistoryActivity> {
   final TextEditingController _searchController = TextEditingController();
-  List<GuestsModel> _filteredGuests = [];
-  List<GuestsModel> _allGuests = [];
+  List<GuestActivityModel> _filteredGuests = [];
+  List<GuestActivityModel> _allGuests = [];
 
   void _filterGuests() {
     final keyword = _searchController.text.toLowerCase();
     if (keyword.isEmpty) {
       _filteredGuests = _allGuests;
     } else {
-      _filteredGuests = _allGuests
-          .where(
-            (g) =>
-                g.name.toLowerCase().contains(keyword) ||
-                (g.phone?.toLowerCase().contains(keyword) ?? false),
-          )
-          .toList();
+      _filteredGuests = _allGuests.where((g) => g.name.toLowerCase().contains(keyword)).toList();
     }
   }
 
   @override
   void initState() {
     super.initState();
+
     _searchController.addListener(() {
       setState(() {
         _filterGuests();
@@ -66,7 +61,7 @@ class _DashboardHistoryActivityState extends State<DashboardHistoryActivity> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Aktifiitas Tamu',
+            'Aktifitas Tamu',
             style: AppTextStyles.bodyLarge.copyWith(
               color: AppColors.whiteColor,
               fontWeight: FontWeight.w500,
@@ -75,14 +70,14 @@ class _DashboardHistoryActivityState extends State<DashboardHistoryActivity> {
           const SizedBox(height: 8),
           CustomFormWidget().buildTextFormInput(
             controller: _searchController,
-            hintText: 'Cari Acara...',
+            hintText: 'Cari Tamu...',
             prefixIcon: const Icon(Icons.search),
             contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
           ),
           Expanded(
-            child: BlocBuilder<GuestBloc, GuestState>(
+            child: BlocBuilder<GuestSessionBloc, GuestSessionState>(
               builder: (context, state) {
-                if (state is GuestError) {
+                if (state is GuestSessionError) {
                   return Center(
                     child: Text(
                       'Terjadi kesalahan saat memuat data tamu.',
@@ -91,8 +86,8 @@ class _DashboardHistoryActivityState extends State<DashboardHistoryActivity> {
                   );
                 }
 
-                if (state is GuestLoaded) {
-                  _allGuests = state.guests;
+                if (state is GuestSessionLoaded) {
+                  _allGuests = state.activities;
                   _filterGuests();
                 }
 
@@ -111,7 +106,10 @@ class _DashboardHistoryActivityState extends State<DashboardHistoryActivity> {
                     itemCount: _filteredGuests.length,
                     itemBuilder: (context, index) {
                       final guest = _filteredGuests[index];
-                      return _GuestActivityCard(guest: guest, isLoading: state is GuestLoading);
+                      return _GuestActivityCard(
+                        guest: guest,
+                        isLoading: state is GuestSessionLoading,
+                      );
                     },
                   ),
                 );
@@ -127,12 +125,12 @@ class _DashboardHistoryActivityState extends State<DashboardHistoryActivity> {
 class _GuestActivityCard extends StatelessWidget {
   const _GuestActivityCard({required this.guest, required this.isLoading});
 
-  final GuestsModel guest;
+  final GuestActivityModel guest;
   final bool isLoading;
 
   @override
   Widget build(BuildContext context) {
-    final avatarImage = GuestPhotoHelper.guestAvatarProvider(guest);
+    final avatarImage = GuestPhotoHelper.guestSessionAvatarProvider(guest);
 
     return ListTile(
       leading: CircleAvatar(
@@ -155,6 +153,12 @@ class _GuestActivityCard extends StatelessWidget {
                 ? ShimmerBox(height: 14, width: 40)
                 : Text(guest.phone!, style: AppTextStyles.body)
           : null,
+      trailing: isLoading
+          ? ShimmerBox(height: 14, width: 30)
+          : Text(
+              guest.checkInAt.toLocal().toString().substring(11, 16),
+              style: AppTextStyles.body.copyWith(color: AppColors.greyColor),
+            ),
 
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),

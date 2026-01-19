@@ -2,7 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:sun_scan/core/enum/enum.dart';
 
 class GuestSessionModel extends Equatable {
-  final String sessionUuidl;
+  final String sessionUuid;
   final String guestUuid;
   final String eventUuid;
 
@@ -17,7 +17,7 @@ class GuestSessionModel extends Equatable {
   final DateTime? deletedAt;
 
   const GuestSessionModel({
-    required this.sessionUuidl,
+    required this.sessionUuid,
     required this.guestUuid,
     required this.eventUuid,
     required this.checkinAt,
@@ -31,7 +31,7 @@ class GuestSessionModel extends Equatable {
 
   @override
   List<Object?> get props => [
-    sessionUuidl,
+    sessionUuid,
     guestUuid,
     eventUuid,
     checkinAt,
@@ -43,38 +43,27 @@ class GuestSessionModel extends Equatable {
     deletedAt,
   ];
 
-  factory GuestSessionModel.fromJson(
-    Map<String, dynamic> json, {
-    bool fromOnline = false,
-  }) {
+  factory GuestSessionModel.fromJson(Map<String, dynamic> json, {bool fromOnline = false}) {
     return GuestSessionModel(
-      sessionUuidl: json['session_uuid'],
+      sessionUuid: json['session_uuid'],
       guestUuid: json['guest_uuid'],
       eventUuid: json['event_uuid'],
       checkinAt: DateTime.parse(json['checkin_at']),
-      checkoutAt: json['checkout_at'] != null
-          ? DateTime.parse(json['checkout_at'])
-          : null,
+      checkoutAt: json['checkout_at'] != null ? DateTime.parse(json['checkout_at']) : null,
       syncStatus: SyncStatus.values.firstWhere(
         (e) => e.name == json['sync_status'],
         orElse: () => SyncStatus.pending,
       ),
       createdAt: DateTime.parse(json['created_at']),
-      updatedAt: json['updated_at'] != null
-          ? DateTime.parse(json['updated_at'])
-          : null,
-      isDeleted: fromOnline == true
-          ? (json['is_deleted'] == true)
-          : (json['is_deleted'] == 1),
-      deletedAt: json['deleted_at'] != null
-          ? DateTime.parse(json['deleted_at'])
-          : null,
+      updatedAt: json['updated_at'] != null ? DateTime.parse(json['updated_at']) : null,
+      isDeleted: fromOnline == true ? (json['is_deleted'] == true) : (json['is_deleted'] == 1),
+      deletedAt: json['deleted_at'] != null ? DateTime.parse(json['deleted_at']) : null,
     );
   }
 
   Map<String, dynamic> toJson({bool forOnline = false}) {
     return {
-      'session_uuid': sessionUuidl,
+      'session_uuid': sessionUuid,
       'guest_uuid': guestUuid,
       'event_uuid': eventUuid,
       'checkin_at': checkinAt.toIso8601String(),
@@ -89,7 +78,7 @@ class GuestSessionModel extends Equatable {
 
   // copyWith
   GuestSessionModel copyWith({
-    String? sessionUuidl,
+    String? sessionUuid,
     String? guestUuid,
     String? eventUuid,
     DateTime? checkinAt,
@@ -101,7 +90,7 @@ class GuestSessionModel extends Equatable {
     DateTime? deletedAt,
   }) {
     return GuestSessionModel(
-      sessionUuidl: sessionUuidl ?? this.sessionUuidl,
+      sessionUuid: sessionUuid ?? this.sessionUuid,
       guestUuid: guestUuid ?? this.guestUuid,
       eventUuid: eventUuid ?? this.eventUuid,
       checkinAt: checkinAt ?? this.checkinAt,
@@ -117,7 +106,7 @@ class GuestSessionModel extends Equatable {
   // empty
   factory GuestSessionModel.empty() {
     return GuestSessionModel(
-      sessionUuidl: '',
+      sessionUuid: '',
       guestUuid: '',
       eventUuid: '',
       checkinAt: DateTime.fromMillisecondsSinceEpoch(0),

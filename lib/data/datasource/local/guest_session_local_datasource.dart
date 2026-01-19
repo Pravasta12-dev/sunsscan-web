@@ -1,8 +1,11 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:sun_scan/core/enum/enum.dart';
 import 'package:sun_scan/core/storage/database.dart';
+import 'package:sun_scan/data/model/guest_activity_model.dart';
 import 'package:sun_scan/data/model/guest_session_model.dart';
 import 'package:uuid/uuid.dart';
+
+import '../../model/guest_photo_model.dart';
 
 class GuestSessionLocalDatasource {
   final DatabaseHelper _databaseHelper;
@@ -21,6 +24,7 @@ class GuestSessionLocalDatasource {
       'guest_sessions',
       where: 'guest_uuid = ? AND checkout_at IS NULL AND is_deleted = 0',
       whereArgs: [guestUuid],
+      orderBy: 'checkin_at DESC',
       limit: 1,
     );
 
@@ -36,7 +40,7 @@ class GuestSessionLocalDatasource {
 
     final now = DateTime.now().toUtc();
     final session = GuestSessionModel(
-      sessionUuidl: const Uuid().v4(),
+      sessionUuid: const Uuid().v4(),
       guestUuid: guestUuid,
       eventUuid: eventUuid,
       checkinAt: now,
@@ -71,6 +75,37 @@ class GuestSessionLocalDatasource {
     } catch (e) {
       throw Exception('Failed to close guest session: $e');
     }
+  }
+
+  Future<List<GuestActivityModel>> getGuestActivities(String eventUuid) async {
+    print('[GuestSessionDatasource] getGuestActivities called with eventUuid: $eventUuid');
+    final db = await _databaseHelper.database;
+
+    final result = await db.rawQuery(
+      '''
+      SELECT 
+        g.name,
+        g.phone,
+        gp.file_path AS photo_path,
+        gp.file_url AS photo_url,
+        gc.name AS category_name,
+        gs.checkin_at,
+        gs.checkout_at
+      FROM guest_sessions gs
+      INNER JOIN guests g ON gs.guest_uuid = g.guest_uuid
+      LEFT JOIN guest_categories gc ON g.guest_category_uuid = gc.category_uuid
+      LEFT JOIN guest_photos gp 
+        ON g.guest_uuid = gp.guest_uuid 
+        AND gp.is_primary = 1 
+        AND gp.photo_type = '${PhotoType.identity.name}' 
+        AND gp.is_deleted = 0
+      WHERE gs.event_uuid = ? AND gs.is_deleted = 0
+      ORDER BY gs.checkin_at DESC
+    ''',
+      [eventUuid],
+    );
+
+    return result.map(GuestActivityModel.fromJson).toList();
   }
 
   Future<List<GuestSessionModel>> getPendingSessions(int limit) async {
@@ -109,14 +144,14 @@ class GuestSessionLocalDatasource {
     final existing = await db.query(
       'guest_sessions',
       where: 'session_uuid = ?',
-      whereArgs: [session.sessionUuidl],
+      whereArgs: [session.sessionUuid],
     );
 
     if (session.isDeleted == true) {
       await db.delete(
         'guest_sessions',
         where: 'session_uuid = ?',
-        whereArgs: [session.sessionUuidl],
+        whereArgs: [session.sessionUuid],
       );
       return;
     }
@@ -129,9 +164,7 @@ class GuestSessionLocalDatasource {
         return;
       }
 
-      final localUpdated = DateTime.tryParse(
-        localRow['updated_at'] as String? ?? '',
-      );
+      final localUpdated = DateTime.tryParse(localRow['updated_at'] as String? ?? '');
 
       if (localUpdated != null &&
           session.updatedAt != null &&

@@ -5,6 +5,7 @@ import 'package:sun_scan/core/sync/sync_runner.dart';
 import 'package:sun_scan/data/datasource/local/event_local_datasource.dart';
 import 'package:sun_scan/data/datasource/local/guest_category_datasource.dart';
 import 'package:sun_scan/data/datasource/local/guest_local_datasource.dart';
+import 'package:sun_scan/data/datasource/local/guest_session_local_datasource.dart';
 import 'package:sun_scan/data/datasource/local/souvenir_local_datasource.dart';
 import 'package:sun_scan/data/datasource/remote/event_remote_datasource.dart';
 import 'package:sun_scan/data/datasource/remote/guest_category_remote_datasource.dart';
@@ -12,10 +13,12 @@ import 'package:sun_scan/data/datasource/remote/guest_remote_datasource.dart';
 import 'package:sun_scan/data/model/event_model.dart';
 import 'package:sun_scan/data/model/greeting_screen_model.dart';
 import 'package:sun_scan/data/model/guest_category_model.dart';
+import 'package:sun_scan/data/model/guest_session_model.dart';
 import 'package:sun_scan/data/model/guests_model.dart';
 
 import '../../data/datasource/local/greeting_local_datasource.dart';
 import '../../data/datasource/remote/greeting_remote_datasource.dart';
+import '../../data/datasource/remote/guest_session_remote_datasource.dart';
 import '../../data/datasource/remote/souvenir_remote_datasource.dart';
 import '../../data/model/souvenir_model.dart';
 
@@ -31,6 +34,8 @@ class SyncRegistry {
     required SouvenirRemoteDatasource souvenirRemoteDatasource,
     required GreetingLocalDatasource greetingLocalDatasource,
     required GreetingRemoteDatasource greetingRemoteDatasource,
+    required GuestSessionLocalDatasource guestSessionLocalDatasource,
+    required GuestSessionRemoteDatasource guestSessionRemoteDatasource,
   }) {
     final eventRunner = SyncRunner<EventModel>(
       queue: SyncQueue(
@@ -77,6 +82,15 @@ class SyncRegistry {
       getId: (greeting) => greeting.greetingUuid ?? '',
     );
 
+    final guestSessionRunner = SyncRunner<GuestSessionModel>(
+      queue: SyncQueue(
+        fetchPending: guestSessionLocalDatasource.getPendingSessions,
+        markAsSynced: guestSessionLocalDatasource.markSessionsAsSynced,
+      ),
+      pushRemote: guestSessionRemoteDatasource.sync,
+      getId: (session) => session.sessionUuid,
+    );
+
     return SyncEngine(
       config: SyncConfig(interval: Duration(seconds: 8), batchSize: 20),
       runners: [
@@ -85,6 +99,7 @@ class SyncRegistry {
         guestRunner,
         souvenirRunner,
         greetingRunner,
+        guestSessionRunner,
       ],
     );
   }

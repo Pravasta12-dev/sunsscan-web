@@ -14,9 +14,7 @@ class DashboardGuestStatisticTab extends StatelessWidget {
         children: [
           Flexible(
             flex: 3,
-            child: Column(
-              children: [const DashboardStats(), const SizedBox(height: 16)],
-            ),
+            child: Column(children: [const DashboardStats(), const SizedBox(height: 16)]),
           ),
           const SizedBox(width: 16),
           Flexible(flex: 2, child: const DashboardHistoryActivity()),

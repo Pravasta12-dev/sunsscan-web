@@ -25,14 +25,14 @@ class WebGuestDetailDialog extends StatelessWidget {
       _RowText(label: 'Tag', value: guest.tag ?? '-'),
       _RowText(
         label: 'Scan Masuk',
-        value: guest.checkedInAt != null
-            ? CustomDateFormat().getFormattedEventDate(date: guest.checkedInAt!)
+        value: guest.lastCheckInAt != null
+            ? CustomDateFormat().getFormattedEventDate(date: guest.lastCheckInAt!)
             : '-',
       ),
       _RowText(
         label: 'Scan Keluar',
-        value: guest.checkedOutAt != null
-            ? CustomDateFormat().getFormattedEventDate(date: guest.checkedOutAt!)
+        value: guest.lastCheckOutAt != null
+            ? CustomDateFormat().getFormattedEventDate(date: guest.lastCheckOutAt!)
             : '-',
       ),
     ];

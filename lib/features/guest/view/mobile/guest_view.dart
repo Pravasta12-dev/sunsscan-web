@@ -21,11 +21,7 @@ class GuestView extends StatefulWidget {
   final EventModel activeEvent;
   final String eventName;
 
-  const GuestView({
-    super.key,
-    required this.activeEvent,
-    required this.eventName,
-  });
+  const GuestView({super.key, required this.activeEvent, required this.eventName});
 
   @override
   State<GuestView> createState() => _GuestViewState();
@@ -35,9 +31,7 @@ class _GuestViewState extends State<GuestView> {
   @override
   void initState() {
     super.initState();
-    print(
-      '[GuestView] Loading guests for event location: ${widget.activeEvent.location}',
-    );
+    print('[GuestView] Loading guests for event location: ${widget.activeEvent.location}');
     context.read<GuestBloc>().loadGuests(widget.activeEvent.eventUuid ?? '');
   }
 
@@ -49,11 +43,7 @@ class _GuestViewState extends State<GuestView> {
         centerTitle: false,
         leading: InkWell(
           onTap: () => AppTransition.popTransition(context),
-          child: Icon(
-            Icons.arrow_back_ios,
-            color: AppColors.whiteColor,
-            size: 12,
-          ),
+          child: Icon(Icons.arrow_back_ios, color: AppColors.whiteColor, size: 12),
         ),
       ),
       body: SafeArea(
@@ -92,8 +82,7 @@ class _GuestViewState extends State<GuestView> {
                                 context: context,
                                 dialogType: DialogEnum.info,
                                 title: 'Acara Terkunci',
-                                message:
-                                    'Acara telah dikunci. Tidak dapat menambahkan tamu baru.',
+                                message: 'Acara telah dikunci. Tidak dapat menambahkan tamu baru.',
                               );
                               return;
                             }
@@ -113,9 +102,10 @@ class _GuestViewState extends State<GuestView> {
                 }
 
                 final totalGuest = state.guests.length;
-                final checkedIn = state.guests
-                    .where((guest) => guest.isCheckedIn)
-                    .length;
+                // final checkedIn = state.guests
+                //     .where((guest) => guest.isCheckedIn)
+                //     .length;
+                final checkedIn = state.guests.length;
 
                 return Column(
                   spacing: 24,
@@ -125,9 +115,7 @@ class _GuestViewState extends State<GuestView> {
                       activeEvent: widget.activeEvent,
                       totalGuest: totalGuest,
                       checkedIn: checkedIn,
-                      checkOut: state.guests
-                          .where((guest) => guest.checkedOutAt != null)
-                          .length,
+                      checkOut: state.guests.where((guest) => guest.isDeleted).length,
                     ),
 
                     /// 2️⃣ ACTION CARDS
@@ -145,8 +133,7 @@ class _GuestViewState extends State<GuestView> {
                                 context,
                                 GuestScanPage(
                                   scanType: GuestScanType.checkIn,
-                                  activeEventId:
-                                      widget.activeEvent.eventUuid ?? '',
+                                  activeEventId: widget.activeEvent.eventUuid ?? '',
                                 ),
                               );
                             },
@@ -161,8 +148,7 @@ class _GuestViewState extends State<GuestView> {
                                   context,
                                   GuestScanPage(
                                     scanType: GuestScanType.checkOut,
-                                    activeEventId:
-                                        widget.activeEvent.eventUuid ?? '',
+                                    activeEventId: widget.activeEvent.eventUuid ?? '',
                                   ),
                                 );
                               },

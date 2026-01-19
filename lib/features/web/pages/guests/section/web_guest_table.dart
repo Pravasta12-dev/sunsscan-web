@@ -181,24 +181,24 @@ class _WebGuestTableState extends State<WebGuestTable> {
                                     DataCell(Text(guest.tag ?? '-')),
                                     DataCell(
                                       GuestStatusBadge(
-                                        isCheckedIn: guest.isCheckedIn,
-                                        isCheckedOut: guest.checkedOutAt != null,
+                                        isCheckedIn: guest.lastCheckInAt != null,
+                                        isCheckedOut: guest.lastCheckOutAt != null,
                                       ),
                                     ),
                                     DataCell(
                                       Text(
-                                        guest.checkedInAt != null
+                                        guest.lastCheckInAt != null
                                             ? CustomDateFormat().getFormattedTime(
-                                                date: guest.checkedInAt!,
+                                                date: guest.lastCheckInAt!,
                                               )
                                             : '-',
                                       ),
                                     ),
                                     DataCell(
                                       Text(
-                                        guest.checkedOutAt != null
+                                        guest.lastCheckOutAt != null
                                             ? CustomDateFormat().getFormattedTime(
-                                                date: guest.checkedOutAt!,
+                                                date: guest.lastCheckOutAt!,
                                               )
                                             : '-',
                                       ),

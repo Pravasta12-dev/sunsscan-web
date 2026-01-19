@@ -10,8 +10,7 @@ import '../../../core/enum/enum.dart';
 class GuestLocalDatasource {
   final DatabaseHelper _databaseHelper;
 
-  GuestLocalDatasource({required DatabaseHelper databaseHelper})
-    : _databaseHelper = databaseHelper;
+  GuestLocalDatasource({required DatabaseHelper databaseHelper}) : _databaseHelper = databaseHelper;
 
   factory GuestLocalDatasource.create() {
     return GuestLocalDatasource(databaseHelper: DatabaseHelper());
@@ -26,10 +25,7 @@ class GuestLocalDatasource {
     final categoryUuid = guestData.guestCategoryUuid;
     final categoryName = guestData.guestCategoryName;
 
-    final newGuest = guestData.copyWith(
-      updatedAt: DateTime.now(),
-      syncStatus: SyncStatus.pending,
-    );
+    final newGuest = guestData.copyWith(updatedAt: DateTime.now(), syncStatus: SyncStatus.pending);
 
     // await db.insert('guests', newGuest.toJson());
     await db.transaction((txn) async {
@@ -49,10 +45,7 @@ class GuestLocalDatasource {
       await txn.insert(
         'guests',
         newGuest
-            .copyWith(
-              guestCategoryUuid: categoryUuid ?? catUuid,
-              guestCategoryName: categoryName,
-            )
+            .copyWith(guestCategoryUuid: categoryUuid ?? catUuid, guestCategoryName: categoryName)
             .toJson(),
       );
 
@@ -122,13 +115,24 @@ class GuestLocalDatasource {
       SELECT guests.*,
         events.name AS event_name,
         gp.file_path AS photo_path,
-        gp.file_url AS photo_url
+        gp.file_url AS photo_url,
+        gs.checkin_at AS last_checkin_at,
+        gs.checkout_at AS last_checkout_at
         FROM guests
         INNER JOIN events ON guests.event_uuid = events.event_uuid
         LEFT JOIN guest_photos gp
           ON gp.guest_uuid = guests.guest_uuid
           AND gp.is_primary = 1 AND gp.photo_type = '${PhotoType.identity.name}'
           AND gp.is_deleted = 0
+        LEFT JOIN guest_sessions gs
+          ON gs.session_uuid = (
+            SELECT s.session_uuid
+            FROM guest_sessions s
+            WHERE s.guest_uuid = guests.guest_uuid
+            AND s.is_deleted = 0
+            ORDER BY s.checkin_at DESC
+            LIMIT 1
+          )
       WHERE guests.event_uuid = ? AND guests.is_deleted = 0
     ''',
         [eventUuid],
@@ -136,7 +140,6 @@ class GuestLocalDatasource {
 
       return maps.map(GuestsModel.fromJson).toList();
     } catch (e) {
-      print('[GuestLocalDatasource] Error getGuestsByEventId: $e');
       throw Exception('Database query error: $e');
     }
   }
@@ -150,22 +153,31 @@ class GuestLocalDatasource {
       SELECT guests.*,
         events.name AS event_name,
         gp.file_path AS photo_path,
-        gp.file_url AS photo_url
+        gp.file_url AS photo_url,
+        gs.checkin_at AS last_checkin_at,
+        gs.checkout_at AS last_checkout_at
         FROM guests
         INNER JOIN events ON guests.event_uuid = events.event_uuid
         LEFT JOIN guest_photos gp
           ON gp.guest_uuid = guests.guest_uuid
           AND gp.is_primary = 1
           AND gp.is_deleted = 0
+        LEFT JOIN guest_sessions gs
+          ON gs.session_uuid = (
+            SELECT s.session_uuid
+            FROM guest_sessions s
+            WHERE s.guest_uuid = guests.guest_uuid
+            AND s.is_deleted = 0
+            ORDER BY s.checkin_at DESC
+            LIMIT 1
+          )
       WHERE LOWER(TRIM(guests.qr_value)) = LOWER(TRIM(?)) AND guests.is_deleted = 0
     ''',
       [qrValue],
     );
 
     if (maps.isEmpty) {
-      print(
-        '[getGuestByQrValue] No guest found for QR: ${qrValue.substring(0, 20)}...',
-      );
+      print('[getGuestByQrValue] No guest found for QR: ${qrValue.substring(0, 20)}...');
       return null;
     }
 
@@ -205,12 +217,7 @@ class GuestLocalDatasource {
       // Update guest dengan categoryUuid yang benar
       await txn.update(
         'guests',
-        updatedGuest
-            .copyWith(
-              guestCategoryUuid: catUuid,
-              guestCategoryName: categoryName,
-            )
-            .toJson(),
+        updatedGuest.copyWith(guestCategoryUuid: catUuid, guestCategoryName: categoryName).toJson(),
         where: 'guest_uuid = ?',
         whereArgs: [guestData.guestUuid],
       );
@@ -356,19 +363,11 @@ class GuestLocalDatasource {
   Future<void> upsertFromRemote(GuestsModel remote) async {
     final db = await _databaseHelper.database;
 
-    final local = await db.query(
-      'guests',
-      where: 'guest_uuid = ?',
-      whereArgs: [remote.guestUuid],
-    );
+    final local = await db.query('guests', where: 'guest_uuid = ?', whereArgs: [remote.guestUuid]);
 
     /// 🟥 REMOTE DELETE → HARUS MENANG
     if (remote.isDeleted == true) {
-      await db.delete(
-        'guests',
-        where: 'guest_uuid = ?',
-        whereArgs: [remote.guestUuid],
-      );
+      await db.delete('guests', where: 'guest_uuid = ?', whereArgs: [remote.guestUuid]);
       return;
     }
 
@@ -380,9 +379,7 @@ class GuestLocalDatasource {
         return;
       }
 
-      final localUpdated = DateTime.tryParse(
-        localRow['updated_at'] as String? ?? '',
-      );
+      final localUpdated = DateTime.tryParse(localRow['updated_at'] as String? ?? '');
 
       if (localUpdated != null &&
           remote.updatedAt != null &&

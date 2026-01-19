@@ -53,12 +53,9 @@ class DatabaseHelper {
         phone TEXT,
         qr_value TEXT NOT NULL UNIQUE,
         tag TEXT,
-        is_checked_in INTEGER NOT NULL DEFAULT 0,
         gender VARCHAR(16) NOT NULL DEFAULT 'male',
         guest_category_uuid TEXT NOT NULL,
         guest_category_name TEXT,
-        checked_in_at TEXT,
-        checked_out_at TEXT,
         created_at TEXT NOT NULL,
         updated_at TEXT,
         sync_status TEXT NOT NULL DEFAULT 'pending',
@@ -160,38 +157,24 @@ class DatabaseHelper {
     ''');
 
     await db.execute('CREATE INDEX idx_guests_qr_value ON guests (qr_value);');
-    await db.execute(
-      'CREATE INDEX idx_guests_event_uuid ON guests (event_uuid);',
-    );
+    await db.execute('CREATE INDEX idx_guests_event_uuid ON guests (event_uuid);');
     await db.execute(
       'CREATE INDEX idx_guest_categories_event_uuid ON guest_categories (event_uuid);',
     );
-    await db.execute(
-      'CREATE INDEX idx_guest_sessions_guest_uuid ON guest_sessions (guest_uuid);',
-    );
-    await db.execute(
-      'CREATE INDEX idx_guest_sessions_event_uuid ON guest_sessions (event_uuid);',
-    );
+    await db.execute('CREATE INDEX idx_guest_sessions_guest_uuid ON guest_sessions (guest_uuid);');
+    await db.execute('CREATE INDEX idx_guest_sessions_event_uuid ON guest_sessions (event_uuid);');
     await db.execute(
       'CREATE INDEX idx_guest_sessions_active ON guest_sessions (guest_uuid, checkout_at);',
     );
-    await db.execute(
-      'CREATE INDEX idx_souvenirs_event_uuid ON souvenirs (event_uuid);',
-    );
-    await db.execute(
-      'CREATE INDEX idx_souvenirs_guest_uuid ON souvenirs (guest_uuid);',
-    );
+    await db.execute('CREATE INDEX idx_souvenirs_event_uuid ON souvenirs (event_uuid);');
+    await db.execute('CREATE INDEX idx_souvenirs_guest_uuid ON souvenirs (guest_uuid);');
     await db.execute(
       'CREATE INDEX idx_souvenirs_guest_category_uuid ON souvenirs (guest_category_uuid);',
     );
     await db.execute(
       'CREATE INDEX idx_greeting_screens_event_uuid ON greeting_screens (event_uuid);',
     );
-    await db.execute(
-      'CREATE INDEX idx_guest_photos_guest_uuid ON guest_photos (guest_uuid);',
-    );
-    await db.execute(
-      'CREATE INDEX idx_guest_photos_event_uuid ON guest_photos (event_uuid);',
-    );
+    await db.execute('CREATE INDEX idx_guest_photos_guest_uuid ON guest_photos (guest_uuid);');
+    await db.execute('CREATE INDEX idx_guest_photos_event_uuid ON guest_photos (event_uuid);');
   }
 }

@@ -106,7 +106,7 @@ class _GuestInsertPageState extends State<GuestInsertPage> {
       name: _nameController.text.trim(),
       qrValue: qrData,
       phone: _phoneController.text.trim().isEmpty ? null : _phoneController.text.trim(),
-      isCheckedIn: false,
+
       createdAt: DateTime.now(),
       tag: _tagController.text.trim().isEmpty ? null : _tagController.text.trim(),
       guestCategoryUuid: selectedGuestCategoryUuid,

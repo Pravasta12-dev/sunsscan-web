@@ -25,9 +25,7 @@ class DashboardStats extends StatelessWidget {
       builder: (context, state) {
         final bool isLoading = state is GuestLoading;
 
-        final List<GuestsModel> guests = state is GuestLoaded
-            ? state.guests
-            : [];
+        final List<GuestsModel> guests = state is GuestLoaded ? state.guests : [];
 
         final vipGuests = guests.where(_isVip).toList();
         final regularGuests = guests.where((g) => !_isVip(g)).toList();
@@ -35,9 +33,10 @@ class DashboardStats extends StatelessWidget {
         int attendedCount(List<GuestsModel> list) => list.length;
         // Tamu masuk: isCheckedIn = true ATAU checkedOutAt != null (sudah pernah check-in lalu check-out)
         int checkedInCount(List<GuestsModel> list) =>
-            list.where((g) => g.isCheckedIn || g.checkedOutAt != null).length;
+            list.where((g) => g.lastCheckInAt != null || g.lastCheckOutAt != null).length;
+
         int notCheckedInCount(List<GuestsModel> list) =>
-            list.where((g) => !g.isCheckedIn && g.checkedOutAt == null).length;
+            list.where((g) => g.lastCheckInAt == null && g.lastCheckOutAt == null).length;
 
         return Container(
           width: double.infinity,
@@ -122,12 +121,8 @@ class _StatisticCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      type == StatisticType.vip
-                          ? 'VIP Guests'
-                          : 'Regular Guests',
-                      style: AppTextStyles.body.copyWith(
-                        fontWeight: FontWeight.w500,
-                      ),
+                      type == StatisticType.vip ? 'VIP Guests' : 'Regular Guests',
+                      style: AppTextStyles.body.copyWith(fontWeight: FontWeight.w500),
                     ),
                     const SizedBox(height: 4),
                     isLoading
@@ -147,12 +142,8 @@ class _StatisticCard extends StatelessWidget {
             /// Placeholder for statistic number
             CircularGauge(
               isLoading: isLoading,
-              progress: total != null && total! > 0
-                  ? (checkedIn ?? 0) / total!
-                  : 0.0,
-              color: type == StatisticType.vip
-                  ? AppColors.primaryColor
-                  : AppColors.purpleColor,
+              progress: total != null && total! > 0 ? (checkedIn ?? 0) / total! : 0.0,
+              color: type == StatisticType.vip ? AppColors.primaryColor : AppColors.purpleColor,
               size: 150,
             ),
 
@@ -163,18 +154,14 @@ class _StatisticCard extends StatelessWidget {
                 Expanded(
                   child: Text(
                     'Tamu Masuk',
-                    style: AppTextStyles.caption.copyWith(
-                      color: AppColors.greyColor.withAlpha(80),
-                    ),
+                    style: AppTextStyles.caption.copyWith(color: AppColors.greyColor.withAlpha(80)),
                   ),
                 ),
                 isLoading
                     ? const ShimmerBox(width: 32, height: 12)
                     : Text(
                         '$checkedIn',
-                        style: AppTextStyles.caption.copyWith(
-                          fontWeight: FontWeight.w600,
-                        ),
+                        style: AppTextStyles.caption.copyWith(fontWeight: FontWeight.w600),
                       ),
               ],
             ),
@@ -184,18 +171,14 @@ class _StatisticCard extends StatelessWidget {
                 Expanded(
                   child: Text(
                     'Belum Masuk',
-                    style: AppTextStyles.caption.copyWith(
-                      color: AppColors.greyColor.withAlpha(80),
-                    ),
+                    style: AppTextStyles.caption.copyWith(color: AppColors.greyColor.withAlpha(80)),
                   ),
                 ),
                 isLoading
                     ? const ShimmerBox(width: 32, height: 12)
                     : Text(
                         '$notCheckedIn',
-                        style: AppTextStyles.caption.copyWith(
-                          fontWeight: FontWeight.w600,
-                        ),
+                        style: AppTextStyles.caption.copyWith(fontWeight: FontWeight.w600),
                       ),
               ],
             ),

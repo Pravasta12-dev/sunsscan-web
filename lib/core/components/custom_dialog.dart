@@ -40,10 +40,7 @@ class CustomDialog {
     }
   }
 
-  static void showLoadingDialog({
-    required BuildContext context,
-    GlobalKey? loadingKey,
-  }) {
+  static void showLoadingDialog({required BuildContext context, GlobalKey? loadingKey}) {
     if (_isShowingLoading) return;
 
     _isShowingLoading = true;
@@ -83,9 +80,7 @@ class CustomDialog {
                               shape: BoxShape.circle,
                             ),
                             child: const CircularProgressIndicator(
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                AppColors.primaryColor,
-                              ),
+                              valueColor: AlwaysStoppedAnimation<Color>(AppColors.primaryColor),
                             ),
                           ),
                           SizedBox(height: 16),
@@ -114,10 +109,7 @@ class CustomDialog {
                         width: 24,
                         height: 24,
                         decoration: BoxDecoration(
-                          border: Border.all(
-                            color: AppColors.greyColor,
-                            width: 1.0,
-                          ),
+                          border: Border.all(color: AppColors.greyColor, width: 1.0),
                           borderRadius: BorderRadius.circular(4.0),
                         ),
                         child: Center(
@@ -130,11 +122,7 @@ class CustomDialog {
                                 _loadingContext = null;
                               }
                             },
-                            icon: Icon(
-                              Icons.close,
-                              size: 18,
-                              color: AppColors.greyColor,
-                            ),
+                            icon: Icon(Icons.close, size: 18, color: AppColors.greyColor),
                           ),
                         ),
                       ),
@@ -188,43 +176,31 @@ class CustomDialog {
                   children: [
                     Container(
                       padding: const EdgeInsets.all(16.0),
-                      decoration: BoxDecoration(
-                        color: AppColors.redColor,
-                        shape: BoxShape.circle,
-                      ),
+                      decoration: BoxDecoration(color: AppColors.redColor, shape: BoxShape.circle),
                       child: SvgPicture.asset(
                         Assets.svg.svgTrash.path,
                         width: 48,
                         height: 48,
-                        colorFilter: ColorFilter.mode(
-                          AppColors.whiteColor,
-                          BlendMode.srcIn,
-                        ),
+                        colorFilter: ColorFilter.mode(AppColors.whiteColor, BlendMode.srcIn),
                       ),
                     ),
                     SizedBox(height: 16),
                     Text(
                       title,
-                      style: AppTextStyles.bodyLarge.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: AppTextStyles.bodyLarge.copyWith(fontWeight: FontWeight.bold),
                     ),
                     SizedBox(height: 12),
                     if (subtitle.isNotEmpty) ...[
                       Text(
                         subtitle,
-                        style: AppTextStyles.body.copyWith(
-                          fontWeight: FontWeight.w400,
-                        ),
+                        style: AppTextStyles.body.copyWith(fontWeight: FontWeight.w400),
                       ),
                       SizedBox(height: 8),
                     ],
                     Text(
                       message,
                       textAlign: TextAlign.center,
-                      style: AppTextStyles.caption.copyWith(
-                        fontWeight: FontWeight.w400,
-                      ),
+                      style: AppTextStyles.caption.copyWith(fontWeight: FontWeight.w400),
                     ),
                     SizedBox(height: 24),
                     Row(
@@ -236,19 +212,14 @@ class CustomDialog {
                             },
                             style: OutlinedButton.styleFrom(
                               side: BorderSide(color: AppColors.greyColor),
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 32.0,
-                                vertical: 12.0,
-                              ),
+                              padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 12.0),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(8.0),
                               ),
                             ),
                             child: Text(
                               'Batal',
-                              style: AppTextStyles.body.copyWith(
-                                fontWeight: FontWeight.w600,
-                              ),
+                              style: AppTextStyles.body.copyWith(fontWeight: FontWeight.w600),
                             ),
                           ),
                         ),
@@ -263,10 +234,7 @@ class CustomDialog {
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: AppColors.redColor,
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 32.0,
-                                vertical: 12.0,
-                              ),
+                              padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 12.0),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(8.0),
                               ),
@@ -358,18 +326,12 @@ class CustomDialog {
                   children: [
                     Container(
                       padding: const EdgeInsets.all(16.0),
-                      decoration: BoxDecoration(
-                        color: bgIconColor,
-                        shape: BoxShape.circle,
-                      ),
+                      decoration: BoxDecoration(color: bgIconColor, shape: BoxShape.circle),
                       child: SvgPicture.asset(
                         imagePath!,
                         width: 48,
                         height: 48,
-                        colorFilter: ColorFilter.mode(
-                          iconColor!,
-                          BlendMode.srcIn,
-                        ),
+                        colorFilter: ColorFilter.mode(iconColor!, BlendMode.srcIn),
                       ),
                     ),
                     SizedBox(height: 16),
@@ -394,19 +356,12 @@ class CustomDialog {
                       width: double.infinity,
                       child: ElevatedButton(
                         onPressed: () {
-                          onPressed != null
-                              ? onPressed()
-                              : Navigator.of(context).pop();
+                          onPressed != null ? onPressed() : Navigator.of(context).pop();
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: buttonColor,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 32.0,
-                            vertical: 12.0,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8.0),
-                          ),
+                          padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 12.0),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
                         ),
                         child: Text(
                           'Tutup',

@@ -33,12 +33,8 @@ class _GuestScanPageState extends State<GuestScanPage> {
   void _onDetect(BarcodeCapture capture) {
     if (_isProcessing) return;
 
-    print('[GuestScanPage] Barcode detected: ${capture.barcodes.length}');
-
     final barcode = capture.barcodes.firstOrNull;
     final rawValue = barcode?.rawValue;
-
-    print('[GuestScanPage] Raw value: $rawValue');
 
     if (rawValue == null) return;
 
@@ -47,13 +43,13 @@ class _GuestScanPageState extends State<GuestScanPage> {
     try {
       final qrValue = QrScanHelper.parse(rawValue);
 
-      if (widget.scanType == GuestScanType.checkIn) {
-        print('[GuestScanPage] Scanning for check-in');
-        context.read<GuestBloc>().scanCheckIn(qrValue.raw);
-      } else {
-        print('[GuestScanPage] Scanning for check-out');
-        context.read<GuestBloc>().scanCheckOut(qrValue.raw);
-      }
+      // if (widget.scanType == GuestScanType.checkIn) {
+      //   print('[GuestScanPage] Scanning for check-in');
+      //   context.read<GuestBloc>().scanCheckIn(qrValue.raw);
+      // } else {
+      //   print('[GuestScanPage] Scanning for check-out');
+      //   context.read<GuestBloc>().scanCheckOut(qrValue.raw);
+      // }
     } catch (e) {
       _showError(e.toString());
       _reset();
@@ -89,10 +85,7 @@ class _GuestScanPageState extends State<GuestScanPage> {
               if (state is GuestScanSuccess) {
                 final result = await AppTransition.pushTransition<GuestScanResult>(
                   context,
-                  GuestScanSuccessPage(
-                    guestName: state.guest.name,
-                    isCheckOut: state.guest.checkedOutAt != null,
-                  ),
+                  GuestScanSuccessPage(guestName: state.guest.name, isCheckOut: false),
                 );
 
                 if (result == GuestScanResult.scanAgain) {

@@ -22,17 +22,35 @@ class SouvenirLocalDataSource {
       final maps = await db.rawQuery(
         '''
           SELECT 
-            souvenirs.*,
-            guests.name AS guest_name,
-            guest_categories.name AS guest_category_name,
+            s.*,
+            g.name AS guest_name,
+            gc.name AS guest_category_name,
+
             CASE 
-              WHEN guests.checked_in_at IS NOT NULL THEN 1
+              WHEN gs.checkout_at IS NULL AND gs.checkin_at IS NOT NULL THEN 1
               ELSE 0
             END AS checkin_status
-          FROM souvenirs
-          INNER JOIN guests ON souvenirs.guest_uuid = guests.guest_uuid
-          INNER JOIN guest_categories ON souvenirs.guest_category_uuid = guest_categories.category_uuid
-          WHERE souvenirs.event_uuid = ? AND souvenirs.is_deleted = 0
+
+          FROM souvenirs s
+
+          INNER JOIN guests g 
+            ON s.guest_uuid = g.guest_uuid
+
+          INNER JOIN guest_categories gc 
+            ON s.guest_category_uuid = gc.category_uuid
+
+          LEFT JOIN guest_sessions gs
+            ON gs.session_uuid = (
+              SELECT gs2.session_uuid
+              FROM guest_sessions gs2
+              WHERE gs2.guest_uuid = s.guest_uuid
+                AND gs2.is_deleted = 0
+              ORDER BY gs2.checkin_at DESC
+              LIMIT 1
+            )
+
+          WHERE s.event_uuid = ?
+            AND s.is_deleted = 0;
         ''',
         [eventUuid],
       );
@@ -43,10 +61,7 @@ class SouvenirLocalDataSource {
     }
   }
 
-  Future<void> markSouvenirToReceivedByGuestUuid(
-    String guestUuid,
-    DateTime receivedAt,
-  ) async {
+  Future<void> markSouvenirToReceivedByGuestUuid(String guestUuid, DateTime receivedAt) async {
     final db = await _databaseHelper.database;
 
     try {
@@ -155,9 +170,7 @@ class SouvenirLocalDataSource {
         return;
       }
 
-      final localUpdatedAt = DateTime.tryParse(
-        existing.first['updated_at'] as String? ?? '',
-      );
+      final localUpdatedAt = DateTime.tryParse(existing.first['updated_at'] as String? ?? '');
 
       if (localUpdatedAt != null &&
           souvenir.updatedAt != null &&
@@ -167,10 +180,6 @@ class SouvenirLocalDataSource {
       }
     }
 
-    await db.insert(
-      'souvenirs',
-      souvenir.toJson(),
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
+    await db.insert('souvenirs', souvenir.toJson(), conflictAlgorithm: ConflictAlgorithm.replace);
   }
 }

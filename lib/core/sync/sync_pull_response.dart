@@ -2,6 +2,7 @@ import 'package:sun_scan/data/model/event_model.dart';
 import 'package:sun_scan/data/model/greeting_screen_model.dart';
 import 'package:sun_scan/data/model/guest_category_model.dart';
 import 'package:sun_scan/data/model/guest_photo_model.dart';
+import 'package:sun_scan/data/model/guest_session_model.dart';
 import 'package:sun_scan/data/model/guests_model.dart';
 import 'package:sun_scan/data/model/souvenir_model.dart';
 
@@ -13,6 +14,7 @@ class SyncPullResponse {
   final List<SouvenirModel>? souvenirs;
   final List<GreetingScreenModel>? greetingScreens;
   final List<GuestPhotoModel>? guestPhotos;
+  final List<GuestSessionModel>? guestSessions;
 
   SyncPullResponse({
     required this.serverTime,
@@ -22,6 +24,7 @@ class SyncPullResponse {
     this.souvenirs,
     this.greetingScreens,
     this.guestPhotos,
+    this.guestSessions,
   });
 
   factory SyncPullResponse.fromJson(Map<String, dynamic> json) {
@@ -51,6 +54,11 @@ class SyncPullResponse {
       guestPhotos: json['guest_photos'] != null
           ? (json['guest_photos'] as List<dynamic>)
                 .map((p) => GuestPhotoModel.fromJson(p, isOnline: true))
+                .toList()
+          : null,
+      guestSessions: json['guest_sessions'] != null
+          ? (json['guest_sessions'] as List<dynamic>)
+                .map((s) => GuestSessionModel.fromJson(s, fromOnline: true))
                 .toList()
           : null,
     );

@@ -1,4 +1,5 @@
 import 'package:sun_scan/data/datasource/local/guest_category_datasource.dart';
+import 'package:sun_scan/data/datasource/local/guest_session_local_datasource.dart';
 import 'package:sun_scan/data/datasource/local/souvenir_local_datasource.dart';
 
 import '../../data/datasource/local/event_local_datasource.dart';
@@ -17,6 +18,7 @@ class SyncPullService {
   final SouvenirLocalDataSource _souvenirLocal;
   final GreetingLocalDatasource _greetingLocal;
   final GuestPhotoLocalDatasource _guestPhotoLocal;
+  final GuestSessionLocalDatasource _guestSessionLocal;
 
   SyncPullService({
     required EventRemoteDatasource remote,
@@ -27,6 +29,7 @@ class SyncPullService {
     required SouvenirLocalDataSource souvenirLocal,
     required GreetingLocalDatasource greetingLocal,
     required GuestPhotoLocalDatasource guestPhotoLocal,
+    required GuestSessionLocalDatasource guestSessionLocal,
   }) : _remote = remote,
        _eventLocal = eventLocal,
        _guestLocal = guestLocal,
@@ -34,7 +37,8 @@ class SyncPullService {
        _guestCategoryLocal = guestCategoryLocal,
        _souvenirLocal = souvenirLocal,
        _greetingLocal = greetingLocal,
-       _guestPhotoLocal = guestPhotoLocal;
+       _guestPhotoLocal = guestPhotoLocal,
+       _guestSessionLocal = guestSessionLocal;
 
   Future<void> pull() async {
     final lastSyncAt = await _syncState.getLastSyncAt();
@@ -138,6 +142,21 @@ class SyncPullService {
       }
     } else {
       print('[SyncPullService] ⚠️ Tidak ada guest photos dari server');
+    }
+
+    if (response.guestSessions != null && response.guestSessions!.isNotEmpty) {
+      print('[SyncPullService] ⏱️  Memproses ${response.guestSessions!.length} guest sessions...');
+
+      for (final session in response.guestSessions!) {
+        try {
+          await _guestSessionLocal.upsertFromRemote(session);
+        } catch (e, st) {
+          print('[SyncPullService] ❌ Failed to upsert guest session: $e');
+          print('[SyncPullService] Stack trace: $st');
+        }
+      }
+    } else {
+      print('[SyncPullService] ⚠️ Tidak ada guest sessions dari server');
     }
 
     /// 🔹 SAVE SERVER TIME

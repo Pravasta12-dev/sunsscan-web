@@ -26,7 +26,8 @@ class GuestScanIn extends StatelessWidget {
               borderRadius: BorderRadius.circular(8),
             ),
             child: Text(
-              'Mode Aktif: Scan Masuk',
+              'Silahkan Pindai QR Code Tamu Undangan untuk Check-In dan Check-Out',
+              textAlign: TextAlign.center,
               style: AppTextStyles.body.copyWith(
                 color: AppColors.greenColor,
                 fontWeight: FontWeight.w400,

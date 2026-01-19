@@ -152,8 +152,8 @@ class _GuestListPageState extends State<GuestListPage> {
                                   );
                                 },
                                 trailing: GuestStatusBadge(
-                                  isCheckedIn: guest.isCheckedIn,
-                                  isCheckedOut: guest.checkedOutAt != null,
+                                  isCheckedIn: guest.lastCheckInAt != null,
+                                  isCheckedOut: guest.lastCheckOutAt != null,
                                 ),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(8),

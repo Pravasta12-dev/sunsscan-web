@@ -181,8 +181,8 @@ class _GuestDetailContent extends StatelessWidget {
                         Text('Jam Masuk', style: AppTextStyles.body),
                         const SizedBox(height: 4),
                         Text(
-                          guest.checkedInAt != null
-                              ? CustomDateFormat().getFormattedTime(date: guest.checkedInAt!)
+                          guest.lastCheckInAt != null
+                              ? CustomDateFormat().getFormattedTime(date: guest.lastCheckInAt!)
                               : '-',
                           style: AppTextStyles.bodyLarge.copyWith(fontWeight: FontWeight.w600),
                         ),
@@ -195,8 +195,8 @@ class _GuestDetailContent extends StatelessWidget {
                         Text('Jam Keluar', style: AppTextStyles.body),
                         const SizedBox(height: 4),
                         Text(
-                          guest.checkedOutAt != null
-                              ? CustomDateFormat().getFormattedTime(date: guest.checkedOutAt!)
+                          guest.lastCheckOutAt != null
+                              ? CustomDateFormat().getFormattedTime(date: guest.lastCheckOutAt!)
                               : '-',
                           style: AppTextStyles.bodyLarge.copyWith(fontWeight: FontWeight.w600),
                         ),

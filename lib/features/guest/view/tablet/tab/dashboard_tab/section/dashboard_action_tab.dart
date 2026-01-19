@@ -19,26 +19,16 @@ class DashboardActionTab extends StatelessWidget {
         bool isLoading = state is GuestLoading;
 
         if (state is GuestError) {
-          return Center(
-            child: Text('Error: ${state.message}', style: AppTextStyles.body),
-          );
+          return Center(child: Text('Error: ${state.message}', style: AppTextStyles.body));
         }
 
-        final List<GuestsModel> guests = (state is GuestLoaded)
-            ? state.guests
-            : [];
+        final List<GuestsModel> guests = (state is GuestLoaded) ? state.guests : [];
 
         final int totalGuests = guests.length;
-        final int checkedInGuests = guests
-            .where((guest) => guest.checkedInAt != null)
-            .length;
+        final int checkedInGuests = guests.where((guest) => guest.lastCheckInAt != null).length;
 
         final int vipCheckinGuests = guests
-            .where(
-              (element) =>
-                  element.guestCategoryName == 'VIP' &&
-                  element.checkedInAt != null,
-            )
+            .where((element) => element.guestCategoryName == 'VIP' && element.lastCheckInAt != null)
             .length;
 
         return Row(
@@ -97,9 +87,7 @@ class DashboardActionTab extends StatelessWidget {
                 description: 'Meninggalkan Acara',
                 assetPath: Assets.svg.svgLogout.path,
                 onTap: () {},
-                count: guests
-                    .where((guest) => guest.checkedOutAt != null)
-                    .length,
+                count: guests.where((guest) => guest.lastCheckOutAt != null).length,
                 color: AppColors.greyColor,
               ),
               isLoading: isLoading,
@@ -166,19 +154,12 @@ class _ActionData {
                   ),
             isLoading
                 ? const ShimmerBox(width: 120, height: 14)
-                : Text(
-                    data.title,
-                    style: AppTextStyles.body.copyWith(
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
+                : Text(data.title, style: AppTextStyles.body.copyWith(fontWeight: FontWeight.w500)),
             isLoading
                 ? const ShimmerBox(width: double.infinity, height: 12)
                 : Text(
                     data.description,
-                    style: AppTextStyles.caption.copyWith(
-                      color: AppColors.greyColor.withAlpha(70),
-                    ),
+                    style: AppTextStyles.caption.copyWith(color: AppColors.greyColor.withAlpha(70)),
                   ),
           ],
         ),
