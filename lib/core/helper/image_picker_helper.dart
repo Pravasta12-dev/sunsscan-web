@@ -20,15 +20,16 @@ class ImagePickerHelper {
     File? originalFile;
 
     if (kIsWeb) {
-      print('Picking image from web using FilePicker');
       final result = await FilePicker.platform.pickFiles(type: FileType.image);
       if (result == null) return null;
       originalFile = File(result.files.single.path!);
     } else if (Platform.isAndroid || Platform.isIOS) {
-      print('Picking image from mobile using ImagePicker');
-      if (source == PickImageSource.camera || source == PickImageSource.gallery) {
+      if (source == PickImageSource.camera ||
+          source == PickImageSource.gallery) {
         final picked = await _picker.pickImage(
-          source: source == PickImageSource.camera ? ImageSource.camera : ImageSource.gallery,
+          source: source == PickImageSource.camera
+              ? ImageSource.camera
+              : ImageSource.gallery,
           imageQuality: quality,
         );
 
@@ -37,7 +38,6 @@ class ImagePickerHelper {
         originalFile = File(picked.path);
       }
     } else {
-      print('Picking image from desktop using FilePicker');
       final result = await FilePicker.platform.pickFiles(type: FileType.image);
       if (result == null) return null;
       originalFile = File(result.files.single.path!);
@@ -45,7 +45,11 @@ class ImagePickerHelper {
 
     if (originalFile == null) return null;
 
-    return _resizeAndSave(file: originalFile, maxWidth: maxWidth, quality: quality);
+    return _resizeAndSave(
+      file: originalFile,
+      maxWidth: maxWidth,
+      quality: quality,
+    );
   }
 
   static Future<String?> _resizeAndSave({

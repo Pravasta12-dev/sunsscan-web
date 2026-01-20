@@ -20,7 +20,6 @@ class QrScanHelper {
     }
 
     final eventId = parts[1];
-    print('[QrScanHelper] Parsed QR: eventId=$eventId, raw=$rawQr');
 
     return QrScanResult(eventId: eventId, raw: rawQr);
   }

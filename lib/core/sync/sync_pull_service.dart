@@ -48,12 +48,16 @@ class SyncPullService {
     print('[SyncPullService] 📥 Response dari server:');
     print('[SyncPullService] - Events: ${response.events?.length ?? 0}');
     print('[SyncPullService] - Guests: ${response.guests?.length ?? 0}');
-    print('[SyncPullService] - Guest Categories: ${response.guestCategories?.length ?? 0}');
+    print(
+      '[SyncPullService] - Guest Categories: ${response.guestCategories?.length ?? 0}',
+    );
     print('[SyncPullService] - Server Time: ${response.serverTime}');
 
     /// 🔹 EVENTS
     if (response.events != null && response.events!.isNotEmpty) {
-      print('[SyncPullService] 📝 Memproses ${response.events!.length} events...');
+      print(
+        '[SyncPullService] 📝 Memproses ${response.events!.length} events...',
+      );
       for (final event in response.events!) {
         try {
           print('[SyncPullService] - Upsert event: ${event.eventUuid} )');
@@ -69,7 +73,9 @@ class SyncPullService {
     }
 
     if (response.guests != null && response.guests!.isNotEmpty) {
-      print('[SyncPullService] 👥 Memproses ${response.guests!.length} guests...');
+      print(
+        '[SyncPullService] 👥 Memproses ${response.guests!.length} guests...',
+      );
       for (final guest in response.guests!) {
         try {
           await _guestLocal.upsertFromRemote(guest);
@@ -83,7 +89,8 @@ class SyncPullService {
     }
 
     /// 🔹 GUEST CATEGORIES
-    if (response.guestCategories != null && response.guestCategories!.isNotEmpty) {
+    if (response.guestCategories != null &&
+        response.guestCategories!.isNotEmpty) {
       print(
         '[SyncPullService] 🏷️  Memproses ${response.guestCategories!.length} guest categories...',
       );
@@ -101,7 +108,9 @@ class SyncPullService {
 
     /// 🔹 SOUVENIRS
     if (response.souvenirs != null && response.souvenirs!.isNotEmpty) {
-      print('[SyncPullService] 🎁 Memproses ${response.souvenirs!.length} souvenirs...');
+      print(
+        '[SyncPullService] 🎁 Memproses ${response.souvenirs!.length} souvenirs...',
+      );
       for (final souvenir in response.souvenirs!) {
         try {
           await _souvenirLocal.upsertFromRemote(souvenir);
@@ -114,8 +123,11 @@ class SyncPullService {
       print('[SyncPullService] ⚠️ Tidak ada souvenirs dari server');
     }
 
-    if (response.greetingScreens != null && response.greetingScreens!.isNotEmpty) {
-      print('[SyncPullService] 👋 Memproses ${response.greetingScreens!.length} greetings...');
+    if (response.greetingScreens != null &&
+        response.greetingScreens!.isNotEmpty) {
+      print(
+        '[SyncPullService] 👋 Memproses ${response.greetingScreens!.length} greetings...',
+      );
       for (final greeting in response.greetingScreens!) {
         try {
           await _greetingLocal.upsertFormRemote(greeting);
@@ -130,7 +142,9 @@ class SyncPullService {
 
     /// 🔹 GUEST PHOTOS
     if (response.guestPhotos != null && response.guestPhotos!.isNotEmpty) {
-      print('[SyncPullService] 📸 Memproses ${response.guestPhotos!.length} guest photos...');
+      print(
+        '[SyncPullService] 📸 Memproses ${response.guestPhotos!.length} guest photos...',
+      );
 
       for (final photo in response.guestPhotos!) {
         try {
@@ -145,7 +159,9 @@ class SyncPullService {
     }
 
     if (response.guestSessions != null && response.guestSessions!.isNotEmpty) {
-      print('[SyncPullService] ⏱️  Memproses ${response.guestSessions!.length} guest sessions...');
+      print(
+        '[SyncPullService] ⏱️  Memproses ${response.guestSessions!.length} guest sessions...',
+      );
 
       for (final session in response.guestSessions!) {
         try {

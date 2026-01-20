@@ -63,7 +63,9 @@ class _GuestScanPageState extends State<GuestScanPage> {
   }
 
   void _showError(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override
@@ -75,7 +77,11 @@ class _GuestScanPageState extends State<GuestScanPage> {
         centerTitle: true,
         leading: InkWell(
           onTap: () => AppTransition.popTransition(context),
-          child: Icon(Icons.arrow_back_ios, color: AppColors.whiteColor, size: 12),
+          child: Icon(
+            Icons.arrow_back_ios,
+            color: AppColors.whiteColor,
+            size: 12,
+          ),
         ),
       ),
       body: Stack(
@@ -83,10 +89,14 @@ class _GuestScanPageState extends State<GuestScanPage> {
           BlocListener<GuestBloc, GuestState>(
             listener: (context, state) async {
               if (state is GuestScanSuccess) {
-                final result = await AppTransition.pushTransition<GuestScanResult>(
-                  context,
-                  GuestScanSuccessPage(guestName: state.guest.name, isCheckOut: false),
-                );
+                final result =
+                    await AppTransition.pushTransition<GuestScanResult>(
+                      context,
+                      GuestScanSuccessPage(
+                        guestName: state.guest.name,
+                        isCheckOut: false,
+                      ),
+                    );
 
                 if (result == GuestScanResult.scanAgain) {
                   setState(() => _isProcessing = false);
@@ -101,7 +111,10 @@ class _GuestScanPageState extends State<GuestScanPage> {
 
               if (state is GuestScanFailure) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(state.message), duration: const Duration(seconds: 2)),
+                  SnackBar(
+                    content: Text(state.message),
+                    duration: const Duration(seconds: 2),
+                  ),
                 );
 
                 // Semua error, kembali ke halaman sebelumnya

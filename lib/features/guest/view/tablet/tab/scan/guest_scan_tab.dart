@@ -15,7 +15,7 @@ class GuestScanTab extends StatefulWidget {
 }
 
 class _GuestScanTabState extends State<GuestScanTab> {
-  GlobalKey _loadingKey = GlobalKey();
+  final GlobalKey _loadingKey = GlobalKey();
 
   BarcodeScanner? _barcodeScanner;
 
@@ -42,7 +42,10 @@ class _GuestScanTabState extends State<GuestScanTab> {
         BlocListener<GuestSessionBloc, GuestSessionState>(
           listener: (context, stateSession) {
             if (stateSession is GuestSessionChecking) {
-              CustomDialog.showLoadingDialog(context: context, loadingKey: _loadingKey);
+              CustomDialog.showLoadingDialog(
+                context: context,
+                loadingKey: _loadingKey,
+              );
             }
 
             if (stateSession is GuestCheckInSuccess) {
@@ -81,7 +84,9 @@ class _GuestScanTabState extends State<GuestScanTab> {
             padding: const EdgeInsetsGeometry.symmetric(horizontal: 40),
             child: Container(
               width: double.infinity,
-              decoration: BoxDecoration(borderRadius: BorderRadius.circular(12)),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+              ),
               child: Column(
                 children: [
                   const SizedBox(height: 24),

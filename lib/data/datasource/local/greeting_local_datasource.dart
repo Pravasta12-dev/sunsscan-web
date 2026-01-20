@@ -14,7 +14,9 @@ class GreetingLocalDatasource {
     return GreetingLocalDatasource(DatabaseHelper());
   }
 
-  Future<void> insertGreetingScreen({required GreetingScreenModel greetingScreen}) async {
+  Future<void> insertGreetingScreen({
+    required GreetingScreenModel greetingScreen,
+  }) async {
     final db = await _databaseHelper.database;
 
     try {
@@ -23,27 +25,32 @@ class GreetingLocalDatasource {
       await db.insert(
         'greeting_screens',
         greetingScreen
-            .copyWith(greetingUuid: greetingUuid, syncStatus: SyncStatus.pending)
+            .copyWith(
+              greetingUuid: greetingUuid,
+              syncStatus: SyncStatus.pending,
+            )
             .toJson(),
       );
     } catch (e) {
-      print('Error inserting greeting screen: $e');
       throw CustomException('Failed to insert greeting screen');
     }
   }
 
-  Future<void> updateGreetingScreen({required GreetingScreenModel greetingScreen}) async {
+  Future<void> updateGreetingScreen({
+    required GreetingScreenModel greetingScreen,
+  }) async {
     final db = await _databaseHelper.database;
 
     try {
       await db.update(
         'greeting_screens',
-        greetingScreen.copyWith(syncStatus: SyncStatus.pending, updatedAt: DateTime.now()).toJson(),
+        greetingScreen
+            .copyWith(syncStatus: SyncStatus.pending, updatedAt: DateTime.now())
+            .toJson(),
         where: 'greeting_uuid = ?',
         whereArgs: [greetingScreen.greetingUuid],
       );
     } catch (e) {
-      print('Error updating greeting screen: $e');
       throw CustomException('Failed to update greeting screen');
     }
   }
@@ -64,7 +71,6 @@ class GreetingLocalDatasource {
         whereArgs: [greetingUuid],
       );
     } catch (e) {
-      print('Error marking greeting screen as deleted: $e');
       throw CustomException('Failed to delete greeting screen');
     }
   }
@@ -85,7 +91,6 @@ class GreetingLocalDatasource {
         return GreetingScreenModel.fromJson(maps[i]);
       });
     } catch (e) {
-      print('Error fetching greeting screens: $e');
       throw CustomException('Failed to fetch greeting screens');
     }
   }
@@ -106,7 +111,6 @@ class GreetingLocalDatasource {
         return GreetingScreenModel.fromJson(maps[i]);
       });
     } catch (e) {
-      print('Error fetching pending greeting screens: $e');
       throw CustomException('Failed to fetch pending greeting screens');
     }
   }
@@ -123,7 +127,6 @@ class GreetingLocalDatasource {
         [SyncStatus.synced.name, ...greetingUuids],
       );
     } catch (e) {
-      print('Error marking greeting screens as synced: $e');
       throw CustomException('Failed to mark greeting screens as synced');
     }
   }
@@ -150,7 +153,9 @@ class GreetingLocalDatasource {
       final localRow = existing.first;
 
       final localSyncStatus = localRow['sync_status'] as String?;
-      final localUpdatedAt = DateTime.tryParse(localRow['updated_at'] as String? ?? '');
+      final localUpdatedAt = DateTime.tryParse(
+        localRow['updated_at'] as String? ?? '',
+      );
 
       if (localSyncStatus == SyncStatus.pending.name) {
         // Skip updating to avoid overwriting local changes

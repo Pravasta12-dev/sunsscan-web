@@ -74,16 +74,15 @@ class EventLocalDatasource {
   Future<int> updateEvent(EventModel event) async {
     final db = await _databaseHelper.database;
     try {
-      print('[EventLocalDatasource] Updating event: ${event.eventUuid}');
       return await db.update(
         'events',
-        event.copyWith(updatedAt: DateTime.now(), syncStatus: SyncStatus.pending).toJson(),
+        event
+            .copyWith(updatedAt: DateTime.now(), syncStatus: SyncStatus.pending)
+            .toJson(),
         where: 'event_uuid = ?',
         whereArgs: [event.eventUuid],
       );
-    } catch (e, st) {
-      print('[EventLocalDatasource] Error updating event: $e');
-      print('[EventLocalDatasource] Stack trace: $st');
+    } catch (e) {
       throw Exception('Failed to update event: $e');
     }
   }
@@ -110,17 +109,17 @@ class EventLocalDatasource {
 
   Future<EventModel?> getActiveEvent() async {
     final db = await _databaseHelper.database;
-    print('[EventLocalDatasource] Fetching active event from local database');
     try {
-      final result = await db.query('events', where: 'is_active = ?', whereArgs: [1]);
-      print('[EventLocalDatasource] Active event query result count: ${result.length}');
+      final result = await db.query(
+        'events',
+        where: 'is_active = ?',
+        whereArgs: [1],
+      );
       if (result.isNotEmpty) {
-        print('[EventLocalDatasource] Active event found: ${result.first}');
         return EventModel.fromJson(result.first);
       }
       return null;
     } catch (e) {
-      print('[EventLocalDatasource] Error fetching active event: $e');
       throw Exception('Failed to get active event: $e');
     }
   }
@@ -133,7 +132,12 @@ class EventLocalDatasource {
       await db.update('events', {'is_active': 0});
 
       // Set the specified event to active
-      await db.update('events', {'is_active': 1}, where: 'event_uuid = ?', whereArgs: [eventUuid]);
+      await db.update(
+        'events',
+        {'is_active': 1},
+        where: 'event_uuid = ?',
+        whereArgs: [eventUuid],
+      );
     } catch (e) {
       throw Exception('Failed to set active event: $e');
     }
@@ -158,10 +162,10 @@ class EventLocalDatasource {
     final db = await _databaseHelper.database;
     try {
       final ids = eventUuids.map((e) => '?').join(', ');
-      await db.rawUpdate('UPDATE events SET sync_status = ? WHERE event_uuid IN ($ids)', [
-        SyncStatus.synced.name,
-        ...eventUuids,
-      ]);
+      await db.rawUpdate(
+        'UPDATE events SET sync_status = ? WHERE event_uuid IN ($ids)',
+        [SyncStatus.synced.name, ...eventUuids],
+      );
     } catch (e) {
       throw Exception('Failed to mark events as synced: $e');
     }
@@ -170,13 +174,19 @@ class EventLocalDatasource {
   Future<void> upsertFromRemote(EventModel remote) async {
     final db = await _databaseHelper.database;
 
-    final local = await db.query('events', where: 'event_uuid = ?', whereArgs: [remote.eventUuid]);
+    final local = await db.query(
+      'events',
+      where: 'event_uuid = ?',
+      whereArgs: [remote.eventUuid],
+    );
 
     if (local.isNotEmpty) {
       final localRow = local.first;
 
       final localSyncStatus = localRow['sync_status'] as String?;
-      final localUpdatedAt = DateTime.tryParse(localRow['updated_at'] as String? ?? '');
+      final localUpdatedAt = DateTime.tryParse(
+        localRow['updated_at'] as String? ?? '',
+      );
 
       /// 1️⃣ JANGAN overwrite data lokal yang masih pending
       if (localSyncStatus == SyncStatus.pending.name) {
@@ -185,7 +195,11 @@ class EventLocalDatasource {
 
       /// 2️⃣ JIKA REMOTE SUDAH DI-DELETE → HARUS TERAPKAN
       if (remote.isDeleted == true) {
-        await db.delete('events', where: 'event_uuid = ?', whereArgs: [remote.eventUuid]);
+        await db.delete(
+          'events',
+          where: 'event_uuid = ?',
+          whereArgs: [remote.eventUuid],
+        );
         return;
       }
 

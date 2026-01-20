@@ -45,7 +45,10 @@ class GuestScanIn extends StatelessWidget {
       final raw = qrValue.raw.trim();
       context.read<GuestSessionBloc>().scanQr(raw);
     } catch (e) {
-      print('[GuestScanPage] Error: ${e.toString()}');
+      // Handle error (e.g., show a snackbar or dialog)
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error scanning QR code: ${e.toString()}')),
+      );
     }
   }
 }
