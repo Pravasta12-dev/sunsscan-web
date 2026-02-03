@@ -58,45 +58,48 @@ class GuestBloc extends Cubit<GuestState> {
         return;
       }
 
-      final guests = rows.where((r) => r['name']!.trim().isNotEmpty).map((row) {
-        final qrValue = const Uuid().v4();
-        final qrData = 'SUNSCAN|$eventUuid|$qrValue'.trim(); // Ensure no whitespace
+      final guests = rows
+          .where((r) => r.containsKey('name') && r['name'] != null && r['name']!.trim().isNotEmpty)
+          .map((row) {
+            final qrValue = const Uuid().v4();
+            final qrData = 'SUNSCAN|$eventUuid|$qrValue'.trim(); // Ensure no whitespace
 
-        // Parse gender dengan validasi
-        Gender guestGender = Gender.male;
-        final genderStr = row['gender']?.trim().toLowerCase();
-        if (genderStr != null && genderStr.isNotEmpty) {
-          try {
-            guestGender = Gender.values.firstWhere(
-              (g) => g.name.toLowerCase() == genderStr,
-              orElse: () => Gender.male,
+            // Parse gender dengan validasi
+            Gender guestGender = Gender.male;
+            final genderStr = row['gender']?.trim().toLowerCase();
+            if (genderStr != null && genderStr.isNotEmpty) {
+              try {
+                guestGender = Gender.values.firstWhere(
+                  (g) => g.name.toLowerCase() == genderStr,
+                  orElse: () => Gender.male,
+                );
+              } catch (_) {
+                // Default ke male jika parsing gagal
+                guestGender = Gender.male;
+              }
+            }
+
+            // Parse phone dengan trim yang benar
+            final phoneStr = row['phone']?.trim();
+            final phone = (phoneStr == null || phoneStr.isEmpty) ? null : phoneStr;
+
+            // Parse category dengan trim yang benar
+            final categoryStr = row['category']?.trim();
+            final category = (categoryStr == null || categoryStr.isEmpty) ? null : categoryStr;
+
+            return GuestsModel(
+              eventUuid: eventUuid,
+              name: row['name']!.trim(),
+              phone: phone,
+              gender: guestGender,
+              guestCategoryUuid: null,
+              guestCategoryName: category,
+              qrValue: qrData,
+
+              createdAt: DateTime.now(),
             );
-          } catch (_) {
-            // Default ke male jika parsing gagal
-            guestGender = Gender.male;
-          }
-        }
-
-        // Parse phone dengan trim yang benar
-        final phoneStr = row['phone']?.trim();
-        final phone = (phoneStr == null || phoneStr.isEmpty) ? null : phoneStr;
-
-        // Parse category dengan trim yang benar
-        final categoryStr = row['category']?.trim();
-        final category = (categoryStr == null || categoryStr.isEmpty) ? null : categoryStr;
-
-        return GuestsModel(
-          eventUuid: eventUuid,
-          name: row['name']!.trim(),
-          phone: phone,
-          gender: guestGender,
-          guestCategoryUuid: null,
-          guestCategoryName: category,
-          qrValue: qrData,
-
-          createdAt: DateTime.now(),
-        );
-      }).toList();
+          })
+          .toList();
 
       await _guestLocalRepository.insertGuestsBatch(
         guests: guests,
@@ -106,7 +109,9 @@ class GuestBloc extends Cubit<GuestState> {
       );
       SyncDispatcher.onLocalChange();
       emit(GuestsImportSuccess(guests.length));
-    } catch (e) {
+    } catch (e, st) {
+      print("Error during import: $e");
+      print('Stack trace: $st');
       emit(GuestsImportFailure(e.toString()));
     }
   }

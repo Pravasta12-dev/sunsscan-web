@@ -5,9 +5,12 @@ import 'package:sun_scan/core/helper/assets/assets.gen.dart';
 import 'package:sun_scan/core/theme/app_colors.dart';
 import 'package:sun_scan/core/theme/app_text_styles.dart';
 import 'package:sun_scan/features/guest/bloc/guest_tab/guest_tab_cubit.dart';
+import 'package:sun_scan/features/guest/bloc/souvenir/souvenir_bloc.dart';
 
 class GuestTabletTabbar extends StatelessWidget {
-  GuestTabletTabbar({super.key});
+  GuestTabletTabbar({super.key, required this.eventUuid});
+
+  final String eventUuid;
 
   final List<_TabbarLabel> tabbarLabels = [
     _TabbarLabel(
@@ -45,6 +48,19 @@ class GuestTabletTabbar extends StatelessWidget {
               onTap: (value) {
                 // Handle tab changes if necessary
                 context.read<GuestTabCubit>().setTab(GuestTab.values[value]);
+                switch (GuestTab.values[value]) {
+                  case GuestTab.dashboard:
+                    break;
+                  case GuestTab.scan:
+                    break;
+                  case GuestTab.guests:
+                    break;
+                  case GuestTab.souvenirs:
+                    context.read<SouvenirBloc>().loadSouvenirs(eventUuid);
+                    break;
+                  case GuestTab.layers:
+                    break;
+                }
               },
               tabs: tabbarLabels
                   .map(

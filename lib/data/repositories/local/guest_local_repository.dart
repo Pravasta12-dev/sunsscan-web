@@ -38,7 +38,9 @@ class GuestLocalRepositoryImpl implements GuestLocalRepository {
   }) async {
     try {
       await _datasource.insertGuestsBatch(guests: guests, onProgress: onProgress);
-    } catch (e) {
+    } catch (e, st) {
+      print('[GuestLocalRepository] Error insertGuestsBatch: $e');
+      print("[GuestLocalRepository] Stack trace: $st");
       return _dbError();
     }
   }

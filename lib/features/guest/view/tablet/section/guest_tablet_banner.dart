@@ -146,7 +146,7 @@ class GuestTabletBanner extends StatelessWidget {
             decoration: const BoxDecoration(
               border: Border(top: BorderSide(color: AppColors.lightGreyColor, width: 0.5)),
             ),
-            child: GuestTabletTabbar(),
+            child: GuestTabletTabbar(eventUuid: eventUuid),
           ),
         ],
       ),

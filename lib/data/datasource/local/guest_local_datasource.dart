@@ -78,20 +78,69 @@ class GuestLocalDatasource {
     int inserted = 0;
 
     for (int i = 0; i < total; i += batchSize) {
-      final batch = db.batch();
       final end = (i + batchSize < total) ? i + batchSize : total;
       final currentBatch = guests.sublist(i, end);
 
-      for (final guest in currentBatch) {
-        final newGuest = guest.copyWith(
-          guestUuid: const Uuid().v4(),
-          updatedAt: DateTime.now(),
-          syncStatus: SyncStatus.pending,
-        );
-        batch.insert('guests', newGuest.toJson());
-      }
+      await db.transaction((txn) async {
+        for (final guest in currentBatch) {
+          final categoryUuid = guest.guestCategoryUuid;
+          final categoryName = guest.guestCategoryName;
+          var catUuid = categoryUuid;
 
-      await batch.commit(noResult: true);
+          // Jika kategori baru (nama ada tapi uuid null), check atau create kategori dulu
+          if (categoryUuid == null && categoryName != null) {
+            // Check apakah category dengan nama yang sama sudah ada
+            final existingCategory = await txn.query(
+              'guest_categories',
+              where: 'event_uuid = ? AND name = ?',
+              whereArgs: [guest.eventUuid, categoryName],
+              limit: 1,
+            );
+
+            if (existingCategory.isNotEmpty) {
+              // Pakai category yang sudah ada
+              catUuid = existingCategory.first['category_uuid'] as String;
+            } else {
+              // Create category baru
+              catUuid = const Uuid().v4();
+              await txn.insert('guest_categories', {
+                'category_uuid': catUuid,
+                'event_uuid': guest.eventUuid,
+                'name': categoryName,
+                'created_at': DateTime.now().toUtc().toIso8601String(),
+                'updated_at': DateTime.now().toUtc().toIso8601String(),
+                'sync_status': SyncStatus.pending.name,
+              });
+            }
+          }
+
+          final guestUuid = const Uuid().v4();
+          final newGuest = guest.copyWith(
+            guestUuid: guestUuid,
+            guestCategoryUuid: catUuid,
+            guestCategoryName: categoryName,
+            updatedAt: DateTime.now(),
+            syncStatus: SyncStatus.pending,
+          );
+
+          await txn.insert('guests', newGuest.toJson());
+
+          // Insert souvenir untuk setiap guest
+          final souvenirUuid = const Uuid().v4();
+          await txn.insert('souvenirs', {
+            'souvenir_uuid': souvenirUuid,
+            'event_uuid': guest.eventUuid,
+            'guest_uuid': guestUuid,
+            'guest_category_uuid': catUuid,
+            'souvenir_status': SouvenirStatus.pending.name,
+            'received_at': null,
+            'created_at': DateTime.now().toUtc().toIso8601String(),
+            'updated_at': null,
+            'sync_status': SyncStatus.pending.name,
+          });
+        }
+      });
+
       inserted += currentBatch.length;
       onProgress(inserted, total);
     }
